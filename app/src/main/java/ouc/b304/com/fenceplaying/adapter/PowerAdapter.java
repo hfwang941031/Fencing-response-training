@@ -14,7 +14,8 @@ import ouc.b304.com.fenceplaying.device.Device;
 
 public class PowerAdapter extends BaseAdapter {
     private LayoutInflater inflater ;
-    private static final int MAX_ITEM_COUNT = 12;
+    /*最多允许16个设备显示在电池列表*/
+    private static final int MAX_ITEM_COUNT = 16;
     public PowerAdapter(Context context)
     {
         this.inflater = LayoutInflater.from(context);
@@ -51,10 +52,10 @@ public class PowerAdapter extends BaseAdapter {
         ImageView imgPower =  view1.findViewById(R.id.img_power);
         DeviceInfo info = Device.DEVICE_LIST.get(i);
         tvDeviceNum.setText("设备" + info.getDeviceNum());
-        if (info.getPower() == 0)
+        /*if (info.getPower() == 0)
            tvPower.setText("5%");
        else
-            tvPower.setText(info.getPower() + "0%");
+            tvPower.setText(info.getPower() + "0%");*/
         switch (info.getPower())
         {
             case 0:

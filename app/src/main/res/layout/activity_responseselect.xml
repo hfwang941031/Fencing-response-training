@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+
+    <Button
+        android:id="@+id/btn_singlespot"
+        android:layout_width="0dp"
+        android:layout_height="350dp"
+        android:layout_weight="1"
+        android:text="单点训练"
+        android:textSize="50sp"
+        android:layout_gravity="center"
+        android:layout_marginLeft="50dp"/>
+    <View
+        android:layout_width="10dp"
+        android:layout_height="350dp"/>
+    <Button
+        android:id="@+id/btn_singlecolumn"
+        android:layout_width="0dp"
+        android:layout_height="350dp"
+        android:layout_weight="1"
+        android:text="单列训练"
+        android:textSize="50sp"
+        android:layout_gravity="center"/>
+    <View
+        android:layout_width="10dp"
+        android:layout_height="350dp"/>
+    <Button
+        android:id="@+id/btn_matrix"
+        android:layout_width="0dp"
+        android:layout_height="350dp"
+        android:layout_weight="1"
+        android:text="方阵训练"
+        android:textSize="50sp"
+        android:layout_gravity="center"
+        android:layout_marginRight="50dp"/>
+
+
+</LinearLayout>

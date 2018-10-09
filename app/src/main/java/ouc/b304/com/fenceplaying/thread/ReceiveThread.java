@@ -41,11 +41,11 @@ public class ReceiveThread extends Thread{
     public void run() {
         //检测电量线程
         if (threadFlag == POWER_RECEIVE_THREAD) {
-            Timer.sleep(2000);
+            Timer.sleep(5000);
             Log.d("Thread", "POWER_RECEIVE_THREAD has run");
             readData();
         } else if (threadFlag == PAN_ID_THREAD) {
-            Timer.sleep(500);
+            Timer.sleep(5000);
             Log.d("Thread", "PAN_ID_THREAD has run");
             readData();
         } else if (threadFlag == CLEAR_DATA_THREAD) {
@@ -54,26 +54,25 @@ public class ReceiveThread extends Thread{
         }
         //返回设备数量的线程
         else if (threadFlag == DEVICE_NUM_THREAD) {
-            Timer.sleep(500);
+            Timer.sleep(1000);
             Log.d("Thread", "DEVICE_NUM_THREAD has run");
             readData();
         }
-        else if (threadFlag == TIME_RECEIVE_THREAD) {//接收设备返回时间线程
+        else if (threadFlag == TIME_RECEIVE_THREAD) {
+            //接收设备返回时间线程
             // Log.i("------------","我来了");
             THREAD_RUNNING_FLAG = true;
+            Log.d("Thread", "TIME_RECEIVE_THREAD has run");
             while (THREAD_RUNNING_FLAG) {
-                Log.d("Thread", "TIME_RECEIVE_THREAD has run");
                 readData();
                 try {
-                    Thread.sleep(5);
+                    Thread.sleep(100);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
             }
         }
     }
-
-
     public void readData() {
         if (ftDev != null) {
             synchronized (ftDev) {
@@ -87,11 +86,11 @@ public class ReceiveThread extends Thread{
                     //返回的结果转String
                     result = new String(readData);
                     Log.d(Constant.LOG_TAG, "origin Data: length(" + iavailable + ")  data:" + result);
-
                 }
                 Message msg = Message.obtain();
                 msg.what = msgFlag;
                 msg.obj = result;
+                Log.d(Constant.LOG_TAG, "result" + result.toString() );
                 handler.sendMessage(msg);
             }
         }

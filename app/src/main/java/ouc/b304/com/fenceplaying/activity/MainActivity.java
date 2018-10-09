@@ -12,7 +12,6 @@ import android.hardware.usb.UsbManager;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.UserManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -32,7 +31,7 @@ import ouc.b304.com.fenceplaying.Bean.PowerInfoComparetor;
 import ouc.b304.com.fenceplaying.R;
 import ouc.b304.com.fenceplaying.adapter.PowerAdapter;
 import ouc.b304.com.fenceplaying.device.Device;
-import ouc.b304.com.fenceplaying.thread.ReceiveThread;
+import ouc.b304.com.fenceplaying.thread.AutoCheckPower;
 import ouc.b304.com.fenceplaying.thread.Timer;
 import ouc.b304.com.fenceplaying.utils.DataAnalyzeUtils;
 
@@ -46,8 +45,6 @@ public class MainActivity extends Activity {
     Button btnPlayerInfo;
     @BindView(R.id.btn_progrgmSetting)
     Button btnProgrgmSetting;
-    @BindView(R.id.btn_selectProgram)
-    Button btnSelectProgram;
     @BindView(R.id.btn_randomProgram)
     Button btnRandomProgram;
     @BindView(R.id.btn_historyData)
@@ -58,13 +55,17 @@ public class MainActivity extends Activity {
     LinearLayout llRightmain;
     @BindView(R.id.lv_battery)
     ListView lvBattery;
+    @BindView(R.id.btn_responsetraining)
+    Button btnResponsetraining;
     private Device device;
     private Context context;
     private Boolean isLeave = false;
     private PowerAdapter powerAdapter;
     private final int POWER_RECEIVE = 2;
+    private AutoCheckPower checkPowerThread;
+    private static final String TAG = "MainActivity";
 
-/*onCreate方法*/
+    /*onCreate方法*/
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,41 +75,82 @@ public class MainActivity extends Activity {
         powerAdapter = new PowerAdapter(context);
         device = new Device(this);
         initView();
-        System.out.println("MainActivity---->onCreate");
+        Log.d(TAG, "---->onCreate");
         //设置全局广播监听--->USB插拔
         IntentFilter filter = new IntentFilter();
         filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
         filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
+        filter.setPriority(500);
         this.registerReceiver(mUsbReceiver, filter);
+
     }
 
     @Override
-    protected void onStart() {
-        super.onStart();
-        System.out.println("MainActivity----->onStart");
-        device.checkDevice(context);
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "---->onResume");
         initDevice();
         isLeave = false;
-        new ReceiveThread(handler, device.ftDev, POWER_RECEIVE_THREAD, 2).start();
-
+        if (checkPowerThread == null) {
+            Log.d(TAG, "checkPowerThread==null");
+            checkPowerThread = new AutoCheckPower(context, device, POWER_RECEIVE_THREAD, handler);
+            checkPowerThread.start();
+        } else
+            Log.d(TAG, "checkPowerThread!=null");
     }
+
 
     @Override
     protected void onPause() {
         super.onPause();
+        Log.d(TAG, "---->onPause");
         isLeave = true;
         device.disconnect();
-        Log.d("MainActivity","---->onPause");
+       /* if (checkPowerThread != null) {
+            checkPowerThread.interrupt();
+        }*/
+
     }
 
-    @OnClick({R.id.btn_playerInfo, R.id.btn_progrgmSetting, R.id.btn_selectProgram, R.id.btn_randomProgram, R.id.btn_historyData, R.id.btn_Setting})
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+        Log.d(TAG, "----->onReStart");
+
+        isLeave = false;
+       /* if (checkPowerThread == null)
+        {
+            Log.d(TAG,"checkPowerThread==null");
+            checkPowerThread=new AutoCheckPower();
+            checkPowerThread.start();
+        }
+        else
+            Log.d(TAG,"checkPowerThread!=null");   */
+    }
+
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        //device.disconnect();
+        Log.d(TAG, "----->onDestroy");
+        if (checkPowerThread != null) {
+            checkPowerThread.interrupt();
+        }
+        this.unregisterReceiver(mUsbReceiver);
+    }
+
+    @OnClick({R.id.btn_playerInfo, R.id.btn_progrgmSetting, R.id.btn_responsetraining, R.id.btn_randomProgram, R.id.btn_historyData, R.id.btn_Setting})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.btn_playerInfo:
+                startActivity(new Intent(context, PlayerShowActivity.class));
                 break;
             case R.id.btn_progrgmSetting:
                 break;
-            case R.id.btn_selectProgram:
+            case R.id.btn_responsetraining:
+                startActivity(new Intent(context, ResponseSelect.class));
+
                 break;
             case R.id.btn_randomProgram:
                 break;
@@ -119,7 +161,6 @@ public class MainActivity extends Activity {
                 break;
         }
     }
-
 
 
     /*初始化串口*/
@@ -150,12 +191,10 @@ public class MainActivity extends Activity {
 
 
     /*拔出usb设备后 直接断开连接*/
-    public void notifyUSBDeviceDetach()
-    {
-        Toast.makeText(context,"设备已拔出，即将断开连接·······",Toast.LENGTH_SHORT).show();
+    public void notifyUSBDeviceDetach() {
+        Toast.makeText(context, "设备已拔出，即将断开连接·······", Toast.LENGTH_SHORT).show();
         device.disconnect();
     }
-
 
 
     //读取电量信息
@@ -176,7 +215,6 @@ public class MainActivity extends Activity {
         /*tvDeviceCount.setText("共" + Math.min(12, powerInfos.size()) + "个");*/
         Log.i("AAA", powerInfos.size() + "");
     }
-
 
 
     private void setPowerFlag() {
@@ -234,7 +272,7 @@ public class MainActivity extends Activity {
     }
 
 
-    public  Handler handler = new Handler() {
+    private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
@@ -257,20 +295,6 @@ public class MainActivity extends Activity {
             }
         }
     };
-    private class AutoCheckPower extends Thread {
-        private boolean powerFlag = true;
 
-        @Override
-        public void run() {
-            while (powerFlag) {
-                // 发送获取全部设备电量指令
-                device.sendGetDeviceInfo();
-                //开启接收电量的线程
-                new ReceiveThread(handler, device.ftDev, POWER_RECEIVE_THREAD,
-                        POWER_RECEIVE).start();
-                Timer.sleep(10000);
-            }
-        }
-    }
 
 }

@@ -16,7 +16,7 @@
         android:orientation="horizontal">
             <ListView
                 android:id="@+id/lv_battery"
-                android:layout_width="40dp"
+                android:layout_width="60dp"
                 android:layout_height="match_parent"
                 android:scrollbars="none" />
     </LinearLayout>
@@ -75,8 +75,8 @@
             android:layout_marginRight="60dp">
             >
             <Button
-                android:id="@+id/btn_selectProgram"
-                android:text="选择程序"
+                android:id="@+id/btn_responsetraining"
+                android:text="敏捷训练"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"

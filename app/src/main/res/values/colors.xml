@@ -7,5 +7,7 @@
     <color name="grey2">#F0FFFF</color>
     <color name="black">#000</color>
     <color name="white">#fff</color>
+    <color name="content_color">#666666</color>
+
 
 </resources>
