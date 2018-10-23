@@ -37,6 +37,12 @@
 
         <activity
             android:name=".activity.SingleSpotActivity"
+            android:windowSoftInputMode="stateHidden"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+        </activity>
+        <activity
+            android:name=".activity.MatrixActivity"
+            android:windowSoftInputMode="stateHidden"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
         </activity>
     </application>

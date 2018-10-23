@@ -19,14 +19,11 @@ import ouc.b304.com.fenceplaying.R;
  */
 public class SingleSpotAdapter extends BaseAdapter {
     private Context context;
-
     //每次时间的集合
     private ArrayList<Integer> timeList;
-
     public void setTimeList(ArrayList<Integer> time) {
         this.timeList = time;
     }
-
     public SingleSpotAdapter(Context context) {
         this.context = context;
     }
@@ -65,7 +62,7 @@ public class SingleSpotAdapter extends BaseAdapter {
 
         }
         viewHolder.tvOrderth.setText("第" + (position + 1) + "次");
-        viewHolder.tvScores.setText(timeList.get(position)+"毫秒");
+        viewHolder.tvScores.setText(timeList.get(position)+"");
         return convertView;
     }
 

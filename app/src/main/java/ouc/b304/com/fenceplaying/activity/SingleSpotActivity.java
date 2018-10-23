@@ -135,6 +135,8 @@ public class SingleSpotActivity extends Activity {
                 List<TimeInfo> infos = DataAnalyzeUtils.analyzeTimeData(data);
                 for (TimeInfo info : infos) {
                     counter+=1;
+                    if (counter>trainTimes)
+                        break;
                     Log.d("******", infos.size()+"");
                     Log.d("#######", counter+"");
                     timeList.add(info.getTime());

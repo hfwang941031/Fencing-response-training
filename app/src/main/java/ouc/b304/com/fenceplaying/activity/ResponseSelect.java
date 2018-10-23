@@ -61,6 +61,7 @@ public class ResponseSelect extends Activity {
             case R.id.btn_singlecolumn:
                 break;
             case R.id.btn_matrix:
+                startActivity(new Intent(context,MatrixActivity.class));
                 break;
         }
     }

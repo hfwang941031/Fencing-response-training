@@ -5,21 +5,18 @@
     android:layout_height="match_parent">
     <TextView
         android:id="@+id/tv_orderth"
-        android:layout_width="0dp"
-        android:layout_height="match_parent"
-        android:layout_weight="1"
+        android:layout_width="305dp"
+        android:layout_height="wrap_content"
         android:textSize="22sp"
         android:layout_marginTop="20dp"
         android:gravity="center"
         android:textColor="@color/black"/>
     <TextView
         android:id="@+id/tv_scores"
-        android:layout_width="0dp"
+        android:layout_width="305dp"
         android:layout_height="wrap_content"
-        android:layout_weight="1"
         android:textSize="22sp"
         android:layout_marginTop="20dp"
         android:gravity="center"
         android:textColor="@color/black"/>
-
 </LinearLayout>
