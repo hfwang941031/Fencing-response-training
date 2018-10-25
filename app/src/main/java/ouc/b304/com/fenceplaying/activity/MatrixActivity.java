@@ -3,6 +3,8 @@ package ouc.b304.com.fenceplaying.activity;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
@@ -15,6 +17,7 @@ import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,22 +27,24 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ouc.b304.com.fenceplaying.Bean.Constant;
 import ouc.b304.com.fenceplaying.Bean.DeviceInfo;
+import ouc.b304.com.fenceplaying.Bean.TimeInfo;
 import ouc.b304.com.fenceplaying.R;
+import ouc.b304.com.fenceplaying.adapter.MatrixAdapter;
 import ouc.b304.com.fenceplaying.device.Device;
 import ouc.b304.com.fenceplaying.device.Order;
 import ouc.b304.com.fenceplaying.thread.ReceiveThread;
+import ouc.b304.com.fenceplaying.thread.Timer;
+import ouc.b304.com.fenceplaying.utils.DataAnalyzeUtils;
 
 /**
  * @author 王海峰 on 2018/10/9 16:09
  */
 public class MatrixActivity extends Activity {
-    private static String TAG = "MatrixActivity";
+
     @BindView(R.id.bt_run_cancel)
     ImageView btRunCancel;
     @BindView(R.id.layout_cancel)
     LinearLayout layoutCancel;
-/*    @BindView(R.id.sp_devices)
-    Spinner spDevices;*/
     @BindView(R.id.btn_turnon)
     Button btnTurnon;
     @BindView(R.id.sp_times)
@@ -56,6 +61,11 @@ public class MatrixActivity extends Activity {
     Button btnStoprun;
     @BindView(R.id.lvTimes)
     ListView lvTimes;
+    private final static int TIME_RECEIVE = 1;
+    private final static int POWER_RECEIVE = 2;
+    private final static int UPDATE_TIMES = 3;
+    private final static int STOP_TRAINING = 4;
+    private final static String TAG = "MatrixActivity";
     private Context context;
     private Device device;
     private char deviceNum;
@@ -72,6 +82,111 @@ public class MatrixActivity extends Activity {
     //训练次数下拉框适配器
     private ArrayAdapter<String> spTimesAdapter;
 
+    //每次训练的时间集合
+    private ArrayList<Integer> timeList;
+
+    //训练开始时间
+    private long startTime;
+
+    //计数器
+    private int counter=0;
+    //第二个计数器
+    private int counter2=1;
+
+    private Timer timer;
+
+    //训练开始标志
+    private boolean trainingBeginFlag = false;
+
+    private MatrixAdapter matrixAdapter;
+
+    //存储分好组的设备编号集合
+    private List<ArrayList<Character>> listOfSubList;
+
+    private  Handler handler = new Handler() {
+        @Override
+        public  void handleMessage(Message msg) {
+            switch (msg.what){
+                case Timer.TIMER_FLAG:
+                    String time=msg.obj.toString();
+                    tvTotalTime.setText("总时间"+time);
+                    break;
+                case TIME_RECEIVE:
+                    String data=msg.obj.toString();
+                    if (data.length() > 7) {
+                        //解析数据
+                        analyzeTimeData(data);
+                    }
+                    break;
+                case STOP_TRAINING:
+                    stopTraining();
+                    break;
+                case UPDATE_TIMES:
+                    matrixAdapter.setTimeList(timeList);
+                    matrixAdapter.notifyDataSetChanged();
+                    break;
+            }
+        }
+    };
+
+    private void stopTraining() {
+        trainingBeginFlag = false;
+        //停止接收线程
+        ReceiveThread.stopThread();
+        device.turnOffAllTheLight();
+        timer.stopTimer();
+
+        //很重要的重置计数器
+        counter=0;
+    }
+
+    public void analyzeTimeData(final String data) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("analyzeTimeData", "analyzeTimeData Run");
+                Log.d("what's in data", data);
+                List<TimeInfo> infos = DataAnalyzeUtils.analyzeTimeData(data);
+                for (TimeInfo info : infos) {
+                    counter+=1;
+                    if (counter > trainTimes) {
+                        listOfSubList = listOfSubList(trainTimes);
+                        counter2=1;
+                        break;
+                    }
+
+                    /*Log.d("******", infos.size()+"");
+                    Log.d("#######", counter+"");*/
+                    timeList.add(info.getTime());
+                    device.turnOffAllTheLight();
+                    turnOnLight2(listOfSubList.get(counter2).get(0),1,2);
+                    turnOnLight2(listOfSubList.get(counter2).get(1),0,1);
+                    counter2+=1;
+                    if (counter2 > listOfSubList.size()-1) {
+                        counter2=listOfSubList.size()-1;
+                    }
+                }
+                Message msg=Message.obtain();
+                msg.what=UPDATE_TIMES;
+                msg.obj = "";
+                handler.sendMessage(msg);
+                if (isTrainingOver()) {
+                    Log.d("ifistrainingover", "has run"+counter);
+                    Message msg1 = Message.obtain();
+                    msg1.what = STOP_TRAINING;
+                    msg1.obj = "";
+                    handler.sendMessage(msg1);
+                }
+            }
+        }).start();
+    }
+
+    private boolean isTrainingOver() {
+        if (counter >= trainTimes)
+            return true;
+        else return false;
+    }
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -87,8 +202,9 @@ public class MatrixActivity extends Activity {
             device.connect(this);
             device.initConfig();
         }
-        initData();
         initView();
+       /* initData();*/
+
     }
 
     private void initView() {
@@ -109,13 +225,29 @@ public class MatrixActivity extends Activity {
 
             }
         });
+        matrixAdapter = new MatrixAdapter(this);
+        lvTimes.setAdapter(matrixAdapter);
     }
 
     private void initData() {
+
+
+
         //获取当前可用的设备编号，存储到list当中
         for (DeviceInfo info : Device.DEVICE_LIST) {
             list.add(info.getDeviceNum());
         }
+      /*  for (int i=0;i<list.size();i++) {
+            Log.d("list里有什么",list.get(i)+"");
+        }*/
+/*
+        listOfSubList = listOfSubList(trainTimes);
+*/
+
+       /* for (int i=0;i<listOfSubList.size();i++) {
+            Log.d("第" + i + "组", listOfSubList.get(i).get(0)+listOfSubList.get(i).get(1)+"");
+
+        }*/
     }
 
     @Override
@@ -128,6 +260,11 @@ public class MatrixActivity extends Activity {
     protected void onResume() {
         super.onResume();
         Log.d(TAG,"---->onResume");
+        initData();
+       /* for (int i=0;i<listOfSubList.size();i++) {
+            Log.d("第" + i + "组", listOfSubList.get(i).get(0)+listOfSubList.get(i).get(1)+"");
+
+        }*/
     }
 
     @Override
@@ -169,11 +306,109 @@ public class MatrixActivity extends Activity {
                 device.turnOffAllTheLight();
                 break;
             case R.id.btn_startrun:
+                if (!device.checkDevice(MatrixActivity.this))
+                    return;
+                else if (trainTimes == 0)
+                    Toast.makeText(this,"请先选择训练次数！",Toast.LENGTH_SHORT).show();
+                else if (!checkDeviceNumber(list)) {
+                    Toast.makeText(this,"当前可用的感应器数量不足四个，无法进行方阵训练",Toast.LENGTH_SHORT).show();
+                    trainingBeginFlag=true;
+                }
+
+                else if (!trainingBeginFlag)  {
+                    listOfSubList = listOfSubList(trainTimes);
+                    startTraining();
+                    btnTurnon.setClickable(false);
+                    btnTurnoff.setClickable(false);
+                }
                 break;
             case R.id.btn_stoprun:
+                if(trainingBeginFlag)
+                {
+                    stopTraining();
+                    btnTurnon.setClickable(true);
+                    btnTurnoff.setClickable(true);
+                }
                 break;
         }
     }
+
+ /*   public void turnOnLight(final char deviceNum) {
+        //实现Runnable接口
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Timer.sleep(500);
+                if (!trainingBeginFlag)
+                    return;
+                device.sendOrder(deviceNum,
+                        Order.LightColor.values()[1],
+                        Order.VoiceMode.values()[0],
+                        Order.BlinkModel.values()[0],
+                        Order.LightModel.OUTER,
+                        Order.ActionModel.values()[1],
+                        Order.EndVoice.values()[0]);
+            }
+        }).start();
+    }*/
+
+    public void turnOnLight2(final char deviceNum, final int actionMode,final int color) {
+        //实现Runnable接口
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Timer.sleep(1000);
+                if (!trainingBeginFlag)
+                    return;
+                device.sendOrder(deviceNum,
+                        Order.LightColor.values()[color],
+                        Order.VoiceMode.values()[0],
+                        Order.BlinkModel.values()[0],
+                        Order.LightModel.OUTER,
+                        Order.ActionModel.values()[actionMode],
+                        Order.EndVoice.values()[0]);
+            }
+        }).start();
+    }
+    private void startTraining() {
+
+
+       /* for (int i=0;i<listOfSubList.size();i++) {
+            Log.d("list里面有什么", listOfSubList.get(i).get(0) +" "+ listOfSubList.get(i).get(1) + "");
+
+        }*/
+        trainingBeginFlag=true;
+        /*time = new int[trainTimes];*/
+        timeList = new ArrayList<>(trainTimes);
+        matrixAdapter.setTimeList(timeList);
+        matrixAdapter.notifyDataSetChanged();
+
+        //清除串口数据
+        new ReceiveThread(handler, device.ftDev, ReceiveThread.CLEAR_DATA_THREAD, 0).start();
+
+        //开启接收设备返回时间的监听线程
+        new ReceiveThread(handler, device.ftDev, ReceiveThread.TIME_RECEIVE_THREAD, TIME_RECEIVE).start();
+
+        for (int i=0;i<2;i++) {
+
+
+            Log.d("第一次发送", "i:"+i);
+            device.sendOrder(listOfSubList.get(0).get(i),
+                    Order.LightColor.values()[2-i],
+                    Order.VoiceMode.values()[0],
+                    Order.BlinkModel.values()[0],
+                    Order.LightModel.OUTER,
+                    Order.ActionModel.values()[1-i],
+                    Order.EndVoice.values()[0]);
+        }
+
+        //获得当前的系统时间
+        startTime = System.currentTimeMillis();
+        timer = new Timer(handler);
+        timer.setBeginTime(startTime);
+        timer.start();
+    }
+
     //对设备数量有要求，如果当前可用的设备少于四个 该项训练不能进行
     public boolean checkDeviceNumber(List<Character> list) {
         if (list.size() >= 4) {

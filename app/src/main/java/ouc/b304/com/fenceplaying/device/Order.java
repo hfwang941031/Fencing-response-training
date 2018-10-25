@@ -12,7 +12,7 @@ public class Order {
     public static enum LightColor
     {
         /*无、蓝色、红色、绿色、品红*/
-        NONE, BLUE, RED, GREEN,BLUE_RED,BLUE_GREEN,RED_GREEN,BLUE_RED_GREEN
+        RED, BLUE,NONE, GREEN,BLUE_RED,BLUE_GREEN,RED_GREEN,BLUE_RED_GREEN
     }
 
     /*蜂鸣器*/
@@ -32,8 +32,8 @@ public class Order {
     /*感应模式*/
     public static enum ActionModel
     {
-        /*0无、1:红外、2触碰、3触碰+红外、4轻触、5轻触+红外、6重触、7重触+红外*/
-        NONE, LIGHT, TOUCH, ALL, Q_TOUCH, Q_TOUCH_LIGHT, Z_TOUCH, Z_TOUCH_LIGHT
+        /*0:红外,1无、、2触碰、3触碰+红外、4轻触、5轻触+红外、6重触、7重触+红外*/
+         LIGHT, NONE,TOUCH, ALL, Q_TOUCH, Q_TOUCH_LIGHT, Z_TOUCH, Z_TOUCH_LIGHT
     }
 
     /*闪烁模式*/
