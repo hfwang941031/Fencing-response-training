@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -32,9 +33,12 @@ import ouc.b304.com.fenceplaying.R;
 import ouc.b304.com.fenceplaying.adapter.MatrixAdapter;
 import ouc.b304.com.fenceplaying.device.Device;
 import ouc.b304.com.fenceplaying.device.Order;
+import ouc.b304.com.fenceplaying.thread.AutoCheckPower;
 import ouc.b304.com.fenceplaying.thread.ReceiveThread;
 import ouc.b304.com.fenceplaying.thread.Timer;
 import ouc.b304.com.fenceplaying.utils.DataAnalyzeUtils;
+
+import static ouc.b304.com.fenceplaying.thread.ReceiveThread.POWER_RECEIVE_THREAD;
 
 /**
  * @author 王海峰 on 2018/10/9 16:09
@@ -66,6 +70,12 @@ public class MatrixActivity extends Activity {
     private final static int UPDATE_TIMES = 3;
     private final static int STOP_TRAINING = 4;
     private final static String TAG = "MatrixActivity";
+    @BindView(R.id.tv_avalibledevices)
+    TextView tvAvalibledevices;
+    @BindView(R.id.tv_devicenumbers)
+    TextView tvDevicenumbers;
+    @BindView(R.id.img_btn_refresh)
+    ImageButton imgBtnRefresh;
     private Context context;
     private Device device;
     private char deviceNum;
@@ -77,7 +87,7 @@ public class MatrixActivity extends Activity {
     private List<ArrayList<Character>> subList = new ArrayList<>();
 
     //选中的训练次数
-    private int trainTimes=0;
+    private int trainTimes = 0;
 
     //训练次数下拉框适配器
     private ArrayAdapter<String> spTimesAdapter;
@@ -89,9 +99,9 @@ public class MatrixActivity extends Activity {
     private long startTime;
 
     //计数器
-    private int counter=0;
+    private int counter = 0;
     //第二个计数器
-    private int counter2=1;
+    private int counter2 = 1;
 
     private Timer timer;
 
@@ -103,16 +113,18 @@ public class MatrixActivity extends Activity {
     //存储分好组的设备编号集合
     private List<ArrayList<Character>> listOfSubList;
 
-    private  Handler handler = new Handler() {
+
+
+    private Handler handler = new Handler() {
         @Override
-        public  void handleMessage(Message msg) {
-            switch (msg.what){
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
                 case Timer.TIMER_FLAG:
-                    String time=msg.obj.toString();
-                    tvTotalTime.setText("总时间"+time);
+                    String time = msg.obj.toString();
+                    tvTotalTime.setText("总时间" + time);
                     break;
                 case TIME_RECEIVE:
-                    String data=msg.obj.toString();
+                    String data = msg.obj.toString();
                     if (data.length() > 7) {
                         //解析数据
                         analyzeTimeData(data);
@@ -128,6 +140,7 @@ public class MatrixActivity extends Activity {
             }
         }
     };
+    private AutoCheckPower checkPowerThread;
 
     private void stopTraining() {
         trainingBeginFlag = false;
@@ -137,7 +150,7 @@ public class MatrixActivity extends Activity {
         timer.stopTimer();
 
         //很重要的重置计数器
-        counter=0;
+        counter = 0;
     }
 
     public void analyzeTimeData(final String data) {
@@ -148,10 +161,10 @@ public class MatrixActivity extends Activity {
                 Log.d("what's in data", data);
                 List<TimeInfo> infos = DataAnalyzeUtils.analyzeTimeData(data);
                 for (TimeInfo info : infos) {
-                    counter+=1;
+                    counter += 1;
                     if (counter > trainTimes) {
                         listOfSubList = listOfSubList(trainTimes);
-                        counter2=1;
+                        counter2 = 1;
                         break;
                     }
 
@@ -159,19 +172,19 @@ public class MatrixActivity extends Activity {
                     Log.d("#######", counter+"");*/
                     timeList.add(info.getTime());
                     device.turnOffAllTheLight();
-                    turnOnLight2(listOfSubList.get(counter2).get(0),1,2);
-                    turnOnLight2(listOfSubList.get(counter2).get(1),0,1);
-                    counter2+=1;
-                    if (counter2 > listOfSubList.size()-1) {
-                        counter2=listOfSubList.size()-1;
+                    turnOnLight2(listOfSubList.get(counter2).get(0), 1, 2);
+                    turnOnLight2(listOfSubList.get(counter2).get(1), 0, 1);
+                    counter2 += 1;
+                    if (counter2 > listOfSubList.size() - 1) {
+                        counter2 = listOfSubList.size() - 1;
                     }
                 }
-                Message msg=Message.obtain();
-                msg.what=UPDATE_TIMES;
+                Message msg = Message.obtain();
+                msg.what = UPDATE_TIMES;
                 msg.obj = "";
                 handler.sendMessage(msg);
                 if (isTrainingOver()) {
-                    Log.d("ifistrainingover", "has run"+counter);
+                    Log.d("ifistrainingover", "has run" + counter);
                     Message msg1 = Message.obtain();
                     msg1.what = STOP_TRAINING;
                     msg1.obj = "";
@@ -190,10 +203,17 @@ public class MatrixActivity extends Activity {
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(TAG,"---->onCreate");
+        Log.d(TAG, "---->onCreate");
         setContentView(R.layout.activity_matrix);
         ButterKnife.bind(this);
         context = this.getApplicationContext();
+        initDevices();
+        initView();
+        /* initData();*/
+
+    }
+
+    public void initDevices() {
         device = new Device(this);
         //更新连接设备列表
         device.createDeviceList(this);
@@ -201,10 +221,10 @@ public class MatrixActivity extends Activity {
         if (device.devCount > 0) {
             device.connect(this);
             device.initConfig();
+            Timer.sleep(200);
+            checkPowerThread = new AutoCheckPower(context, device, POWER_RECEIVE_THREAD, handler);
+            checkPowerThread.start();
         }
-        initView();
-       /* initData();*/
-
     }
 
     private void initView() {
@@ -229,6 +249,16 @@ public class MatrixActivity extends Activity {
         lvTimes.setAdapter(matrixAdapter);
     }
 
+    public void updateData() {
+        StringBuffer stringBuffer= new StringBuffer(list.size());
+        for (int i = 0; i < list.size(); i++) {
+            stringBuffer.append(list.get(i));
+            stringBuffer.append(" ");
+        }
+        tvDevicenumbers.setText("");
+        tvDevicenumbers.setText(stringBuffer.toString());
+
+    }
     private void initData() {
 
 
@@ -237,6 +267,10 @@ public class MatrixActivity extends Activity {
         for (DeviceInfo info : Device.DEVICE_LIST) {
             list.add(info.getDeviceNum());
         }
+
+
+
+
       /*  for (int i=0;i<list.size();i++) {
             Log.d("list里有什么",list.get(i)+"");
         }*/
@@ -253,13 +287,13 @@ public class MatrixActivity extends Activity {
     @Override
     protected void onRestart() {
         super.onRestart();
-        Log.d(TAG,"---->onRestart");
+        Log.d(TAG, "---->onRestart");
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-        Log.d(TAG,"---->onResume");
+        Log.d(TAG, "---->onResume");
         initData();
        /* for (int i=0;i<listOfSubList.size();i++) {
             Log.d("第" + i + "组", listOfSubList.get(i).get(0)+listOfSubList.get(i).get(1)+"");
@@ -270,7 +304,7 @@ public class MatrixActivity extends Activity {
     @Override
     protected void onPause() {
         super.onPause();
-        Log.d(TAG,"---->onPause");
+        Log.d(TAG, "---->onPause");
         device.turnOffAllTheLight();
         ReceiveThread.stopThread();
         if (device.devCount > 0)
@@ -280,7 +314,7 @@ public class MatrixActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        Log.d(TAG,"---->onDestroy");
+        Log.d(TAG, "---->onDestroy");
     }
 
     @OnClick({R.id.bt_run_cancel, R.id.layout_cancel, R.id.btn_turnon, R.id.btn_turnoff, R.id.btn_startrun, R.id.btn_stoprun})
@@ -309,13 +343,11 @@ public class MatrixActivity extends Activity {
                 if (!device.checkDevice(MatrixActivity.this))
                     return;
                 else if (trainTimes == 0)
-                    Toast.makeText(this,"请先选择训练次数！",Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "请先选择训练次数！", Toast.LENGTH_SHORT).show();
                 else if (!checkDeviceNumber(list)) {
-                    Toast.makeText(this,"当前可用的感应器数量不足四个，无法进行方阵训练",Toast.LENGTH_SHORT).show();
-                    trainingBeginFlag=true;
-                }
-
-                else if (!trainingBeginFlag)  {
+                    Toast.makeText(this, "当前可用的感应器数量不足四个，无法进行方阵训练", Toast.LENGTH_SHORT).show();
+                    trainingBeginFlag = true;
+                } else if (!trainingBeginFlag) {
                     listOfSubList = listOfSubList(trainTimes);
                     startTraining();
                     btnTurnon.setClickable(false);
@@ -323,13 +355,15 @@ public class MatrixActivity extends Activity {
                 }
                 break;
             case R.id.btn_stoprun:
-                if(trainingBeginFlag)
-                {
+                if (trainingBeginFlag) {
                     stopTraining();
                     btnTurnon.setClickable(true);
                     btnTurnoff.setClickable(true);
                 }
                 break;
+
+
+
         }
     }
 
@@ -352,7 +386,7 @@ public class MatrixActivity extends Activity {
         }).start();
     }*/
 
-    public void turnOnLight2(final char deviceNum, final int actionMode,final int color) {
+    public void turnOnLight2(final char deviceNum, final int actionMode, final int color) {
         //实现Runnable接口
         new Thread(new Runnable() {
             @Override
@@ -370,6 +404,7 @@ public class MatrixActivity extends Activity {
             }
         }).start();
     }
+
     private void startTraining() {
 
 
@@ -377,7 +412,7 @@ public class MatrixActivity extends Activity {
             Log.d("list里面有什么", listOfSubList.get(i).get(0) +" "+ listOfSubList.get(i).get(1) + "");
 
         }*/
-        trainingBeginFlag=true;
+        trainingBeginFlag = true;
         /*time = new int[trainTimes];*/
         timeList = new ArrayList<>(trainTimes);
         matrixAdapter.setTimeList(timeList);
@@ -389,16 +424,16 @@ public class MatrixActivity extends Activity {
         //开启接收设备返回时间的监听线程
         new ReceiveThread(handler, device.ftDev, ReceiveThread.TIME_RECEIVE_THREAD, TIME_RECEIVE).start();
 
-        for (int i=0;i<2;i++) {
+        for (int i = 0; i < 2; i++) {
 
 
-            Log.d("第一次发送", "i:"+i);
+            Log.d("第一次发送", "i:" + i);
             device.sendOrder(listOfSubList.get(0).get(i),
-                    Order.LightColor.values()[2-i],
+                    Order.LightColor.values()[2 - i],
                     Order.VoiceMode.values()[0],
                     Order.BlinkModel.values()[0],
                     Order.LightModel.OUTER,
-                    Order.ActionModel.values()[1-i],
+                    Order.ActionModel.values()[1 - i],
                     Order.EndVoice.values()[0]);
         }
 
@@ -413,10 +448,10 @@ public class MatrixActivity extends Activity {
     public boolean checkDeviceNumber(List<Character> list) {
         if (list.size() >= 4) {
             return true;
-        }
-        else
+        } else
             return false;
     }
+
     //产生范围内的随机数
     public int randomNumber(int range) {
         return (int) (Math.random() * range);
@@ -425,9 +460,9 @@ public class MatrixActivity extends Activity {
     //返回生成包含两个不同随机设备编号的list
     public ArrayList<Character> randomSubList(List<Character> list) {
         List<Character> subList = new ArrayList<>();
-        int random1= randomNumber(list.size());
-        int random2= randomNumber(list.size());
-        while (random1==random2) {
+        int random1 = randomNumber(list.size());
+        int random2 = randomNumber(list.size());
+        while (random1 == random2) {
             random2 = randomNumber(list.size());
         }
         subList.add(list.get(random1));
@@ -437,9 +472,18 @@ public class MatrixActivity extends Activity {
 
     //将每个subList都添加到list中，形成所有subList的集合
     public List<ArrayList<Character>> listOfSubList(int trainTimes) {
-        for (int i=0;i<trainTimes;i++) {
+        for (int i = 0; i < trainTimes; i++) {
             subList.add(randomSubList(list));
         }
         return subList;
+    }
+
+
+    @OnClick(R.id.img_btn_refresh)
+    public void onViewClicked() {
+        Log.d("图片按钮被点击拉", "o");
+
+        updateData();
+        Toast.makeText(this,"可用设备已刷新",Toast.LENGTH_LONG).show();
     }
 }

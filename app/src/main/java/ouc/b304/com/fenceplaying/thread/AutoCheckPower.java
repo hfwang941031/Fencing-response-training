@@ -22,6 +22,11 @@ public class AutoCheckPower extends Thread {
         this.flag=flag;
         this.handler=handler;
     }
+
+    public void setPowerFlag(boolean powerFlag) {
+        this.powerFlag = powerFlag;
+    }
+
     @Override
     public void run() {
         while (powerFlag) {

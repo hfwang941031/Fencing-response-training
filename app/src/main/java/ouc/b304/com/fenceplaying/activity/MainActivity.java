@@ -74,7 +74,7 @@ public class MainActivity extends Activity {
         this.context = getApplicationContext();
         powerAdapter = new PowerAdapter(context);
         device = new Device(this);
-        initView();
+
         Log.d(TAG, "---->onCreate");
         //设置全局广播监听--->USB插拔
         IntentFilter filter = new IntentFilter();
@@ -82,6 +82,8 @@ public class MainActivity extends Activity {
         filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
         filter.setPriority(500);
         this.registerReceiver(mUsbReceiver, filter);
+        initView();
+
 
     }
 
@@ -91,12 +93,12 @@ public class MainActivity extends Activity {
         Log.d(TAG, "---->onResume");
         initDevice();
         isLeave = false;
-        if (checkPowerThread == null) {
+        /*if (checkPowerThread == null) {
             Log.d(TAG, "checkPowerThread==null");
             checkPowerThread = new AutoCheckPower(context, device, POWER_RECEIVE_THREAD, handler);
             checkPowerThread.start();
         } else
-            Log.d(TAG, "checkPowerThread!=null");
+            Log.d(TAG, "checkPowerThread!=null");*/
     }
 
 
@@ -109,8 +111,13 @@ public class MainActivity extends Activity {
        /* if (checkPowerThread != null) {
             checkPowerThread.interrupt();
         }*/
+        if (checkPowerThread != null) {
+            checkPowerThread.setPowerFlag(false);
+        }
 
     }
+
+
 
     @Override
     protected void onRestart() {
@@ -171,17 +178,26 @@ public class MainActivity extends Activity {
             device.connect(this);
             device.initConfig();
             Timer.sleep(200);
+            checkPowerThread = new AutoCheckPower(context, device, POWER_RECEIVE_THREAD, handler);
+            checkPowerThread.start();
         } else {
             // 未检测到协调器
             AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
             builder.setTitle("温馨提示");
-            builder.setMessage("                       未检测到协调器，请先插入协调器！\n");
-            builder.setNegativeButton("确定", new DialogInterface.OnClickListener() {
+            builder.setMessage("未检测到协调器，请先连接协调器！\n");
+            builder.setNegativeButton("这就去连接", new DialogInterface.OnClickListener() {
                 @Override
                 public void onClick(DialogInterface dialog, int which) {
                     dialog.dismiss();
                 }
             });
+           /* builder.setPositiveButton("我已连接协调器", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int i) {
+                    initDevice();
+                    dialog.dismiss();
+                }
+            });*/
             AlertDialog alertdialog = builder.create();
             alertdialog.show();
         }
@@ -192,7 +208,7 @@ public class MainActivity extends Activity {
 
     /*拔出usb设备后 直接断开连接*/
     public void notifyUSBDeviceDetach() {
-        Toast.makeText(context, "设备已拔出，即将断开连接·······", Toast.LENGTH_SHORT).show();
+        Toast.makeText(context, "设备已拔出，即将断开连接·······", Toast.LENGTH_LONG).show();
         device.disconnect();
     }
 
