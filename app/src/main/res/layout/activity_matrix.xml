@@ -186,11 +186,117 @@
                         android:id="@+id/img_btn_refresh"
                         android:src="@drawable/refresh_18dp"/>
                 </LinearLayout>
-
-                <EditText
-                    android:id="@+id/edit_beizhu"
+                <View
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/black" />
+                <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="match_parent" />
+                    android:layout_height="match_parent"
+                    android:orientation="vertical"
+                    android:layout_gravity="center">
+                 <TextView
+                     android:id="@+id/tv_setdeviceparam"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content"
+                     android:text="参数设置"
+                     android:textColor="@color/black"
+                     android:textSize="30sp"
+                     android:layout_marginLeft="210dp"/>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/tv_setdevicemode"
+                            android:textSize="22sp"
+                            android:textColor="@color/black"
+                            android:text="感应模式："
+                            android:layout_marginLeft="180dp"/>
+                        <Spinner
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/sp_devicesmode"></Spinner>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/tv_setdevicemaincolor"
+                            android:textSize="22sp"
+                            android:textColor="@color/black"
+                            android:text="设置目标颜色："
+                            android:layout_marginLeft="180dp"
+                            />
+                        <Spinner
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/sp_devicemaincolor"></Spinner>
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/tv_setdevicesecondcolor"
+                            android:textSize="22sp"
+                            android:textColor="@color/black"
+                            android:text="设置干扰颜色："
+                            android:layout_marginLeft="180dp"/>
+                        <Spinner
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/sp_devicessecondcolor"></Spinner>
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:orientation="horizontal">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/tv_setlightmode"
+                            android:textSize="22sp"
+                            android:textColor="@color/black"
+                            android:text="设置灯光模式："
+                            android:layout_marginLeft="180dp"/>
+                        <Spinner
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/sp_setlightmode"></Spinner>
+
+                    </LinearLayout>
+                    <LinearLayout
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:orientation="vertical">
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/tv_tishi"
+                            android:textSize="33sp"
+                            android:textColor="@color/black"
+                            android:text="提示："/>
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/tv_beizhu"
+                            android:textSize="22sp"
+                            android:textColor="@color/black"
+                            android:text="目标颜色默认为红色，干扰颜色为蓝色"/>
+                    </LinearLayout>
+
+                </LinearLayout>
+
+
             </LinearLayout>
 
             <View

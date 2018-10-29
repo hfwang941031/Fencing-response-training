@@ -11,7 +11,6 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -55,8 +54,7 @@ public class MatrixActivity extends Activity {
     Spinner spTimes;
     @BindView(R.id.btn_turnoff)
     Button btnTurnoff;
-    @BindView(R.id.edit_beizhu)
-    EditText editBeizhu;
+
     @BindView(R.id.tvTotalTime)
     TextView tvTotalTime;
     @BindView(R.id.btn_startrun)
@@ -76,6 +74,28 @@ public class MatrixActivity extends Activity {
     TextView tvDevicenumbers;
     @BindView(R.id.img_btn_refresh)
     ImageButton imgBtnRefresh;
+    @BindView(R.id.tv_setdeviceparam)
+    TextView tvSetdeviceparam;
+    @BindView(R.id.tv_setdevicemode)
+    TextView tvSetdevicemode;
+    @BindView(R.id.sp_devicesmode)
+    Spinner spDevicesmode;
+    @BindView(R.id.tv_setdevicemaincolor)
+    TextView tvSetdevicemaincolor;
+    @BindView(R.id.sp_devicemaincolor)
+    Spinner spDevicemaincolor;
+    @BindView(R.id.tv_setdevicesecondcolor)
+    TextView tvSetdevicesecondcolor;
+    @BindView(R.id.sp_devicessecondcolor)
+    Spinner spDevicessecondcolor;
+    @BindView(R.id.tv_setlightmode)
+    TextView tvSetlightmode;
+    @BindView(R.id.sp_setlightmode)
+    Spinner spSetlightmode;
+    @BindView(R.id.tv_tishi)
+    TextView tvTishi;
+    @BindView(R.id.tv_beizhu)
+    TextView tvBeizhu;
     private Context context;
     private Device device;
     private char deviceNum;
@@ -89,8 +109,14 @@ public class MatrixActivity extends Activity {
     //选中的训练次数
     private int trainTimes = 0;
 
+    //选中的感应模式
+    private String actionModeOfString=null;
+
     //训练次数下拉框适配器
     private ArrayAdapter<String> spTimesAdapter;
+
+    //感应模式选择适配器
+    private ArrayAdapter spModeAdapter;
 
     //每次训练的时间集合
     private ArrayList<Integer> timeList;
@@ -113,6 +139,8 @@ public class MatrixActivity extends Activity {
     //存储分好组的设备编号集合
     private List<ArrayList<Character>> listOfSubList;
 
+    //感应模式标识数字
+    private int flagOfMode=0;
 
 
     private Handler handler = new Handler() {
@@ -245,12 +273,29 @@ public class MatrixActivity extends Activity {
 
             }
         });
+        //设置spinner感应模式适配器
+        spModeAdapter = new ArrayAdapter(this, R.layout.spinner_item, Constant.action_model);
+        spDevicesmode.setAdapter(spModeAdapter);
+        //将选中的感应模式存储到变量actionMode中
+        spDevicesmode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                actionModeOfString= (String) spDevicesmode.getSelectedItem();
+                Log.d("actionMode", actionModeOfString + "");
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
         matrixAdapter = new MatrixAdapter(this);
         lvTimes.setAdapter(matrixAdapter);
     }
 
     public void updateData() {
-        StringBuffer stringBuffer= new StringBuffer(list.size());
+        StringBuffer stringBuffer = new StringBuffer(list.size());
         for (int i = 0; i < list.size(); i++) {
             stringBuffer.append(list.get(i));
             stringBuffer.append(" ");
@@ -259,8 +304,8 @@ public class MatrixActivity extends Activity {
         tvDevicenumbers.setText(stringBuffer.toString());
 
     }
-    private void initData() {
 
+    private void initData() {
 
 
         //获取当前可用的设备编号，存储到list当中
@@ -363,7 +408,6 @@ public class MatrixActivity extends Activity {
                 break;
 
 
-
         }
     }
 
@@ -433,7 +477,7 @@ public class MatrixActivity extends Activity {
                     Order.VoiceMode.values()[0],
                     Order.BlinkModel.values()[0],
                     Order.LightModel.OUTER,
-                    Order.ActionModel.values()[1 - i],
+                    Order.ActionModel.values()[flagOfMode-2*i],
                     Order.EndVoice.values()[0]);
         }
 
@@ -484,6 +528,13 @@ public class MatrixActivity extends Activity {
         Log.d("图片按钮被点击拉", "o");
 
         updateData();
-        Toast.makeText(this,"可用设备已刷新",Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "可用设备已刷新", Toast.LENGTH_LONG).show();
+    }
+
+    public void setParmOfDevice(String actionModeOfString) {
+        if (actionModeOfString.equals("触碰")) {
+            flagOfMode=2;
+        }
+        else flagOfMode=1;
     }
 }

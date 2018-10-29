@@ -35,6 +35,7 @@ public class Constant {
 
 
 
+
     //服务器域名,IP
     //public final static String SERVER_IP = "http://www.saflight.com.cn";
     public final static String SERVER_IP = "http://www.saflight.com.cn/saflight";
