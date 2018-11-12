@@ -89,7 +89,7 @@
                 android:layout_weight="0.3" />
             <Button
                 android:id="@+id/btn_randomProgram"
-                android:text="随机程序"
+                android:text="精准训练"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="1"

@@ -160,6 +160,8 @@ public class MainActivity extends Activity {
 
                 break;
             case R.id.btn_randomProgram:
+                startActivity(new Intent(getApplicationContext(), AccuracySelectActivity.class));
+
                 break;
             case R.id.btn_historyData:
                 break;
