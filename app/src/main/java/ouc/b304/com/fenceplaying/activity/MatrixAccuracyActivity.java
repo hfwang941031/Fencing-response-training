@@ -242,6 +242,7 @@ public class MatrixAccuracyActivity extends Activity {
                             Order.LightModel.TURN_OFF,
                             Order.ActionModel.NONE,
                             Order.EndVoice.NONE);
+
                 }
                 break;
             case R.id.img_btn_refresh:
