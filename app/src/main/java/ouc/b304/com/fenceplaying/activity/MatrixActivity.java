@@ -36,6 +36,7 @@ import ouc.b304.com.fenceplaying.thread.AutoCheckPower;
 import ouc.b304.com.fenceplaying.thread.ReceiveThread;
 import ouc.b304.com.fenceplaying.thread.Timer;
 import ouc.b304.com.fenceplaying.utils.DataAnalyzeUtils;
+import ouc.b304.com.fenceplaying.utils.NumberUtils;
 
 import static ouc.b304.com.fenceplaying.thread.ReceiveThread.POWER_RECEIVE_THREAD;
 
@@ -195,9 +196,6 @@ public class MatrixActivity extends Activity {
                         counter2 = 1;
                         break;
                     }
-
-                    /*Log.d("******", infos.size()+"");
-                    Log.d("#######", counter+"");*/
                     timeList.add(info.getTime());
                     device.turnOffAllTheLight();
                     turnOnLight2(listOfSubList.get(counter2).get(0), 1, 2);
@@ -312,21 +310,6 @@ public class MatrixActivity extends Activity {
         for (DeviceInfo info : Device.DEVICE_LIST) {
             list.add(info.getDeviceNum());
         }
-
-
-
-
-      /*  for (int i=0;i<list.size();i++) {
-            Log.d("list里有什么",list.get(i)+"");
-        }*/
-/*
-        listOfSubList = listOfSubList(trainTimes);
-*/
-
-       /* for (int i=0;i<listOfSubList.size();i++) {
-            Log.d("第" + i + "组", listOfSubList.get(i).get(0)+listOfSubList.get(i).get(1)+"");
-
-        }*/
     }
 
     @Override
@@ -366,9 +349,10 @@ public class MatrixActivity extends Activity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.bt_run_cancel:
+                this.finish();
                 break;
             case R.id.layout_cancel:
-                this.finish();
+
                 break;
             case R.id.btn_turnon:
                 for (Character name : list) {
@@ -450,14 +434,7 @@ public class MatrixActivity extends Activity {
     }
 
     private void startTraining() {
-
-
-       /* for (int i=0;i<listOfSubList.size();i++) {
-            Log.d("list里面有什么", listOfSubList.get(i).get(0) +" "+ listOfSubList.get(i).get(1) + "");
-
-        }*/
         trainingBeginFlag = true;
-        /*time = new int[trainTimes];*/
         timeList = new ArrayList<>(trainTimes);
         matrixAdapter.setTimeList(timeList);
         matrixAdapter.notifyDataSetChanged();
@@ -495,19 +472,13 @@ public class MatrixActivity extends Activity {
         } else
             return false;
     }
-
-    //产生范围内的随机数
-    public int randomNumber(int range) {
-        return (int) (Math.random() * range);
-    }
-
     //返回生成包含两个不同随机设备编号的list
     public ArrayList<Character> randomSubList(List<Character> list) {
         List<Character> subList = new ArrayList<>();
-        int random1 = randomNumber(list.size());
-        int random2 = randomNumber(list.size());
+        int random1 = NumberUtils.randomNumber(list.size());
+        int random2 = NumberUtils.randomNumber(list.size());
         while (random1 == random2) {
-            random2 = randomNumber(list.size());
+            random2 = NumberUtils.randomNumber(list.size());
         }
         subList.add(list.get(random1));
         subList.add(list.get(random2));

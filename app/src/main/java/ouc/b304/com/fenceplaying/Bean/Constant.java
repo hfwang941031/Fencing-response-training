@@ -2,6 +2,8 @@ package ouc.b304.com.fenceplaying.Bean;
 
 import android.os.Environment;
 
+import java.util.ArrayList;
+
 public class Constant {
     public static String[] PLAYER_AGE = { "0岁","15岁", "16岁", "17岁", "18岁", "19岁",
             "20岁", "21岁", "22岁", "23岁", "24岁", "25岁", "26岁", "27岁", "28岁",
@@ -58,5 +60,16 @@ public class Constant {
     public static int max=0;
     public static int min=0;
     public static int size=0;
+
+
+    public static char[] first = new char[]{'A', 'B', 'E', 'F'};
+    public static char[] second = new char[]{'C', 'D', 'G', 'H'};
+    public static char[] third = new char[]{'B', 'C', 'F', 'G'};
+    public static char[] forth = new char[]{'E', 'F', 'I', 'J'};
+    public static char[] fifth = new char[]{'F', 'G', 'J', 'K'};
+    public static char[] sixth = new char[]{'G', 'H', 'K', 'L'};
+    public static char[] seventh = new char[]{'I', 'J', 'M', 'N'};
+    public static char[] eighth = new char[]{'J', 'K', 'N', 'O'};
+    public static char[] nineth = new char[]{'K', 'L', 'O', 'P'};
 
 }

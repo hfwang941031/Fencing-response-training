@@ -68,6 +68,8 @@ public class AccuracySelectActivity extends Activity {
 
                 break;
             case R.id.btn_Lshape:
+                startActivity(new Intent(context,LAccuracyActivity.class));
+
                 break;
         }
     }
