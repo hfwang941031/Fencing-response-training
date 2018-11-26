@@ -57,6 +57,10 @@
             android:name=".activity.LAccuracyActivity"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
         </activity>
+        <activity
+            android:name=".activity.SingleLineActivity"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+        </activity>
 
     </application>
 

@@ -2,8 +2,6 @@ package ouc.b304.com.fenceplaying.Bean;
 
 import android.os.Environment;
 
-import java.util.ArrayList;
-
 public class Constant {
     public static String[] PLAYER_AGE = { "0岁","15岁", "16岁", "17岁", "18岁", "19岁",
             "20岁", "21岁", "22岁", "23岁", "24岁", "25岁", "26岁", "27岁", "28岁",
@@ -34,6 +32,7 @@ public class Constant {
     public static String[] sound_model={"不响","开灯时响","关灯时响","开关都响"};
     public static String[] trainingTimes={
         "5", "10", "15", "20", "25", "30", "35", "40", "45", "50", "55", "60"};
+    public static String[] deviceAmounts = {"2","3","4","5","6","7","8","9","10","11","12","13","14","15","16"};
 
 
 

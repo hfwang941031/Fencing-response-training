@@ -208,9 +208,6 @@ public class SingleSpotActivity extends Activity {
             list.add(info.getDeviceNum());
         }
     }
-
-
-
     @Override
     protected void onRestart() {
         super.onRestart();
@@ -223,6 +220,7 @@ public class SingleSpotActivity extends Activity {
         Log.d("***list", list.size() + "");
         /*initView();*/
     }
+
     private void initView() {
         //设置spinner设备号适配器
         spDeviceAdapter = new ArrayAdapter<>(this, R.layout.spinner_item, list);
@@ -271,8 +269,6 @@ public class SingleSpotActivity extends Activity {
         if (device.devCount > 0)
             device.disconnect();
     }
-
-
 
     @Override
     protected void onDestroy() {
@@ -348,9 +344,6 @@ public class SingleSpotActivity extends Activity {
         timer.setBeginTime(startTime);
         timer.start();
     }
-
-
-
 
     public void stopTraining() {
         trainingBeginFlag = false;

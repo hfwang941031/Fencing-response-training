@@ -30,6 +30,7 @@ import ouc.b304.com.fenceplaying.Bean.DeviceInfo;
 import ouc.b304.com.fenceplaying.Bean.TimeInfo;
 import ouc.b304.com.fenceplaying.R;
 import ouc.b304.com.fenceplaying.adapter.MatrixAdapter;
+import ouc.b304.com.fenceplaying.device.Command;
 import ouc.b304.com.fenceplaying.device.Device;
 import ouc.b304.com.fenceplaying.device.Order;
 import ouc.b304.com.fenceplaying.thread.AutoCheckPower;
@@ -181,8 +182,87 @@ public class MatrixActivity extends Activity {
         //很重要的重置计数器
         counter = 0;
     }
+    private void analyzeTimeData(String data) {
 
-    public void analyzeTimeData(final String data) {
+                Log.d("analyzeTimeData", "analyzeTimeData Run");
+                Log.d("what's in data", data);
+                List<TimeInfo> infos = DataAnalyzeUtils.analyzeTimeData(data);
+                for (TimeInfo info : infos) {
+                    counter+=1;
+                    if (counter > trainTimes) {
+                        listOfSubList = listOfSubList(trainTimes);
+                        counter2=1;
+                        break;
+                    }
+                     Log.d("***infos.size***", infos.size()+"");
+                    /*Log.d("#######", counter+"");*/
+                    timeList.add(info.getTime());
+                    device.turnOffAllTheLight();
+                    turnOnLight2(listOfSubList.get(counter2).get(0),1,2);
+                    Log.d("开红灯的是：", listOfSubList.get(counter2).get(0)+"");
+                    turnOnLight2(listOfSubList.get(counter2).get(1),0,1);
+                    Log.d("开蓝灯的是：", listOfSubList.get(counter2).get(1)+"");
+                    counter2+=1;
+                    if (counter2 > listOfSubList.size()-1) {
+                        counter2=listOfSubList.size()-1;
+                    }
+                }
+                Message msg=Message.obtain();
+                msg.what=UPDATE_TIMES;
+                msg.obj = "";
+                handler.sendMessage(msg);
+                if (isTrainingOver()) {
+                    Log.d("ifistrainingover", "has run"+counter);
+                    Message msg1 = Message.obtain();
+                    msg1.what = STOP_TRAINING;
+                    msg1.obj = "";
+                    handler.sendMessage(msg1);
+                }
+            }
+
+
+    /*public void analyzeTimeData(final String data) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("analyzeTimeData", "analyzeTimeData Run");
+                Log.d("what's in data", data);
+                List<TimeInfo> infos = DataAnalyzeUtils.analyzeTimeData(data);
+                for (TimeInfo info : infos) {
+                    counter+=1;
+                    if (counter > trainTimes) {
+                        listOfSubList = listOfSubList(trainTimes);
+                        counter2=1;
+                        break;
+                    }
+                     *//*Log.d("******", infos.size()+"");
+                    Log.d("#######", counter+"");*//*
+                    timeList.add(info.getTime());
+                    device.turnOffAllTheLight();
+                    turnOnLight2(listOfSubList.get(counter2).get(0),1,2);
+                    Log.d("开红灯的是：", listOfSubList.get(counter2).get(0)+"");
+                    turnOnLight2(listOfSubList.get(counter2).get(1),0,1);
+                    Log.d("开蓝灯的是：", listOfSubList.get(counter2).get(1)+"");
+                    counter2+=1;
+                    if (counter2 > listOfSubList.size()-1) {
+                        counter2=listOfSubList.size()-1;
+                    }
+                }
+                Message msg=Message.obtain();
+                msg.what=UPDATE_TIMES;
+                msg.obj = "";
+                handler.sendMessage(msg);
+                if (isTrainingOver()) {
+                    Log.d("ifistrainingover", "has run"+counter);
+                    Message msg1 = Message.obtain();
+                    msg1.what = STOP_TRAINING;
+                    msg1.obj = "";
+                    handler.sendMessage(msg1);
+                }
+            }
+        }).start();
+    }*/
+   /* public void analyzeTimeData(final String data) {
         new Thread(new Runnable() {
             @Override
             public void run() {
@@ -198,6 +278,8 @@ public class MatrixActivity extends Activity {
                     }
                     timeList.add(info.getTime());
                     device.turnOffAllTheLight();
+                    //1是感应 0是常开
+                    //2 是红色 1是蓝色
                     turnOnLight2(listOfSubList.get(counter2).get(0), 1, 2);
                     turnOnLight2(listOfSubList.get(counter2).get(1), 0, 1);
                     counter2 += 1;
@@ -218,7 +300,7 @@ public class MatrixActivity extends Activity {
                 }
             }
         }).start();
-    }
+    }*/
 
     private boolean isTrainingOver() {
         if (counter >= trainTimes)
@@ -247,7 +329,11 @@ public class MatrixActivity extends Activity {
         if (device.devCount > 0) {
             device.connect(this);
             device.initConfig();
-            Timer.sleep(200);
+            try {
+                Thread.sleep(200);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
             checkPowerThread = new AutoCheckPower(context, device, POWER_RECEIVE_THREAD, handler);
             checkPowerThread.start();
         }
@@ -419,7 +505,7 @@ public class MatrixActivity extends Activity {
         new Thread(new Runnable() {
             @Override
             public void run() {
-                Timer.sleep(1000);
+                    Timer.sleep(5000);
                 if (!trainingBeginFlag)
                     return;
                 device.sendOrder(deviceNum,
@@ -438,6 +524,7 @@ public class MatrixActivity extends Activity {
         timeList = new ArrayList<>(trainTimes);
         matrixAdapter.setTimeList(timeList);
         matrixAdapter.notifyDataSetChanged();
+        Command mCommand = new Command();
 
         //清除串口数据
         new ReceiveThread(handler, device.ftDev, ReceiveThread.CLEAR_DATA_THREAD, 0).start();
@@ -450,11 +537,11 @@ public class MatrixActivity extends Activity {
 
             Log.d("第一次发送", "i:" + i);
             device.sendOrder(listOfSubList.get(0).get(i),
-                    Order.LightColor.values()[2 - i],
+                    Order.LightColor.values()[2-i],
                     Order.VoiceMode.values()[0],
                     Order.BlinkModel.values()[0],
                     Order.LightModel.OUTER,
-                    Order.ActionModel.values()[flagOfMode-2*i],
+                    Order.ActionModel.values()[1-i],
                     Order.EndVoice.values()[0]);
         }
 

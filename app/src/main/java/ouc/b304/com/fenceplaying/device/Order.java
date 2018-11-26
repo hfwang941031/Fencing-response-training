@@ -15,6 +15,32 @@ public class Order {
         RED, BLUE,NONE, GREEN,BLUE_RED,BLUE_GREEN,RED_GREEN,BLUE_RED_GREEN
     }
 
+    /*红外高度*/
+    public static enum LightsHight {
+        /*5cm 30cm 60cm*/
+        HIGHT_5C,HIGHT_30C,HIGHT_60C
+    }
+    /*亮灯模式*/
+    public static enum LightsUpModel {
+        /*正常点亮、累加点亮*/
+        NORMAL_LIGHT, ADD_LIGHT
+    }
+    /*红外发射*/
+    public static enum Infrared_emission {
+        /*不关闭,关闭*/
+        CLOSE, OPEN
+    }
+    /*振动详情*/
+    public static enum Vibration_details {
+        /*0不需要；1需要*/
+        NONE, NEED
+    }
+    /*感应毁灭时操作*/
+    public static enum VoiceTime {
+        /*无、扑灭时响*/
+        ON, OFF
+    }
+
     /*蜂鸣器*/
     public static enum VoiceMode
     {
@@ -39,8 +65,8 @@ public class Order {
     /*闪烁模式*/
     public static enum BlinkModel
     {
-        /*无、慢闪、快闪、先闪后亮*/
-        NONE, SLOW, FAST, BLINK_AND_TURN_ON
+        /*无、慢闪、快闪、先闪后亮、reset*/
+        NONE, SLOW, FAST, BLINK_AND_TURN_ON,RESET
     }
 
     /*感应毁灭时操作*/

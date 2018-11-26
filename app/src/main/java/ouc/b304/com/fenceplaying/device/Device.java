@@ -197,6 +197,10 @@ public class Device {
                     Order.EndVoice.NONE);
         }
     }
+
+
+
+
 /*关闭全部灯*/
     public void turnOffAllTheLight()
     {

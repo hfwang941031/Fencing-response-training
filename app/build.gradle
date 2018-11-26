@@ -34,6 +34,7 @@ dependencies {
     implementation 'com.jakewharton:butterknife-compiler:8.8.1'
     implementation 'com.jakewharton:butterknife:8.8.1'
     implementation files('E:/project/asproject/androidproject/libs/d2xx.jar')
+    implementation 'com.google.code.gson:gson:2.8.5'
 }
 greendao {
     schemaVersion 1//数据库版本号

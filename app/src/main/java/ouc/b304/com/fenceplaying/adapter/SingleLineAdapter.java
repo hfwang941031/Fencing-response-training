@@ -14,29 +14,28 @@ import butterknife.ButterKnife;
 import ouc.b304.com.fenceplaying.R;
 
 /**
- * @author 王海峰 on 2018/10/23 15:01
+ * @author 王海峰 on 2018/11/26 09:08
  */
-public class MatrixAdapter extends BaseAdapter {
-
+public class SingleLineAdapter extends BaseAdapter {
     private Context context;
 
     //每次时间的集合
     private ArrayList<Integer> timeList;
 
+    public SingleLineAdapter(Context context) {
+        this.context = context;
+    }
+
     public void setTimeList(ArrayList<Integer> time) {
         this.timeList = time;
     }
 
-    public MatrixAdapter(Context context) {
-        this.context = context;
-    }
-
     @Override
     public int getCount() {
-        if (timeList == null) {
+        if (timeList == null)
             return 0;
-        }
-        return timeList.size();
+        else
+            return timeList.size();
     }
 
     @Override
@@ -51,16 +50,16 @@ public class MatrixAdapter extends BaseAdapter {
 
     @Override
     public View getView(int position, View convertView, ViewGroup viewGroup) {
-        ViewHolder viewHolder;
+        SingleLineAdapter.ViewHolder viewHolder;
 
         LayoutInflater inflater = LayoutInflater.from(context);
         if (convertView == null) {
             convertView = inflater.inflate(R.layout.item_single_spot_scores, null);
-            viewHolder = new MatrixAdapter.ViewHolder(convertView);
+            viewHolder = new SingleLineAdapter.ViewHolder(convertView);
             convertView.setTag(viewHolder);
 
         } else {
-            viewHolder = (MatrixAdapter.ViewHolder) convertView.getTag();
+            viewHolder = (SingleLineAdapter.ViewHolder) convertView.getTag();
 
         }
         viewHolder.tvOrderth.setText("第" + (position + 1) + "次");

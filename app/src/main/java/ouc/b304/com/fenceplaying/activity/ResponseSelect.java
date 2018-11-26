@@ -59,6 +59,7 @@ public class ResponseSelect extends Activity {
                 startActivity(new Intent(context,SingleSpotActivity.class));
                 break;
             case R.id.btn_singlecolumn:
+                startActivity(new Intent(context,SingleLineActivity.class));
                 break;
             case R.id.btn_matrix:
                 startActivity(new Intent(context,MatrixActivity.class));
