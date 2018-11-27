@@ -397,8 +397,7 @@ public class SingleLineActivity extends Activity {
     }
 
     private void analyzeTimeData(String data) {
-        Log.d("analyzeTimeData", "analyzeTimeData Run");
-        Log.d("what's in data", data);
+        Log.d("analyze what's in data", data);
         List<TimeInfo> infos = DataAnalyzeUtils.analyzeTimeData(data);
         for (TimeInfo info : infos) {
 
@@ -428,7 +427,7 @@ public class SingleLineActivity extends Activity {
 
     //用计数器判断开灯次数是否达到了训练次数，达到了就结束训练
     private boolean isTrainingOver() {
-        if (counter >= trainTimes) {
+        if (counter >= trainTimes-1) {
             return true;
         } else {
             return false;

@@ -1,7 +1,6 @@
 package ouc.b304.com.fenceplaying.adapter;
 
 import android.content.Context;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,11 +54,9 @@ public class SingleSpotAdapter extends BaseAdapter {
             convertView=inflater.inflate(R.layout.item_single_spot_scores, null);
             viewHolder = new SingleSpotAdapter.ViewHolder(convertView);
             convertView.setTag(viewHolder);
-            Log.d("getView 方法", "contentView为空");
+
         } else {
             viewHolder = (SingleSpotAdapter.ViewHolder) convertView.getTag();
-            Log.d("getView 方法", "contentView不为空");
-
         }
         viewHolder.tvOrderth.setText("第" + (position + 1) + "次");
         viewHolder.tvScores.setText(timeList.get(position)+"");

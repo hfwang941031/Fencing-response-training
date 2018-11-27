@@ -35,12 +35,22 @@ import ouc.b304.com.fenceplaying.device.Order;
 import ouc.b304.com.fenceplaying.thread.ReceiveThread;
 import ouc.b304.com.fenceplaying.thread.Timer;
 import ouc.b304.com.fenceplaying.utils.DataAnalyzeUtils;
+import ouc.b304.com.fenceplaying.utils.ScoreUtils;
 
 /**
  * @author 王海峰 on 2018/9/17 10:44
+ * <p>
+ * 流程：
+ * 1、初始化当前所有可用的设备并存储到List中，在init()中完成
+ * 2、选择训练次数和训练所需的单个设备
+ * 3、开始训练，达到训练次数后跳出并执行stopTraining()
+ * <p>
+ * 注意：（后期可能会进行更改的地方）
+ * 1、analyzeTimeData函数运行的时候开启了一个线程
+ * 2、在上述函数中的开灯指令也是在一个匿名线程中进行的
  */
 public class SingleSpotActivity extends Activity {
-    private static final String TAG ="SingleSpotActivity" ;
+    private static final String TAG = "SingleSpotActivity";
     @BindView(R.id.bt_run_cancel)
     ImageView btRunCancel;
     @BindView(R.id.layout_cancel)
@@ -67,52 +77,69 @@ public class SingleSpotActivity extends Activity {
     private final int POWER_RECEIVE = 2;
     private final int UPDATE_TIMES = 3;
     private final int STOP_TRAINING = 4;
+    @BindView(R.id.showAvergeScore)
+    TextView showAvergeScore;
+    @BindView(R.id.avergeScore)
+    TextView avergeScore;
     private Context context;
+
     private Device device;
+
     //存储在当前页面中可以用的设备编号，以方便在Spinner中选择设备
     private List<Character> list = new ArrayList<>();
+
     //设备选择下拉框适配器
     private ArrayAdapter<Character> spDeviceAdapter;
-    //训练次数下拉框适配器
 
+    //训练次数下拉框适配器
     private ArrayAdapter<String> spTimesAdapter;
+
     //选中的设备编号，也就是用哪个设备完成训练
     private char deviceNum;
+
     //选中的训练次数
-    private int trainTimes=0;
+    private int trainTimes = 0;
+
     //训练开始标志
     private boolean trainingBeginFlag = false;
 
     //每次训练的时间集合
     private ArrayList<Integer> timeList;
 
+    private Timer timer;
 
-    private ouc.b304.com.fenceplaying.thread.Timer timer;
     //训练开始时间
     private long startTime;
-    //计数器
-    private int counter=0;
 
+    //计数器
+    private int counter = 0;
+
+    /*平均值*/
+    private float averageScore = 0;
 
     //定义成绩列表适配器
     private SingleSpotAdapter singleSpotAdapter;
-    private Handler handler = new Handler(){
+    private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
-                case ouc.b304.com.fenceplaying.thread.Timer.TIMER_FLAG:
-                    String time=msg.obj.toString();
-                    tvTotalTime.setText("总时间"+time);
+                case Timer.TIMER_FLAG:
+                    String time = msg.obj.toString();
+                    tvTotalTime.setText("总时间" + time);
                     break;
-                    //接收到返回的时间
+                //接收到返回的时间
                 case TIME_RECEIVE:
-                    String data=msg.obj.toString();
+                    String data = msg.obj.toString();
                     if (data.length() > 7) {
                         //解析数据
                         analyzeTimeData(data);
                     }
                     break;
                 case STOP_TRAINING:
+                    //在结束之前先计算平均值
+                    averageScore=ScoreUtils.calcAverageScore(timeList);
+                    //设置值
+                    avergeScore.setText(" "+averageScore+"毫秒");
                     stopTraining();
                     break;
                 case UPDATE_TIMES:
@@ -122,6 +149,137 @@ public class SingleSpotActivity extends Activity {
             }
         }
     };
+
+
+    @Override
+    protected void onCreate(@Nullable Bundle savedInstanceState) {
+        Log.d(TAG, "---->onCreate");
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_singlespot);
+        ButterKnife.bind(this);
+        context = this.getApplicationContext();
+        device = new Device(this);
+        //更新连接设备列表
+        device.createDeviceList(this);
+        //判断是否插入协调器
+        if (device.devCount > 0) {
+            device.connect(this);
+            device.initConfig();
+        }
+        //初始化数据放在resume里面还是onCreate里面
+        initData();
+        initView();
+    }
+
+    @Override
+    protected void onRestart() {
+        super.onRestart();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.d(TAG, "---->onResume");
+        Log.d("***list", list.size() + "");
+        /*initView();*/
+    }
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+        device.turnOffAllTheLight();
+        ReceiveThread.stopThread();
+        if (device.devCount > 0)
+            device.disconnect();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+    }
+
+    @OnClick({R.id.bt_run_cancel, R.id.btn_turnon, R.id.btn_turnoff, R.id.btn_startrun, R.id.btn_stoprun})
+    public void onViewClicked(View view) {
+        switch (view.getId()) {
+            case R.id.bt_run_cancel:
+                this.finish();
+                break;
+            case R.id.btn_turnon:
+                device.sendOrder(deviceNum,
+                        Order.LightColor.BLUE,
+                        Order.VoiceMode.NONE,
+                        Order.BlinkModel.NONE,
+                        Order.LightModel.OUTER,
+                        Order.ActionModel.NONE,
+                        Order.EndVoice.NONE);
+                break;
+            case R.id.btn_turnoff:
+                device.turnOffAllTheLight();
+                break;
+            case R.id.btn_startrun:
+                //训练开始的时候把上次的成绩置空
+                averageScore=0;
+                avergeScore.setText("");
+                if (!device.checkDevice(SingleSpotActivity.this))
+                    return;
+                if (deviceNum == '\0' || trainTimes == 0)
+                    Toast.makeText(this, "请先选择设备和训练次数！", Toast.LENGTH_SHORT).show();
+                if (trainingBeginFlag) {
+                } else {
+                    startTraining();
+                    btnTurnon.setClickable(false);
+                    btnTurnoff.setClickable(false);
+                }
+                break;
+            case R.id.btn_stoprun:
+                if (trainingBeginFlag) {
+                    stopTraining();
+                    btnTurnon.setClickable(true);
+                    btnTurnoff.setClickable(true);
+                }
+                break;
+        }
+    }
+
+    public void startTraining() {
+        Log.d(TAG, "startTraining has run");
+        trainingBeginFlag = true;
+        /*time = new int[trainTimes];*/
+        timeList = new ArrayList<>(trainTimes);
+        singleSpotAdapter.setTimeList(timeList);
+        singleSpotAdapter.notifyDataSetChanged();
+
+        //清除串口数据
+        new ReceiveThread(handler, device.ftDev, ReceiveThread.CLEAR_DATA_THREAD, 0).start();
+
+        //开启接收设备返回时间的监听线程
+        new ReceiveThread(handler, device.ftDev, ReceiveThread.TIME_RECEIVE_THREAD, TIME_RECEIVE).start();
+
+        device.sendOrder(deviceNum,
+                Order.LightColor.values()[1],
+                Order.VoiceMode.values()[0],
+                Order.BlinkModel.values()[0],
+                Order.LightModel.OUTER,
+                Order.ActionModel.values()[1],
+                Order.EndVoice.values()[0]);
+
+        //获得当前的系统时间
+        startTime = System.currentTimeMillis();
+        timer = new Timer(handler);
+        timer.setBeginTime(startTime);
+        timer.start();
+    }
+
+    public void stopTraining() {
+        trainingBeginFlag = false;
+        //停止接收线程
+        ReceiveThread.stopThread();
+        device.turnOffAllTheLight();
+        timer.stopTimer();
+
+        //很重要的重置计数器
+        counter = 0;
+    }
 
     //解析返回来数据
     private void analyzeTimeData(final String data) {
@@ -134,20 +292,20 @@ public class SingleSpotActivity extends Activity {
 
                 List<TimeInfo> infos = DataAnalyzeUtils.analyzeTimeData(data);
                 for (TimeInfo info : infos) {
-                    counter+=1;
-                    if (counter>trainTimes)
+                    counter += 1;
+                    if (counter > trainTimes)
                         break;
-                    Log.d("******", infos.size()+"");
-                    Log.d("#######", counter+"");
+                    Log.d("******", infos.size() + "");
+                    Log.d("#######", counter + "");
                     timeList.add(info.getTime());
                     turnOnLight(info.getDeviceNum());
                 }
-                Message msg=Message.obtain();
-                msg.what=UPDATE_TIMES;
+                Message msg = Message.obtain();
+                msg.what = UPDATE_TIMES;
                 msg.obj = "";
                 handler.sendMessage(msg);
                 if (isTrainingOver()) {
-                    Log.d("ifistrainingover", "has run"+counter);
+                    Log.d("ifistrainingover", "has run" + counter);
                     Message msg1 = Message.obtain();
                     msg1.what = STOP_TRAINING;
                     msg1.obj = "";
@@ -182,43 +340,11 @@ public class SingleSpotActivity extends Activity {
         }).start();
     }
 
-
-    @Override
-    protected void onCreate(@Nullable Bundle savedInstanceState) {
-        Log.d(TAG, "---->onCreate");
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_singlespot);
-        ButterKnife.bind(this);
-        context = this.getApplicationContext();
-        device = new Device(this);
-        //更新连接设备列表
-        device.createDeviceList(this);
-        //判断是否插入协调器
-        if (device.devCount > 0) {
-            device.connect(this);
-            device.initConfig();
-        }
-        //初始化数据放在resume里面还是onCreate里面
-        initData();
-        initView();
-    }
     public void initData() {
         //获取当前可用的设备编号，存储到list当中
         for (DeviceInfo info : Device.DEVICE_LIST) {
             list.add(info.getDeviceNum());
         }
-    }
-    @Override
-    protected void onRestart() {
-        super.onRestart();
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.d(TAG, "---->onResume");
-        Log.d("***list", list.size() + "");
-        /*initView();*/
     }
 
     private void initView() {
@@ -261,98 +387,6 @@ public class SingleSpotActivity extends Activity {
         singleSpotAdapter = new SingleSpotAdapter(this);
         lvTimes.setAdapter(singleSpotAdapter);
     }
-    @Override
-    protected void onPause() {
-        super.onPause();
-        device.turnOffAllTheLight();
-        ReceiveThread.stopThread();
-        if (device.devCount > 0)
-            device.disconnect();
-    }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-    }
 
-    @OnClick({R.id.bt_run_cancel, R.id.btn_turnon, R.id.btn_turnoff, R.id.btn_startrun, R.id.btn_stoprun})
-    public void onViewClicked(View view) {
-        switch (view.getId()) {
-            case R.id.bt_run_cancel:
-                this.finish();
-                break;
-            case R.id.btn_turnon:
-                    device.sendOrder(deviceNum,
-                            Order.LightColor.BLUE,
-                            Order.VoiceMode.NONE,
-                            Order.BlinkModel.NONE,
-                            Order.LightModel.OUTER,
-                            Order.ActionModel.NONE,
-                            Order.EndVoice.NONE);
-                break;
-            case R.id.btn_turnoff:
-                device.turnOffAllTheLight();
-                break;
-            case R.id.btn_startrun:
-                if (!device.checkDevice(SingleSpotActivity.this))
-                    return;
-                if (deviceNum == '\0' || trainTimes == 0)
-                    Toast.makeText(this,"请先选择设备和训练次数！",Toast.LENGTH_SHORT).show();
-                if (trainingBeginFlag) {
-                } else {
-                    startTraining();
-                    btnTurnon.setClickable(false);
-                    btnTurnoff.setClickable(false);
-                }
-                break;
-            case R.id.btn_stoprun:
-                if(trainingBeginFlag)
-                {
-                    stopTraining();
-                    btnTurnon.setClickable(true);
-                    btnTurnoff.setClickable(true);
-                }
-                break;
-        }
-    }
-
-    public void startTraining() {
-        Log.d(TAG, "startTraining has run");
-        trainingBeginFlag=true;
-        /*time = new int[trainTimes];*/
-        timeList = new ArrayList<>(trainTimes);
-        singleSpotAdapter.setTimeList(timeList);
-        singleSpotAdapter.notifyDataSetChanged();
-
-        //清除串口数据
-        new ReceiveThread(handler, device.ftDev, ReceiveThread.CLEAR_DATA_THREAD, 0).start();
-
-        //开启接收设备返回时间的监听线程
-        new ReceiveThread(handler, device.ftDev, ReceiveThread.TIME_RECEIVE_THREAD, TIME_RECEIVE).start();
-
-        device.sendOrder(deviceNum,
-                Order.LightColor.values()[1],
-                Order.VoiceMode.values()[0],
-                Order.BlinkModel.values()[0],
-                Order.LightModel.OUTER,
-                Order.ActionModel.values()[1],
-                Order.EndVoice.values()[0]);
-
-        //获得当前的系统时间
-        startTime = System.currentTimeMillis();
-        timer = new Timer(handler);
-        timer.setBeginTime(startTime);
-        timer.start();
-    }
-
-    public void stopTraining() {
-        trainingBeginFlag = false;
-        //停止接收线程
-        ReceiveThread.stopThread();
-        device.turnOffAllTheLight();
-        timer.stopTimer();
-
-        //很重要的重置计数器
-        counter=0;
-    }
 }
