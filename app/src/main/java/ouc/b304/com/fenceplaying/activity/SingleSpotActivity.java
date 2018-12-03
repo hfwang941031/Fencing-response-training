@@ -20,6 +20,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -36,6 +37,8 @@ import ouc.b304.com.fenceplaying.thread.ReceiveThread;
 import ouc.b304.com.fenceplaying.thread.Timer;
 import ouc.b304.com.fenceplaying.utils.DataAnalyzeUtils;
 import ouc.b304.com.fenceplaying.utils.ScoreUtils;
+
+import static android.widget.Toast.LENGTH_SHORT;
 
 /**
  * @author 王海峰 on 2018/9/17 10:44
@@ -81,6 +84,8 @@ public class SingleSpotActivity extends Activity {
     TextView showAvergeScore;
     @BindView(R.id.avergeScore)
     TextView avergeScore;
+    @BindView(R.id.bt_save)
+    Button btSave;
     private Context context;
 
     private Device device;
@@ -119,6 +124,10 @@ public class SingleSpotActivity extends Activity {
 
     //定义成绩列表适配器
     private SingleSpotAdapter singleSpotAdapter;
+
+    private Date date;
+
+
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -137,9 +146,9 @@ public class SingleSpotActivity extends Activity {
                     break;
                 case STOP_TRAINING:
                     //在结束之前先计算平均值
-                    averageScore=ScoreUtils.calcAverageScore(timeList);
+                    averageScore = ScoreUtils.calcAverageScore(timeList);
                     //设置值
-                    avergeScore.setText(" "+averageScore+"毫秒");
+                    avergeScore.setText(" " + averageScore + "毫秒");
                     stopTraining();
                     break;
                 case UPDATE_TIMES:
@@ -198,7 +207,7 @@ public class SingleSpotActivity extends Activity {
         super.onDestroy();
     }
 
-    @OnClick({R.id.bt_run_cancel, R.id.btn_turnon, R.id.btn_turnoff, R.id.btn_startrun, R.id.btn_stoprun})
+    @OnClick({R.id.bt_run_cancel, R.id.btn_turnon, R.id.btn_turnoff, R.id.btn_startrun, R.id.btn_stoprun,R.id.bt_save})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.bt_run_cancel:
@@ -218,12 +227,12 @@ public class SingleSpotActivity extends Activity {
                 break;
             case R.id.btn_startrun:
                 //训练开始的时候把上次的成绩置空
-                averageScore=0;
+                averageScore = 0;
                 avergeScore.setText("");
                 if (!device.checkDevice(SingleSpotActivity.this))
                     return;
                 if (deviceNum == '\0' || trainTimes == 0)
-                    Toast.makeText(this, "请先选择设备和训练次数！", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(this, "请先选择设备和训练次数！", LENGTH_SHORT).show();
                 if (trainingBeginFlag) {
                 } else {
                     startTraining();
@@ -237,6 +246,17 @@ public class SingleSpotActivity extends Activity {
                     btnTurnon.setClickable(true);
                     btnTurnoff.setClickable(true);
                 }
+                break;
+            case R.id.bt_save:
+                //首先把timeList<Integer>变成List<String>
+                //判空验证
+                if (timeList.size() == 0) {
+                    Toast.makeText(context, "成绩列表为空，无法进行保存！请先进行训练", Toast.LENGTH_SHORT).show();
+                } else {
+
+                }
+
+
                 break;
         }
     }
@@ -387,6 +407,5 @@ public class SingleSpotActivity extends Activity {
         singleSpotAdapter = new SingleSpotAdapter(this);
         lvTimes.setAdapter(singleSpotAdapter);
     }
-
 
 }

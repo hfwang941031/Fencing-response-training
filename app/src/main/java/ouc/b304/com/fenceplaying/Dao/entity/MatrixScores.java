@@ -2,22 +2,19 @@ package ouc.b304.com.fenceplaying.Dao.entity;
 
 import org.greenrobot.greendao.annotation.Convert;
 import org.greenrobot.greendao.annotation.Entity;
-import org.greenrobot.greendao.annotation.Generated;
 
 import java.util.Date;
 import java.util.List;
 
 import ouc.b304.com.fenceplaying.Dao.convert.StringConverter;
+import org.greenrobot.greendao.annotation.Generated;
 
 /**
- * @author 王海峰 on 2018/11/28 14:29
+ * @author 王海峰 on 2018/12/3 09:53
  */
 
-
 @Entity
-public class SingleSpotScores {
-
-
+public class MatrixScores {
     @org.greenrobot.greendao.annotation.Id
     private Long Id;
 
@@ -32,8 +29,8 @@ public class SingleSpotScores {
 
     private long playerId;
 
-    @Generated(hash = 474680631)
-    public SingleSpotScores(Long Id, int trainingTimes, float averageScores,
+    @Generated(hash = 1131514478)
+    public MatrixScores(Long Id, int trainingTimes, float averageScores,
             List<String> scoresList, Date date, long playerId) {
         this.Id = Id;
         this.trainingTimes = trainingTimes;
@@ -43,8 +40,8 @@ public class SingleSpotScores {
         this.playerId = playerId;
     }
 
-    @Generated(hash = 377011257)
-    public SingleSpotScores() {
+    @Generated(hash = 146899550)
+    public MatrixScores() {
     }
 
     public Long getId() {
@@ -94,6 +91,4 @@ public class SingleSpotScores {
     public void setPlayerId(long playerId) {
         this.playerId = playerId;
     }
-
-
 }

@@ -10,13 +10,11 @@ import java.util.List;
 import ouc.b304.com.fenceplaying.Dao.convert.StringConverter;
 
 /**
- * @author 王海峰 on 2018/11/28 14:29
+ * @author 王海峰 on 2018/12/3 09:22
  */
 
-
 @Entity
-public class SingleSpotScores {
-
+public class SingleLineScores {
 
     @org.greenrobot.greendao.annotation.Id
     private Long Id;
@@ -32,8 +30,8 @@ public class SingleSpotScores {
 
     private long playerId;
 
-    @Generated(hash = 474680631)
-    public SingleSpotScores(Long Id, int trainingTimes, float averageScores,
+    @Generated(hash = 297122603)
+    public SingleLineScores(Long Id, int trainingTimes, float averageScores,
             List<String> scoresList, Date date, long playerId) {
         this.Id = Id;
         this.trainingTimes = trainingTimes;
@@ -43,8 +41,8 @@ public class SingleSpotScores {
         this.playerId = playerId;
     }
 
-    @Generated(hash = 377011257)
-    public SingleSpotScores() {
+    @Generated(hash = 1258970968)
+    public SingleLineScores() {
     }
 
     public Long getId() {
@@ -94,6 +92,5 @@ public class SingleSpotScores {
     public void setPlayerId(long playerId) {
         this.playerId = playerId;
     }
-
 
 }
