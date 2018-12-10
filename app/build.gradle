@@ -37,7 +37,7 @@ dependencies {
     implementation 'com.google.code.gson:gson:2.8.5'
 }
 greendao {
-    schemaVersion 1//数据库版本号
+    schemaVersion 2//数据库版本号
     daoPackage 'ouc.b304.com.fenceplaying.Dao'//设置DaoMaster、DaoSession、Dao包名
     targetGenDir 'src/main/java'//设置DaoMaster、DaoSession、Dao目录
     //targetGenDirTest：设置生成单元测试目录

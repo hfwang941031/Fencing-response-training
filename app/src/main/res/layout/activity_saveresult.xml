@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:background="#B0E0E6"
+    android:orientation="vertical">
+    <!--存放返回按钮等标题栏部分-->
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:background="#F1F1F1"
+        android:orientation="horizontal"
+        >
+        <ImageView
+            android:id="@+id/bt_run_cancel"
+            android:layout_width="45dp"
+            android:layout_height="65dp"
+            android:background="@drawable/btn_back_detail_normal" >
+        </ImageView>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:text="返回"
+            android:textSize="19sp"
+            android:textColor="@color/black"/>
+    </LinearLayout>
+    <!--存放listView-->
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="7"
+        >
+        <ListView
+            android:id="@+id/lv_player"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"></ListView>
+    </LinearLayout>
+    <!--存放下方按钮-->
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+        <Button
+            android:gravity="center"
+            android:id="@+id/btn_save"
+            android:text="保存"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+        <Button
+            android:gravity="center"
+            android:id="@+id/btn_nosave"
+            android:text="取消"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            />
+    </LinearLayout>
+
+</LinearLayout>
