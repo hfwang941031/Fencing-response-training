@@ -217,7 +217,7 @@ public class SingleLineActivity extends Activity {
         super.onDestroy();
     }
 
-    @OnClick({R.id.bt_run_cancel, R.id.layout_cancel, R.id.btn_turnon, R.id.btn_turnoff, R.id.btn_startrun, R.id.btn_stoprun,R.id.bt_save})
+    @OnClick({R.id.bt_run_cancel, R.id.layout_cancel, R.id.btn_turnon, R.id.btn_turnoff, R.id.btn_startrun, R.id.btn_stoprun, R.id.bt_save,R.id.img_btn_refresh})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.bt_run_cancel:
@@ -263,6 +263,12 @@ public class SingleLineActivity extends Activity {
                 break;
 
             case R.id.bt_save://成绩保存按钮
+                break;
+
+
+            case R.id.img_btn_refresh://刷新可用设备按钮
+                updateData();
+                Toast.makeText(this, "可用设备已刷新", Toast.LENGTH_LONG).show();
                 break;
         }
     }
@@ -483,5 +489,18 @@ public class SingleLineActivity extends Activity {
 
         }
     }
+
+    //刷新可用设备名称——
+    public void updateData() {
+        StringBuffer stringBuffer = new StringBuffer(list.size());
+        for (int i = 0; i < list.size(); i++) {
+            stringBuffer.append(list.get(i));
+            stringBuffer.append(" ");
+        }
+        tvDevicenumbers.setText("");
+        tvDevicenumbers.setText(stringBuffer.toString());
+
+    }
+
 
 }
