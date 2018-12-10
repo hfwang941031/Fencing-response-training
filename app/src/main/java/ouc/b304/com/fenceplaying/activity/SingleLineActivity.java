@@ -1,12 +1,15 @@
 package ouc.b304.com.fenceplaying.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -19,7 +22,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.greenrobot.greendao.query.QueryBuilder;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -28,15 +34,24 @@ import butterknife.OnClick;
 import ouc.b304.com.fenceplaying.Bean.Constant;
 import ouc.b304.com.fenceplaying.Bean.DeviceInfo;
 import ouc.b304.com.fenceplaying.Bean.TimeInfo;
+import ouc.b304.com.fenceplaying.Dao.PlayerDao;
+import ouc.b304.com.fenceplaying.Dao.SingleLineScoresDao;
+import ouc.b304.com.fenceplaying.Dao.entity.Player;
+import ouc.b304.com.fenceplaying.Dao.entity.SingleLineScores;
 import ouc.b304.com.fenceplaying.R;
+import ouc.b304.com.fenceplaying.adapter.SaveResultAdapter;
 import ouc.b304.com.fenceplaying.adapter.SingleLineAdapter;
+import ouc.b304.com.fenceplaying.application.GreenDaoInitApplication;
 import ouc.b304.com.fenceplaying.device.Device;
 import ouc.b304.com.fenceplaying.device.Order;
 import ouc.b304.com.fenceplaying.thread.AutoCheckPower;
 import ouc.b304.com.fenceplaying.thread.ReceiveThread;
 import ouc.b304.com.fenceplaying.thread.Timer;
 import ouc.b304.com.fenceplaying.utils.DataAnalyzeUtils;
+import ouc.b304.com.fenceplaying.utils.IntegerToStringUtils;
 import ouc.b304.com.fenceplaying.utils.NumberUtils;
+import ouc.b304.com.fenceplaying.utils.PlayDaoUtils;
+import ouc.b304.com.fenceplaying.utils.ScoreUtils;
 
 import static ouc.b304.com.fenceplaying.thread.ReceiveThread.POWER_RECEIVE_THREAD;
 
@@ -115,7 +130,7 @@ public class SingleLineActivity extends Activity {
     private ArrayAdapter spDeviceAmountAdapter;
 
 
-    //每次训练的时间集合
+    //每次训练的时间集合 initdata函数中进行初始化
     private ArrayList<Integer> timeList;
 
     //训练开始时间
@@ -152,6 +167,10 @@ public class SingleLineActivity extends Activity {
                     }
                     break;
                 case STOP_TRAINING:
+                    //在结束之前先计算平均值
+                    averageScore = ScoreUtils.calcAverageScore(timeList);
+                    //设置值
+                    avergeScore.setText(" " + averageScore + "毫秒");
                     stopTraining();
                     break;
                 case UPDATE_TIMES:
@@ -161,6 +180,19 @@ public class SingleLineActivity extends Activity {
             }
         }
     };
+    private Date date;
+    //initdata方法中进行初始化
+    private List<String> scoreList;
+    private List<String> nameList;
+    //对话框中listview的适配器
+    private SaveResultAdapter saveResultAdapter;
+
+    private PlayerDao playerDao;
+    private SingleLineScoresDao singleLineScoresDao;
+    private Player player;
+    private SingleLineScores singleLineScores;
+    /*平均值*/
+    private float averageScore = 0;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -169,6 +201,8 @@ public class SingleLineActivity extends Activity {
         setContentView(R.layout.activity_singleline);
         ButterKnife.bind(this);
         context = this.getApplicationContext();
+        playerDao = GreenDaoInitApplication.getInstances().getDaoSession().getPlayerDao();
+        singleLineScoresDao=GreenDaoInitApplication.getInstances().getDaoSession().getSingleLineScoresDao();
         initDevices();
         initView();
         /*initData();*/
@@ -263,6 +297,74 @@ public class SingleLineActivity extends Activity {
                 break;
 
             case R.id.bt_save://成绩保存按钮
+                //首先把timeList<Integer>变成List<String>
+                //判空验证
+                if (timeList.size() == 0) {
+                    Toast.makeText(context, "成绩列表为空，无法进行保存！请先进行训练", Toast.LENGTH_SHORT).show();
+                } else {
+                    //确定保存时间
+                    date = new Date();
+
+                    //将Integer类型的List转换成String类型
+                    IntegerToStringUtils.integerToString(timeList, scoreList);
+                    final AlertDialog saveDialog = new AlertDialog.Builder(this).create();
+                    //设置对话框ICON
+                    /*saveDialog.setIcon();*/
+                    //初始化对话中listview的布局
+                    View view2 = LayoutInflater.from(this).inflate(R.layout.listview_savedialog, null);
+
+                    final ListView lvSaveresult = view2.findViewById(R.id.lv_saveresult);
+                    //设置对话框中listview的适配器
+                    saveResultAdapter = new SaveResultAdapter(this);
+                    lvSaveresult.setAdapter(saveResultAdapter);
+                    //清空姓名list，防止重复出现
+                    nameList.clear();
+                    saveResultAdapter.setNameList(PlayDaoUtils.nameList(playerDao, nameList));
+                    /*saveResultAdapter.notifyDataSetChanged();*/
+                    //设置标题
+                    saveDialog.setTitle("数据保存");
+                    //添加布局
+                    saveDialog.setView(view2);
+                    //设置按键
+                    saveDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            dialogInterface.dismiss();
+                        }
+                    });
+                    saveDialog.show();
+
+
+                    //为对话框中的listview设置子项单击事件
+
+                    lvSaveresult.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                        @Override
+                        public void onItemClick(AdapterView<?> adapterView, View view2, int position, long l) {
+
+
+                            //获取到点击项的值，此处为名字
+                            String name=String.valueOf(adapterView.getItemAtPosition(position));
+                            //根据名字获取到Player实体
+                            QueryBuilder query=playerDao.queryBuilder();
+                            query.where(PlayerDao.Properties.Name.eq(name));
+                            List<Player> nameList = query.list();
+                            player = nameList.get(0);
+                            //根据player实体设置一对多的ID
+                            singleLineScores = new SingleLineScores();
+                            singleLineScores.setPlayerId(player.getId());
+
+                            singleLineScores.setAverageScores(averageScore);
+                            singleLineScores.setDate(date);
+                            singleLineScores.setScoresList(scoreList);
+                            singleLineScores.setTrainingTimes(trainTimes);
+                            //插入成绩实体
+                            singleLineScoresDao.insert(singleLineScores);
+                            //给出数据插入成功提示
+                            Toast.makeText(context,"数据插入成功",Toast.LENGTH_SHORT).show();
+                            saveDialog.dismiss();
+                        }
+                    });
+                }
                 break;
 
 
@@ -344,6 +446,12 @@ public class SingleLineActivity extends Activity {
                 for (DeviceInfo info : Device.DEVICE_LIST) {
                     list.add(info.getDeviceNum());
                 }
+                //初始化String类型的时间列表
+                scoreList = new ArrayList<>();
+
+                //初始化String类型的运动员姓名列表
+                nameList = new ArrayList<>();
+                timeList = new ArrayList<>();
                /*//根据选择的设备数量，从list中顺序取出前设备数量个元素存储到selectdList中
                for (int i=0;i<deviceAmount;i++) {
                    selectedList.add(list.get(i));
