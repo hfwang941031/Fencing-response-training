@@ -77,15 +77,21 @@ public class SingleLineActivity extends Activity {
     @BindView(R.id.lvTimes)
     ListView lvTimes;
     /*
-    * 在开始训练的时候先对数量选择进行判断，判断选择的设备数量和可用设备数量是否一致，如果设备数量不符合
-    * 应该给出提示，并禁止训练继续下去，直到用户选择了正确的设备数量
-    * */
+     * 在开始训练的时候先对数量选择进行判断，判断选择的设备数量和可用设备数量是否一致，如果设备数量不符合
+     * 应该给出提示，并禁止训练继续下去，直到用户选择了正确的设备数量
+     * */
 
     private final static int TIME_RECEIVE = 1;
     private final static int POWER_RECEIVE = 2;
     private final static int UPDATE_TIMES = 3;
     private final static int STOP_TRAINING = 4;
     private final static String TAG = "SingleLineActivity";
+    @BindView(R.id.showAvergeScore)
+    TextView showAvergeScore;
+    @BindView(R.id.avergeScore)
+    TextView avergeScore;
+    @BindView(R.id.bt_save)
+    Button btSave;
 
     private Context context;
     private Device device;
@@ -100,7 +106,7 @@ public class SingleLineActivity extends Activity {
     private int trainTimes = 0;
 
     //选中的训练设备数量
-    private int deviceAmount=0;
+    private int deviceAmount = 0;
 
     //训练次数下拉框适配器
     private ArrayAdapter<String> spTimesAdapter;
@@ -128,9 +134,9 @@ public class SingleLineActivity extends Activity {
     private AutoCheckPower checkPowerThread;
 
     //存放随机获取到的被选择list中的元素并组成一个新的randomList，元素个数为训练次数
-    private List<Character> randomList=new ArrayList<>();
+    private List<Character> randomList = new ArrayList<>();
 
-    private Handler handler=new Handler() {
+    private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
             switch (msg.what) {
@@ -211,7 +217,7 @@ public class SingleLineActivity extends Activity {
         super.onDestroy();
     }
 
-    @OnClick({R.id.bt_run_cancel, R.id.layout_cancel, R.id.btn_turnon, R.id.btn_turnoff, R.id.btn_startrun, R.id.btn_stoprun})
+    @OnClick({R.id.bt_run_cancel, R.id.layout_cancel, R.id.btn_turnon, R.id.btn_turnoff, R.id.btn_startrun, R.id.btn_stoprun,R.id.bt_save})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.bt_run_cancel:
@@ -220,11 +226,11 @@ public class SingleLineActivity extends Activity {
             case R.id.layout_cancel:
                 this.finish();
                 break;
-                //开启选中的设备灯
+            //开启选中的设备灯
             case R.id.btn_turnon:
                 turnOnLightByDeviceNum(selectedList);
                 break;
-                //关闭全部可用设备灯
+            //关闭全部可用设备灯
             case R.id.btn_turnoff:
                 turnOffLightByDeviceNum(selectedList);
                 break;
@@ -235,7 +241,7 @@ public class SingleLineActivity extends Activity {
                             Toast.makeText(this, "请选择训练次数，并重新开始训练！", Toast.LENGTH_SHORT).show();
                         } else {
                             if (!trainingBeginFlag) {
-                                createRandomList(trainTimes,selectedList);
+                                createRandomList(trainTimes, selectedList);
                                 startTraining();
                                 btnTurnon.setClickable(false);
                                 btnTurnoff.setClickable(false);
@@ -254,6 +260,9 @@ public class SingleLineActivity extends Activity {
                     btnTurnon.setClickable(true);
                     btnTurnoff.setClickable(true);
                 }
+                break;
+
+            case R.id.bt_save://成绩保存按钮
                 break;
         }
     }
@@ -302,7 +311,7 @@ public class SingleLineActivity extends Activity {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 deviceAmount = Integer.parseInt((String) spDevicenumbers.getSelectedItem());
                 Log.d("deviceAmounts", deviceAmount + "");
-                for (int j=0;j<deviceAmount;j++) {
+                for (int j = 0; j < deviceAmount; j++) {
                     selectedList.add(list.get(j));
                     Log.d("编号", String.valueOf(list.get(j)));
                 }
@@ -321,27 +330,27 @@ public class SingleLineActivity extends Activity {
 
     //存储可用的设备编号
     private void initData() {
-       new Thread(new Runnable() {
-           @Override
-           public void run() {
-               Log.d("初始化数据", "填充list开始运行");
-               //获取当前可用的设备编号，存储到list当中
-               for (DeviceInfo info : Device.DEVICE_LIST) {
-                   list.add(info.getDeviceNum());
-               }
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("初始化数据", "填充list开始运行");
+                //获取当前可用的设备编号，存储到list当中
+                for (DeviceInfo info : Device.DEVICE_LIST) {
+                    list.add(info.getDeviceNum());
+                }
                /*//根据选择的设备数量，从list中顺序取出前设备数量个元素存储到selectdList中
                for (int i=0;i<deviceAmount;i++) {
                    selectedList.add(list.get(i));
                    Log.d("编号", String.valueOf(list.get(i)));
                }*/
-           }
-       }).start();
+            }
+        }).start();
 
 
     }
 
     //检查当前选择的设备数是否没超过可用设备数量
-    public boolean checkDeviceNum(int listSize,int deviceAmount) {
+    public boolean checkDeviceNum(int listSize, int deviceAmount) {
         if (deviceAmount <= listSize) {
             return true;
         } else {
@@ -351,10 +360,10 @@ public class SingleLineActivity extends Activity {
     }
 
     //构成randomList,该list长度为训练次数
-    public void createRandomList(int trainTimes,List<Character> selectedList) {
-        for (int i=0;i<trainTimes;i++) {
+    public void createRandomList(int trainTimes, List<Character> selectedList) {
+        for (int i = 0; i < trainTimes; i++) {
             randomList.add(selectedList.get(NumberUtils.randomNumber(selectedList.size())));
-            Log.d("randomList.["+i+"]", selectedList.get(NumberUtils.randomNumber(selectedList.size())) + "");
+            Log.d("randomList.[" + i + "]", selectedList.get(NumberUtils.randomNumber(selectedList.size())) + "");
         }
     }
 
@@ -370,12 +379,12 @@ public class SingleLineActivity extends Activity {
         new ReceiveThread(handler, device.ftDev, ReceiveThread.TIME_RECEIVE_THREAD, TIME_RECEIVE).start();
 
         device.sendOrder(randomList.get(0),       //randomList的第一个元素
-                    Order.LightColor.values()[1],//此处需要更改设备颜色
-                    Order.VoiceMode.values()[0],
-                    Order.BlinkModel.values()[0],
-                    Order.LightModel.OUTER,
-                    Order.ActionModel.values()[1],//此处需要更改感应模式  0是无动作  1是感应
-                    Order.EndVoice.values()[0]);
+                Order.LightColor.values()[1],//此处需要更改设备颜色
+                Order.VoiceMode.values()[0],
+                Order.BlinkModel.values()[0],
+                Order.LightModel.OUTER,
+                Order.ActionModel.values()[1],//此处需要更改感应模式  0是无动作  1是感应
+                Order.EndVoice.values()[0]);
 
 
         //获得当前的系统时间
@@ -405,19 +414,19 @@ public class SingleLineActivity extends Activity {
 
             //将时间数据添加到timeList中
             timeList.add(info.getTime());
-            if (counter >trainTimes-1) {
+            if (counter > trainTimes - 1) {
                 break;
             }
             //打开下一个设备灯，下一个设备就是randomList中，counter作为索引
             turnOnLightByDeviceNum(randomList.get(counter));
 
         }
-        Message msg=Message.obtain();
-        msg.what=UPDATE_TIMES;
+        Message msg = Message.obtain();
+        msg.what = UPDATE_TIMES;
         msg.obj = "";
         handler.sendMessage(msg);
         if (isTrainingOver()) {
-            Log.d("ifistrainingover", "has run"+counter);
+            Log.d("ifistrainingover", "has run" + counter);
             Message msg1 = Message.obtain();
             msg1.what = STOP_TRAINING;
             msg1.obj = "";
@@ -427,7 +436,7 @@ public class SingleLineActivity extends Activity {
 
     //用计数器判断开灯次数是否达到了训练次数，达到了就结束训练
     private boolean isTrainingOver() {
-        if (counter >= trainTimes-1) {
+        if (counter > trainTimes - 1) {
             return true;
         } else {
             return false;
@@ -447,8 +456,8 @@ public class SingleLineActivity extends Activity {
 
     //根据设备编号开灯
     public void turnOnLightByDeviceNum(List<Character> selectedList) {
-        for (Character devicenum :selectedList
-             ) {
+        for (Character devicenum : selectedList
+                ) {
             device.sendOrder(devicenum,
                     Order.LightColor.BLUE,
                     Order.VoiceMode.NONE,
@@ -462,7 +471,7 @@ public class SingleLineActivity extends Activity {
 
     //根据设备编号关灯
     public void turnOffLightByDeviceNum(List<Character> selectedList) {
-        for (Character devicenum :selectedList
+        for (Character devicenum : selectedList
                 ) {
             device.sendOrder(devicenum,
                     Order.LightColor.values()[0],
@@ -474,4 +483,5 @@ public class SingleLineActivity extends Activity {
 
         }
     }
+
 }
