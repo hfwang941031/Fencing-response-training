@@ -61,6 +61,18 @@
             android:name=".activity.SingleLineActivity"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
         </activity>
+        <activity
+            android:name=".activity.DataShowSelect"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+        </activity>
+        <activity
+            android:name=".activity.DataShowActivity"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+        </activity>
+        <activity
+            android:name=".activity.DataCompareActivity"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
+        </activity>
 
     </application>
 

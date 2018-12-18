@@ -164,6 +164,8 @@ public class MainActivity extends Activity {
 
                 break;
             case R.id.btn_historyData:
+                startActivity(new Intent(getApplicationContext(), DataShowSelect.class));
+
                 break;
             case R.id.btn_Setting:
                 startActivity(new Intent(getApplicationContext(), SettingActivity.class));
