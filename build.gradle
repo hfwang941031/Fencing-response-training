@@ -3,12 +3,15 @@
 buildscript {
     
     repositories {
-        google()
+
+        maven{ url 'http://maven.aliyun.com/nexus/content/groups/public/'}
+      /*  google()
         jcenter()
-        mavenCentral()
+        mavenCentral()*/
+
     }
     dependencies {
-        classpath 'com.android.tools.build:gradle:3.1.1'
+        classpath 'com.android.tools.build:gradle:3.1.2'
         classpath 'org.greenrobot:greendao-gradle-plugin:3.2.1'
      /*   classpath 'com.jakewharton:butterknife-gradle-plugin:8.8.1'*/
 
@@ -20,8 +23,10 @@ buildscript {
 
 allprojects {
     repositories {
-        google()
-        jcenter()
+        maven{ url 'http://maven.aliyun.com/nexus/content/groups/public/'}
+
+        /*google()
+        jcenter()*/
     }
 }
 
