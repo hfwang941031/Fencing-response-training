@@ -37,6 +37,7 @@ dependencies {
     implementation files('E:/project/asproject/androidproject/libs/d2xx.jar')
     implementation 'com.google.code.gson:gson:2.8.5'
     implementation 'com.contrarywind:Android-PickerView:4.1.6'
+    implementation 'com.qmuiteam:qmui:1.1.3'
 
 
 }

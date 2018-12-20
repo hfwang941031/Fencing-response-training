@@ -420,8 +420,10 @@ public class SingleLineActivity extends Activity {
                 deviceAmount = Integer.parseInt((String) spDevicenumbers.getSelectedItem());
                 Log.d("deviceAmounts", deviceAmount + "");
                 for (int j = 0; j < deviceAmount; j++) {
-                    selectedList.add(list.get(j));
-                    Log.d("编号", String.valueOf(list.get(j)));
+                    if (list.size() > 0) {
+                        selectedList.add(list.get(j));
+                        Log.d("编号", String.valueOf(list.get(j)));
+                    }
                 }
 
             }
@@ -438,9 +440,6 @@ public class SingleLineActivity extends Activity {
 
     //存储可用的设备编号
     private void initData() {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
                 Log.d("初始化数据", "填充list开始运行");
                 //获取当前可用的设备编号，存储到list当中
                 for (DeviceInfo info : Device.DEVICE_LIST) {
@@ -458,10 +457,10 @@ public class SingleLineActivity extends Activity {
                    Log.d("编号", String.valueOf(list.get(i)));
                }*/
             }
-        }).start();
 
 
-    }
+
+
 
     //检查当前选择的设备数是否没超过可用设备数量
     public boolean checkDeviceNum(int listSize, int deviceAmount) {
