@@ -3,6 +3,7 @@ package ouc.b304.com.fenceplaying.activity;
 import android.app.Activity;
 import android.app.Dialog;
 import android.content.Context;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.util.Log;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 import com.bigkoo.pickerview.builder.TimePickerBuilder;
 import com.bigkoo.pickerview.listener.OnTimeSelectListener;
 import com.bigkoo.pickerview.view.TimePickerView;
+import com.qmuiteam.qmui.widget.textview.QMUILinkTextView;
 
 import org.greenrobot.greendao.query.QueryBuilder;
 
@@ -33,6 +35,11 @@ import java.util.List;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import lecho.lib.hellocharts.model.Axis;
+import lecho.lib.hellocharts.model.Line;
+import lecho.lib.hellocharts.model.LineChartData;
+import lecho.lib.hellocharts.model.PointValue;
+import lecho.lib.hellocharts.view.LineChartView;
 import ouc.b304.com.fenceplaying.Bean.DataShowListBean;
 import ouc.b304.com.fenceplaying.Dao.LScoresDao;
 import ouc.b304.com.fenceplaying.Dao.MatrixScoresDao;
@@ -81,6 +88,10 @@ public class DataShowActivity extends Activity {
     TextView tvShowscores;
     @BindView(R.id.lv_showdata)
     ListView lvShowdata;
+    @BindView(R.id.linechartview_datashow)
+    LineChartView linechartviewDatashow;
+    @BindView(R.id.tv_chartname)
+    QMUILinkTextView tvChartname;
     private Player player;
     private PlayerDao playerDao;
     private List<String> nameList;//存放运动员姓名
@@ -118,8 +129,16 @@ public class DataShowActivity extends Activity {
     /*private DataShowListBean dataShowListBean;*/
 
 
+    private DataShowListBean dataShowListBean;
 
-    private DataShowListBean dataShowListBean ;
+    //单点折线图变量相关
+    private List<Float> averageScoreList = new ArrayList<>();
+    private Line line = new Line().setColor(Color.GREEN);//声明并定义一条线
+    private List<PointValue> values = new ArrayList<>();  //线上的点，一个PointValue形式为（x,y）
+    private List<Line> lines = new ArrayList<>();
+    private LineChartData data = new LineChartData();
+    Axis axisX = new Axis();//x轴
+    Axis axisY = new Axis();//y轴
 
 
     @Override
@@ -129,7 +148,7 @@ public class DataShowActivity extends Activity {
         ButterKnife.bind(this);
         context = this.getApplicationContext();
         playerDao = GreenDaoInitApplication.getInstances().getDaoSession().getPlayerDao();
-        singleSpotScoresDao=GreenDaoInitApplication.getInstances().getDaoSession().getSingleSpotScoresDao();
+        singleSpotScoresDao = GreenDaoInitApplication.getInstances().getDaoSession().getSingleSpotScoresDao();
         singleLineScoresDao = GreenDaoInitApplication.getInstances().getDaoSession().getSingleLineScoresDao();
         matrixScoresDao = GreenDaoInitApplication.getInstances().getDaoSession().getMatrixScoresDao();
         lScoresDao = GreenDaoInitApplication.getInstances().getDaoSession().getLScoresDao();
@@ -184,13 +203,15 @@ public class DataShowActivity extends Activity {
             case R.id.btn_show:
                 switch (selectedTrainMode) {
                     case "单点训练":
-                        /*DataShowListBean dataShowListBean ;*/
+                        //清除averageScoreList
+                        averageScoreList.clear();
+
                         //首先清除beanlist,防止出现重复数据
                         dataShowListBeans.clear();
 
                         //1、根据选定的运动员姓名确定该运动员ID，2、通过运动员ID确定成绩表中的属于该运动员的成绩3、并存储到singleSpotScoresList
                         QueryBuilder<Player> qb = playerDao.queryBuilder();
-                        playerList= qb.where(PlayerDao.Properties.Name.eq(selectedName)).list();
+                        playerList = qb.where(PlayerDao.Properties.Name.eq(selectedName)).list();
                         long playerId = playerList.get(0).getId();
                         QueryBuilder<SingleSpotScores> queryBuilder = singleSpotScoresDao.queryBuilder();
                         singleSpotScoresList = queryBuilder.where(SingleSpotScoresDao.Properties.PlayerId.eq(playerId)).list();
@@ -198,7 +219,10 @@ public class DataShowActivity extends Activity {
                         if (singleSpotScoresList.size() <= 0) {
                             Toast.makeText(context, "无当前运动员单点训练成绩，请先进行训练", Toast.LENGTH_SHORT).show();
                         } else {
-                            for (SingleSpotScores s:singleSpotScoresList) {
+                            for (SingleSpotScores s : singleSpotScoresList) {
+                                //将平均成绩添加到averageScoreList中
+                                averageScoreList.add(s.getAverageScores());
+
                                 dataShowListBean = new DataShowListBean();
                                 dataShowListBean.setName(selectedName);
                                 dataShowListBean.setTrainMode(selectedTrainMode);
@@ -208,14 +232,21 @@ public class DataShowActivity extends Activity {
                             }
                             dataShowAdapter.setBeansList(dataShowListBeans);
                             dataShowAdapter.notifyDataSetChanged();
+
+                            //开始画图
+                            showChartView(linechartviewDatashow,averageScoreList,values,lines,line,data,axisX,axisY);
+
+
                         }
                         break;
                     case "单列训练":
+                        //清除averageScoreList
+                        averageScoreList.clear();
                         //首先清除beanlist,防止出现重复数据
                         dataShowListBeans.clear();
                         //1、根据选定的运动员姓名确定该运动员ID，2、通过运动员ID确定成绩表中的属于该运动员的成绩3、并存储到singleSpotScoresList
                         QueryBuilder<Player> qb1 = playerDao.queryBuilder();
-                        playerList= qb1.where(PlayerDao.Properties.Name.eq(selectedName)).list();
+                        playerList = qb1.where(PlayerDao.Properties.Name.eq(selectedName)).list();
                         long playerId1 = playerList.get(0).getId();
                         QueryBuilder<SingleLineScores> queryBuilder1 = singleLineScoresDao.queryBuilder();
                         singleLineScoresList = queryBuilder1.where(SingleLineScoresDao.Properties.PlayerId.eq(playerId1)).list();
@@ -223,7 +254,9 @@ public class DataShowActivity extends Activity {
                         if (singleLineScoresList.size() <= 0) {
                             Toast.makeText(context, "无当前运动员单列训练成绩，请先进行训练", Toast.LENGTH_SHORT).show();
                         } else {
-                            for (SingleLineScores s:singleLineScoresList) {
+                            for (SingleLineScores s : singleLineScoresList) {
+                                //将平均成绩添加到averageScoreList中
+                                averageScoreList.add(s.getAverageScores());
                                 dataShowListBean = new DataShowListBean();
                                 dataShowListBean.setName(selectedName);
                                 dataShowListBean.setTrainMode(selectedTrainMode);
@@ -233,6 +266,10 @@ public class DataShowActivity extends Activity {
                             }
                             dataShowAdapter.setBeansList(dataShowListBeans);
                             dataShowAdapter.notifyDataSetChanged();
+
+                            //开始画图
+                            showChartView(linechartviewDatashow,averageScoreList,values,lines,line,data,axisX,axisY);
+
                         }
                         break;
                     case "抗干扰训练":
@@ -272,8 +309,6 @@ public class DataShowActivity extends Activity {
         //初始化beansList
         dataShowListBeans = new ArrayList<>();
 
-        //初始化datashowlistbean
-        /*dataShowListBean = new DataShowListBean();*/
 
     }
 
@@ -331,8 +366,12 @@ public class DataShowActivity extends Activity {
 
             }
         });
-         //为listview设置适配器
+        //为listview设置适配器
         lvShowdata.setAdapter(dataShowAdapter);
+
+        //设置折线图属性
+        setChartViewPara();
+
 
     }
 
@@ -404,6 +443,40 @@ public class DataShowActivity extends Activity {
             }
         }
 
+
+    }
+
+    //设置折线图属性
+    public void setChartViewPara() {
+
+        linechartviewDatashow.setZoomEnabled(true);//设置是否支持缩放
+        linechartviewDatashow.setInteractive(true);//设置图表是否可以与用户互动
+        linechartviewDatashow.setValueSelectionEnabled(true);//设置图表数据是否选中进行显示
+        line.setCubic(false);//设置为直线而非平滑线
+        line.setPointColor(Color.RED);//设置点的颜色
+
+        //设置坐标轴各类属性
+        axisX.setHasLines(true).setTextColor(Color.MAGENTA).setLineColor(Color.WHITE).setTextSize(12).setName("训练次序");;
+        axisY.setHasLines(true).setTextColor(Color.RED).setLineColor(Color.WHITE).setName("成绩/毫秒");
+
+    }
+
+    public void showChartView(LineChartView lineChartView,List<Float> averageScoreList,List<PointValue> values,List<Line> lineList,Line line,LineChartData data,Axis axisX,Axis axisY) {
+        //1、清除上次的数据，包括valueList和lineList
+        values.clear();
+        lineList.clear();
+        //2、添加点的数据
+        for (int i = 0; i < averageScoreList.size(); i++) {
+            values.add(new PointValue(i + 1, averageScoreList.get(i)));
+        }
+        line.setValues(values);//把点添加到线上
+        lineList.add(line);
+        data.setAxisXBottom(axisX);
+        data.setAxisYLeft(axisY);
+        data.setLines(lineList);
+        lineChartView.setLineChartData(data);//给图表设置数据
+
+        tvChartname.setText(selectedName+" "+selectedTrainMode+"成绩折线图");
 
     }
 }
