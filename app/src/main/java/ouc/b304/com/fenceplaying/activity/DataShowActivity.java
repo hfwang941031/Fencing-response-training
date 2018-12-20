@@ -117,7 +117,9 @@ public class DataShowActivity extends Activity {
     private List<DataShowListBean> dataShowListBeans;
     /*private DataShowListBean dataShowListBean;*/
 
-    private int referToPlayId;
+
+
+    private DataShowListBean dataShowListBean ;
 
 
     @Override
@@ -182,7 +184,7 @@ public class DataShowActivity extends Activity {
             case R.id.btn_show:
                 switch (selectedTrainMode) {
                     case "单点训练":
-                        DataShowListBean dataShowListBean ;
+                        /*DataShowListBean dataShowListBean ;*/
                         //首先清除beanlist,防止出现重复数据
                         dataShowListBeans.clear();
 
@@ -209,6 +211,29 @@ public class DataShowActivity extends Activity {
                         }
                         break;
                     case "单列训练":
+                        //首先清除beanlist,防止出现重复数据
+                        dataShowListBeans.clear();
+                        //1、根据选定的运动员姓名确定该运动员ID，2、通过运动员ID确定成绩表中的属于该运动员的成绩3、并存储到singleSpotScoresList
+                        QueryBuilder<Player> qb1 = playerDao.queryBuilder();
+                        playerList= qb1.where(PlayerDao.Properties.Name.eq(selectedName)).list();
+                        long playerId1 = playerList.get(0).getId();
+                        QueryBuilder<SingleLineScores> queryBuilder1 = singleLineScoresDao.queryBuilder();
+                        singleLineScoresList = queryBuilder1.where(SingleLineScoresDao.Properties.PlayerId.eq(playerId1)).list();
+                        Log.d("Size of ScoreList", singleLineScoresList.size() + "");
+                        if (singleLineScoresList.size() <= 0) {
+                            Toast.makeText(context, "无当前运动员单列训练成绩，请先进行训练", Toast.LENGTH_SHORT).show();
+                        } else {
+                            for (SingleLineScores s:singleLineScoresList) {
+                                dataShowListBean = new DataShowListBean();
+                                dataShowListBean.setName(selectedName);
+                                dataShowListBean.setTrainMode(selectedTrainMode);
+                                dataShowListBean.setTrainTimes(s.getTrainingTimes());
+                                dataShowListBean.setAverageScore(String.valueOf(s.getAverageScores()));
+                                dataShowListBeans.add(dataShowListBean);
+                            }
+                            dataShowAdapter.setBeansList(dataShowListBeans);
+                            dataShowAdapter.notifyDataSetChanged();
+                        }
                         break;
                     case "抗干扰训练":
                         break;
@@ -261,9 +286,7 @@ public class DataShowActivity extends Activity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 selectedName = (String) adapterView.getSelectedItem();
-                referToPlayId=i+1;
                 Log.d("selectedName--", selectedName + "");
-                Log.d("referToPlayId--", referToPlayId + "");
             }
 
             @Override
