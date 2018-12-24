@@ -329,8 +329,6 @@ public class SingleSpotActivity extends Activity {
                         lvSaveresult.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                             @Override
                             public void onItemClick(AdapterView<?> adapterView, View view2, int position, long l) {
-
-
                                 //获取到点击项的值，此处为名字
                                 String name = String.valueOf(adapterView.getItemAtPosition(position));
                                 //根据名字获取到Player实体
