@@ -36,9 +36,15 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import lecho.lib.hellocharts.model.Axis;
+import lecho.lib.hellocharts.model.AxisValue;
+import lecho.lib.hellocharts.model.Column;
+import lecho.lib.hellocharts.model.ColumnChartData;
 import lecho.lib.hellocharts.model.Line;
 import lecho.lib.hellocharts.model.LineChartData;
 import lecho.lib.hellocharts.model.PointValue;
+import lecho.lib.hellocharts.model.SubcolumnValue;
+import lecho.lib.hellocharts.util.ChartUtils;
+import lecho.lib.hellocharts.view.ColumnChartView;
 import lecho.lib.hellocharts.view.LineChartView;
 import ouc.b304.com.fenceplaying.Bean.DataShowListBean;
 import ouc.b304.com.fenceplaying.Dao.LScoresDao;
@@ -92,6 +98,10 @@ public class DataShowActivity extends Activity {
     LineChartView linechartviewDatashow;
     @BindView(R.id.tv_chartname)
     QMUILinkTextView tvChartname;
+    @BindView(R.id.columnchartview_datashow)
+    ColumnChartView columnchartviewDatashow;
+    @BindView(R.id.tv_columnchartname)
+    QMUILinkTextView tvColumnchartname;
     private Player player;
     private PlayerDao playerDao;
     private List<String> nameList;//存放运动员姓名
@@ -139,6 +149,17 @@ public class DataShowActivity extends Activity {
     private LineChartData data = new LineChartData();
     Axis axisX = new Axis();//x轴
     Axis axisY = new Axis();//y轴
+
+    //柱状图相关
+
+    private List<Float> concreteScoreList = new ArrayList<>();//每次的具体成绩
+    private List<SubcolumnValue> columnValueList = new ArrayList<>();
+    private List<Column> columns = new ArrayList<>();
+    private ColumnChartData columnChartData = new ColumnChartData();
+    Axis axisXColunm = new Axis();//x轴
+    Axis axisYColumn = new Axis();//y轴
+    List<AxisValue> axisValuess=new ArrayList<>();
+
 
 
     @Override
@@ -203,6 +224,7 @@ public class DataShowActivity extends Activity {
             case R.id.btn_show:
                 switch (selectedTrainMode) {
                     case "单点训练":
+
                         //清除averageScoreList
                         averageScoreList.clear();
 
@@ -233,9 +255,49 @@ public class DataShowActivity extends Activity {
                             dataShowAdapter.setBeansList(dataShowListBeans);
                             dataShowAdapter.notifyDataSetChanged();
 
+                            //设置折线图属性
+                            setChartViewPara();
                             //开始画图
-                            showChartView(linechartviewDatashow,averageScoreList,values,lines,line,data,axisX,axisY);
+                            showLineChartView(linechartviewDatashow, averageScoreList, values, lines, line, data, axisX, axisY);
 
+
+                            //设置listview子项的点击事件，通过点击该item形成对应的柱状图
+                            lvShowdata.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                @Override
+                                public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                                    //首先清空上次的具体成绩list
+
+
+                                    DataShowListBean dataShowListBean1=dataShowAdapter.getItem(position);//通过当前点击的item位置找到该位置所对应的item实体
+                                    String tempAverageScore=dataShowListBean1.getAverageScore();//通过item实体找到平均成绩值
+
+                                    String name=dataShowListBean1.getName();
+                                    int trainTimes = dataShowListBean1.getTrainTimes();//通过item实体找到训练次数
+                                    QueryBuilder<SingleSpotScores> queryBuilder1 = singleSpotScoresDao.queryBuilder();//新建一个查询
+                                    QueryBuilder<Player> queryBuilder2 = playerDao.queryBuilder();//新建一个关于运动员的查询
+                                    List<Player> playerList=queryBuilder2.where(PlayerDao.Properties.Name.eq(name)).list();
+                                    Long playerId=playerList.get(0).getId();
+                                    queryBuilder1.where(SingleSpotScoresDao.Properties.PlayerId.eq(playerId), queryBuilder1.and(SingleSpotScoresDao.Properties.TrainingTimes.eq(trainTimes), SingleSpotScoresDao.Properties.AverageScores.eq(tempAverageScore)));
+/*
+                                    queryBuilder1.and(,);//通过组合查询训练次数和平均成绩找到该item对应的单点成绩实体
+*/
+                                    List<SingleSpotScores> singleSpotScoresList=queryBuilder1.list();//列出单点成绩实体
+                                    concreteScoreList.clear();
+                                    for (String s:singleSpotScoresList.get(0).getScoresList()//将单点成绩中的具体成绩list中的每一个元素添加到具体成绩list中
+                                            ) {
+                                        concreteScoreList.add(Float.valueOf(s));
+                                    }
+                                    axisValuess.clear();
+                                    for (int i=0;i<concreteScoreList.size();i++) {
+                                        axisValuess.add(new AxisValue(i).setLabel("第" + (i + 1) + "次"));
+                                    }
+
+                                    //设置柱状图属性
+                                    setColumnChartViewPara();
+                                    //开始画图
+                                    showColumnChartView(columnchartviewDatashow,concreteScoreList,/*columnValueList,*/columns,columnChartData,axisXColunm,axisYColumn);
+                                }
+                            });
 
                         }
                         break;
@@ -268,7 +330,7 @@ public class DataShowActivity extends Activity {
                             dataShowAdapter.notifyDataSetChanged();
 
                             //开始画图
-                            showChartView(linechartviewDatashow,averageScoreList,values,lines,line,data,axisX,axisY);
+                            showLineChartView(linechartviewDatashow, averageScoreList, values, lines, line, data, axisX, axisY);
 
                         }
                         break;
@@ -369,8 +431,13 @@ public class DataShowActivity extends Activity {
         //为listview设置适配器
         lvShowdata.setAdapter(dataShowAdapter);
 
-        //设置折线图属性
-        setChartViewPara();
+
+
+
+
+
+
+
 
 
     }
@@ -454,14 +521,17 @@ public class DataShowActivity extends Activity {
         linechartviewDatashow.setValueSelectionEnabled(true);//设置图表数据是否选中进行显示
         line.setCubic(false);//设置为直线而非平滑线
         line.setPointColor(Color.RED);//设置点的颜色
+        line.setHasLabels(true);
 
         //设置坐标轴各类属性
-        axisX.setHasLines(true).setTextColor(Color.MAGENTA).setLineColor(Color.WHITE).setTextSize(12).setName("训练次序");;
+        axisX.setHasLines(true).setTextColor(Color.MAGENTA).setLineColor(Color.WHITE).setTextSize(12).setName("训练次序");
+
         axisY.setHasLines(true).setTextColor(Color.RED).setLineColor(Color.WHITE).setName("成绩/毫秒");
 
     }
 
-    public void showChartView(LineChartView lineChartView,List<Float> averageScoreList,List<PointValue> values,List<Line> lineList,Line line,LineChartData data,Axis axisX,Axis axisY) {
+    //开始画折线图
+    public void showLineChartView(LineChartView lineChartView, List<Float> averageScoreList, List<PointValue> values, List<Line> lineList, Line line, LineChartData data, Axis axisX, Axis axisY) {
         //1、清除上次的数据，包括valueList和lineList
         values.clear();
         lineList.clear();
@@ -476,7 +546,51 @@ public class DataShowActivity extends Activity {
         data.setLines(lineList);
         lineChartView.setLineChartData(data);//给图表设置数据
 
-        tvChartname.setText(selectedName+" "+selectedTrainMode+"成绩折线图");
+        tvChartname.setText(selectedName + " " + selectedTrainMode + "成绩折线图");
 
+    }
+
+    //开始画柱状图
+    public void showColumnChartView(ColumnChartView columnChartView, List<Float> concreteScoreList, /*List<SubcolumnValue> valueList,*/ List<Column> columnList,  ColumnChartData columnChartData, Axis axisX, Axis axisY) {
+
+        //1、清除上次的数据，包括valueList和columnList
+        /*valueList.clear();*/
+        columnList.clear();
+        //2、添加点的数据
+        for (int i = 0; i < concreteScoreList.size(); i++) {
+            SubcolumnValue subcolumnValue = new SubcolumnValue(concreteScoreList.get(i), ChartUtils.pickColor());
+            List<SubcolumnValue> valueList=new ArrayList<>();
+            /*valueList.add(new SubcolumnValue(concreteScoreList.get(i), ChartUtils.pickColor()));*/
+            valueList.add(subcolumnValue);
+            Column column = new Column(valueList);
+            column.setHasLabels(true);//设置柱状图标签
+
+            columnList.add(column);
+        }
+
+
+
+
+        columnChartData.setColumns(columnList);
+        columnChartView.setColumnChartData(columnChartData);//给图表设置数据
+        tvColumnchartname.setText("本次训练详细数据");
+
+    }
+
+    public void setColumnChartViewPara() {
+        columnchartviewDatashow.setZoomEnabled(true);//设置是否支持缩放
+        columnchartviewDatashow.setInteractive(true);//设置图表是否可以与用户互动
+        columnchartviewDatashow.setValueSelectionEnabled(true);//设置图表数据是否选中进行显示
+        columnchartviewDatashow.setBackgroundColor(Color.WHITE);//设置柱状图背景颜色
+
+
+        //设置坐标轴各类属性
+        axisXColunm.setValues(axisValuess);
+        axisXColunm.setName("训练次序");
+
+        axisYColumn.setHasLines(true).setName("成绩/毫秒");
+
+        columnChartData.setAxisYLeft(axisYColumn);
+        columnChartData.setAxisXBottom(axisXColunm);
     }
 }

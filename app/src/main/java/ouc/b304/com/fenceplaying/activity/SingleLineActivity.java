@@ -202,7 +202,7 @@ public class SingleLineActivity extends Activity {
         ButterKnife.bind(this);
         context = this.getApplicationContext();
         playerDao = GreenDaoInitApplication.getInstances().getDaoSession().getPlayerDao();
-        singleLineScoresDao=GreenDaoInitApplication.getInstances().getDaoSession().getSingleLineScoresDao();
+        singleLineScoresDao = GreenDaoInitApplication.getInstances().getDaoSession().getSingleLineScoresDao();
         initDevices();
         initView();
         /*initData();*/
@@ -251,7 +251,7 @@ public class SingleLineActivity extends Activity {
         super.onDestroy();
     }
 
-    @OnClick({R.id.bt_run_cancel, R.id.layout_cancel, R.id.btn_turnon, R.id.btn_turnoff, R.id.btn_startrun, R.id.btn_stoprun, R.id.bt_save,R.id.img_btn_refresh})
+    @OnClick({R.id.bt_run_cancel, R.id.layout_cancel, R.id.btn_turnon, R.id.btn_turnoff, R.id.btn_startrun, R.id.btn_stoprun, R.id.bt_save, R.id.img_btn_refresh})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.bt_run_cancel:
@@ -343,9 +343,9 @@ public class SingleLineActivity extends Activity {
 
 
                             //获取到点击项的值，此处为名字
-                            String name=String.valueOf(adapterView.getItemAtPosition(position));
+                            String name = String.valueOf(adapterView.getItemAtPosition(position));
                             //根据名字获取到Player实体
-                            QueryBuilder query=playerDao.queryBuilder();
+                            QueryBuilder query = playerDao.queryBuilder();
                             query.where(PlayerDao.Properties.Name.eq(name));
                             List<Player> nameList = query.list();
                             player = nameList.get(0);
@@ -360,7 +360,7 @@ public class SingleLineActivity extends Activity {
                             //插入成绩实体
                             singleLineScoresDao.insert(singleLineScores);
                             //给出数据插入成功提示
-                            Toast.makeText(context,"数据插入成功",Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, "数据插入成功", Toast.LENGTH_SHORT).show();
                             saveDialog.dismiss();
                         }
                     });
@@ -440,26 +440,23 @@ public class SingleLineActivity extends Activity {
 
     //存储可用的设备编号
     private void initData() {
-                Log.d("初始化数据", "填充list开始运行");
-                //获取当前可用的设备编号，存储到list当中
-                for (DeviceInfo info : Device.DEVICE_LIST) {
-                    list.add(info.getDeviceNum());
-                }
-                //初始化String类型的时间列表
-                scoreList = new ArrayList<>();
+        Log.d("初始化数据", "填充list开始运行");
+        //获取当前可用的设备编号，存储到list当中
+        for (DeviceInfo info : Device.DEVICE_LIST) {
+            list.add(info.getDeviceNum());
+        }
+        //初始化String类型的时间列表
+        scoreList = new ArrayList<>();
 
-                //初始化String类型的运动员姓名列表
-                nameList = new ArrayList<>();
-                timeList = new ArrayList<>();
+        //初始化String类型的运动员姓名列表
+        nameList = new ArrayList<>();
+        timeList = new ArrayList<>();
                /*//根据选择的设备数量，从list中顺序取出前设备数量个元素存储到selectdList中
                for (int i=0;i<deviceAmount;i++) {
                    selectedList.add(list.get(i));
                    Log.d("编号", String.valueOf(list.get(i)));
                }*/
-            }
-
-
-
+    }
 
 
     //检查当前选择的设备数是否没超过可用设备数量
@@ -522,16 +519,17 @@ public class SingleLineActivity extends Activity {
         Log.d("analyze what's in data", data);
         List<TimeInfo> infos = DataAnalyzeUtils.analyzeTimeData(data);
         for (TimeInfo info : infos) {
+            if (info.getDeviceNum() == randomList.get(counter)) {
+                ++counter;
 
-            ++counter;
-
-            //将时间数据添加到timeList中
-            timeList.add(info.getTime());
-            if (counter > trainTimes - 1) {
-                break;
+                //将时间数据添加到timeList中
+                timeList.add(info.getTime());
+                if (counter > trainTimes - 1) {
+                    break;
+                }
+                //打开下一个设备灯，下一个设备就是randomList中，counter作为索引
+                turnOnLightByDeviceNum(randomList.get(counter));
             }
-            //打开下一个设备灯，下一个设备就是randomList中，counter作为索引
-            turnOnLightByDeviceNum(randomList.get(counter));
 
         }
         Message msg = Message.obtain();

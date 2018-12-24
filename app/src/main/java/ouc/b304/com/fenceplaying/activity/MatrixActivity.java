@@ -188,24 +188,27 @@ public class MatrixActivity extends Activity {
                 Log.d("what's in data", data);
                 List<TimeInfo> infos = DataAnalyzeUtils.analyzeTimeData(data);
                 for (TimeInfo info : infos) {
-                    counter+=1;
-                    if (counter > trainTimes) {
-                        listOfSubList = listOfSubList(trainTimes);
-                        counter2=1;
-                        break;
+                    if (info.getDeviceNum() == listOfSubList.get(counter2 - 1).get(0)) {
+                        counter+=1;
+                        if (counter > trainTimes) {
+                            listOfSubList = listOfSubList(trainTimes);
+                            counter2=1;
+                            break;
+                        }
+                        Log.d("***infos.size***", infos.size()+"");
+                        /*Log.d("#######", counter+"");*/
+                        timeList.add(info.getTime());
+                        device.turnOffAllTheLight();
+                        turnOnLight2(listOfSubList.get(counter2).get(0),1,2);
+                        Log.d("开红灯的是：", listOfSubList.get(counter2).get(0)+"");
+                        turnOnLight2(listOfSubList.get(counter2).get(1),0,1);
+                        Log.d("开蓝灯的是：", listOfSubList.get(counter2).get(1)+"");
+                        counter2+=1;
+                        if (counter2 > listOfSubList.size()-1) {
+                            counter2=listOfSubList.size()-1;
+                        }
                     }
-                     Log.d("***infos.size***", infos.size()+"");
-                    /*Log.d("#######", counter+"");*/
-                    timeList.add(info.getTime());
-                    device.turnOffAllTheLight();
-                    turnOnLight2(listOfSubList.get(counter2).get(0),1,2);
-                    Log.d("开红灯的是：", listOfSubList.get(counter2).get(0)+"");
-                    turnOnLight2(listOfSubList.get(counter2).get(1),0,1);
-                    Log.d("开蓝灯的是：", listOfSubList.get(counter2).get(1)+"");
-                    counter2+=1;
-                    if (counter2 > listOfSubList.size()-1) {
-                        counter2=listOfSubList.size()-1;
-                    }
+
                 }
                 Message msg=Message.obtain();
                 msg.what=UPDATE_TIMES;

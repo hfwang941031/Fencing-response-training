@@ -39,7 +39,7 @@ public class DataShowAdapter extends BaseAdapter {
     }
 
     @Override
-    public Object getItem(int i) {
+    public DataShowListBean getItem(int i) {
         return beansList.get(i);
     }
 

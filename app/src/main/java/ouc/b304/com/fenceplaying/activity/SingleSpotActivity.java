@@ -159,6 +159,9 @@ public class SingleSpotActivity extends Activity {
 
     private Player player;
 
+    //设置一个布尔变量控制保存按钮的可按与否，当一次训练结束后，可以点击该保存按钮进行保存，点击过之后，不能再次进行点击，除非先进行下一次训练并得到一组时间值；
+    private boolean saveBtnIsClickable = false;
+
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -274,6 +277,7 @@ public class SingleSpotActivity extends Activity {
                 }
                 break;
             case R.id.btn_stoprun:
+
                 if (trainingBeginFlag) {
                     stopTraining();
                     btnTurnon.setClickable(true);
@@ -281,74 +285,81 @@ public class SingleSpotActivity extends Activity {
                 }
                 break;
             case R.id.bt_save:
-                //首先把timeList<Integer>变成List<String>
-                //判空验证
-               if (timeList.size() == 0) {
-                    Toast.makeText(context, "成绩列表为空，无法进行保存！请先进行训练", Toast.LENGTH_SHORT).show();
+                if (saveBtnIsClickable) {
+                    //首先把timeList<Integer>变成List<String>
+                    //判空验证
+                    if (timeList.size() == 0) {
+                        Toast.makeText(context, "成绩列表为空，无法进行保存！请先进行训练", Toast.LENGTH_SHORT).show();
+                    } else {
+                        //确定保存时间
+                        date = new Date();
+
+                        //将Integer类型的List转换成String类型
+                        IntegerToStringUtils.integerToString(timeList, scoreList);
+                        final AlertDialog saveDialog = new AlertDialog.Builder(this).create();
+                        //设置对话框ICON
+                        /*saveDialog.setIcon();*/
+                        //初始化对话中listview的布局
+                        View view2 = LayoutInflater.from(this).inflate(R.layout.listview_savedialog, null);
+
+                        final ListView lvSaveresult = view2.findViewById(R.id.lv_saveresult);
+                        //设置对话框中listview的适配器
+                        saveResultAdapter = new SaveResultAdapter(this);
+                        lvSaveresult.setAdapter(saveResultAdapter);
+                        //清空姓名list，防止重复出现
+                        nameList.clear();
+                        saveResultAdapter.setNameList(PlayDaoUtils.nameList(playerDao, nameList));
+                        /*saveResultAdapter.notifyDataSetChanged();*/
+                        //设置标题
+                        saveDialog.setTitle("数据保存");
+                        //添加布局
+                        saveDialog.setView(view2);
+                        //设置按键
+                        saveDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        });
+                        saveDialog.show();
+
+
+                        //为对话框中的listview设置子项单击事件
+
+                        lvSaveresult.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> adapterView, View view2, int position, long l) {
+
+
+                                //获取到点击项的值，此处为名字
+                                String name = String.valueOf(adapterView.getItemAtPosition(position));
+                                //根据名字获取到Player实体
+                                QueryBuilder query = playerDao.queryBuilder();
+                                query.where(PlayerDao.Properties.Name.eq(name));
+                                List<Player> nameList = query.list();
+                                player = nameList.get(0);
+                                //根据player实体设置一对多的ID
+                                singleSpotScores = new SingleSpotScores();
+                                singleSpotScores.setPlayerId(player.getId());
+
+                                singleSpotScores.setAverageScores(averageScore);
+                                singleSpotScores.setDate(date);
+                                singleSpotScores.setScoresList(scoreList);
+                                singleSpotScores.setTrainingTimes(trainTimes);
+                                //插入成绩实体
+                                singleSpotScoresDao.insert(singleSpotScores);
+                                //给出数据插入成功提示
+                                Toast.makeText(context, "数据插入成功", Toast.LENGTH_SHORT).show();
+                                //将保存按钮设置为不可点击
+                                saveBtnIsClickable = false;
+                                saveDialog.dismiss();
+                            }
+                        });
+                    }
                 } else {
-                    //确定保存时间
-                    date = new Date();
-
-                    //将Integer类型的List转换成String类型
-                    IntegerToStringUtils.integerToString(timeList, scoreList);
-                    final AlertDialog saveDialog = new AlertDialog.Builder(this).create();
-                    //设置对话框ICON
-                    /*saveDialog.setIcon();*/
-                    //初始化对话中listview的布局
-                    View view2 = LayoutInflater.from(this).inflate(R.layout.listview_savedialog, null);
-
-                    final ListView lvSaveresult = view2.findViewById(R.id.lv_saveresult);
-                    //设置对话框中listview的适配器
-                    saveResultAdapter = new SaveResultAdapter(this);
-                    lvSaveresult.setAdapter(saveResultAdapter);
-                    //清空姓名list，防止重复出现
-                    nameList.clear();
-                    saveResultAdapter.setNameList(PlayDaoUtils.nameList(playerDao, nameList));
-                    /*saveResultAdapter.notifyDataSetChanged();*/
-                    //设置标题
-                    saveDialog.setTitle("数据保存");
-                    //添加布局
-                    saveDialog.setView(view2);
-                    //设置按键
-                    saveDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialogInterface, int i) {
-                            dialogInterface.dismiss();
-                        }
-                    });
-                    saveDialog.show();
-
-
-                    //为对话框中的listview设置子项单击事件
-
-                   lvSaveresult.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                       @Override
-                       public void onItemClick(AdapterView<?> adapterView, View view2, int position, long l) {
-
-
-                           //获取到点击项的值，此处为名字
-                           String name=String.valueOf(adapterView.getItemAtPosition(position));
-                           //根据名字获取到Player实体
-                           QueryBuilder query=playerDao.queryBuilder();
-                           query.where(PlayerDao.Properties.Name.eq(name));
-                           List<Player> nameList = query.list();
-                           player = nameList.get(0);
-                           //根据player实体设置一对多的ID
-                           singleSpotScores = new SingleSpotScores();
-                           singleSpotScores.setPlayerId(player.getId());
-
-                           singleSpotScores.setAverageScores(averageScore);
-                           singleSpotScores.setDate(date);
-                           singleSpotScores.setScoresList(scoreList);
-                           singleSpotScores.setTrainingTimes(trainTimes);
-                           //插入成绩实体
-                           singleSpotScoresDao.insert(singleSpotScores);
-                           //给出数据插入成功提示
-                           Toast.makeText(context,"数据插入成功",Toast.LENGTH_SHORT).show();
-                           saveDialog.dismiss();
-                       }
-                   });
+                    Toast.makeText(context, "请勿对该成绩进行二次保存,请进行下一次训练后再执行保存！", Toast.LENGTH_SHORT).show();
                 }
+
                 break;
         }
     }
@@ -356,8 +367,8 @@ public class SingleSpotActivity extends Activity {
     public void startTraining() {
         Log.d(TAG, "startTraining has run");
         trainingBeginFlag = true;
-        /*time = new int[trainTimes];*/
-        timeList = new ArrayList<>(trainTimes);
+        //清空时间列表，防止将上次训练的成绩保存到下一次训练当中
+        timeList.clear();
         singleSpotAdapter.setTimeList(timeList);
         singleSpotAdapter.notifyDataSetChanged();
 
@@ -380,6 +391,7 @@ public class SingleSpotActivity extends Activity {
         timer = new Timer(handler);
         timer.setBeginTime(startTime);
         timer.start();
+
     }
 
     public void stopTraining() {
@@ -404,19 +416,23 @@ public class SingleSpotActivity extends Activity {
 
                 List<TimeInfo> infos = DataAnalyzeUtils.analyzeTimeData(data);
                 for (TimeInfo info : infos) {
-                    counter += 1;
-                    if (counter > trainTimes)
-                        break;
-                    Log.d("******", infos.size() + "");
-                    Log.d("#######", counter + "");
-                    timeList.add(info.getTime());
-                    turnOnLight(info.getDeviceNum());
+                    if (info.getDeviceNum() == deviceNum) {
+                        counter += 1;
+                        if (counter > trainTimes)
+                            break;
+                        Log.d("******", infos.size() + "");
+                        Log.d("#######", counter + "");
+                        timeList.add(info.getTime());
+                        turnOnLight(info.getDeviceNum());
+                    }
                 }
                 Message msg = Message.obtain();
                 msg.what = UPDATE_TIMES;
                 msg.obj = "";
                 handler.sendMessage(msg);
                 if (isTrainingOver()) {
+                    //训练结束后设置保存按钮可点击
+                    saveBtnIsClickable = true;
                     Log.d("ifistrainingover", "has run" + counter);
                     Message msg1 = Message.obtain();
                     msg1.what = STOP_TRAINING;
@@ -506,7 +522,6 @@ public class SingleSpotActivity extends Activity {
         //初始化时间listview,即成绩显示列表
         singleSpotAdapter = new SingleSpotAdapter(this);
         lvTimes.setAdapter(singleSpotAdapter);
-
 
 
     }
