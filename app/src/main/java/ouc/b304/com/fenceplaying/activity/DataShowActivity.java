@@ -376,8 +376,6 @@ public class DataShowActivity extends Activity {
                         break;
                     case "精准训练":
                         break;
-                    case "全部类型训练":
-                        break;
                 }
                 break;
         }
@@ -401,8 +399,6 @@ public class DataShowActivity extends Activity {
         modeList.add("单列训练");
         modeList.add("抗干扰训练");
         modeList.add("精准训练");
-        modeList.add("全部类型训练");
-
         //初始化listview适配器
         dataShowAdapter = new DataShowAdapter(context);
 
@@ -603,6 +599,7 @@ public class DataShowActivity extends Activity {
 
     }
 
+    //设置柱状图属性
     public void setColumnChartViewPara() {
         columnchartviewDatashow.setZoomEnabled(true);//设置是否支持缩放
         columnchartviewDatashow.setInteractive(true);//设置图表是否可以与用户互动
