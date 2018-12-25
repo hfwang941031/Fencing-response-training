@@ -89,22 +89,7 @@
                 android:layout_weight="1"
                 android:orientation="horizontal">
 
-                <!--<TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="选择设备"
-                    android:textSize="22sp"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="20dp"
-                    android:textColor="@color/black"
-                    />-->
-                <!--<Spinner
-                    android:id="@+id/sp_devices"
-                    android:layout_width="280dp"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="center"
-                    android:layout_marginLeft="20dp"
-                    ></Spinner>-->
+
                 <Button
                     android:id="@+id/btn_turnon"
                     android:layout_width="170dp"
@@ -440,6 +425,43 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="20dp"
                     android:layout_marginTop="20sp"></ListView>
+            </LinearLayout>
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="@color/black" />
+            <!--放平均值和保存按钮的地方-->
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+                <TextView
+                    android:id="@+id/showAvergeScore"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:textSize="22sp"
+                    android:textColor="@color/black"
+                    android:layout_marginLeft="100dp"
+                    android:text="成绩平均值："/>
+                <TextView
+                    android:id="@+id/avergeScore"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_height="wrap_content"
+                    android:textSize="22sp"
+                    android:textColor="@color/black"
+                    />
+                <Button
+                    android:id="@+id/bt_save"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="保存"
+                    android:textColor="@color/black"
+                    android:textSize="22sp"/>
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

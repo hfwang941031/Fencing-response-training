@@ -1,12 +1,15 @@
 package ouc.b304.com.fenceplaying.activity;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -19,7 +22,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.greenrobot.greendao.query.QueryBuilder;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -28,16 +34,24 @@ import butterknife.OnClick;
 import ouc.b304.com.fenceplaying.Bean.Constant;
 import ouc.b304.com.fenceplaying.Bean.DeviceInfo;
 import ouc.b304.com.fenceplaying.Bean.TimeInfo;
+import ouc.b304.com.fenceplaying.Dao.MatrixScoresDao;
+import ouc.b304.com.fenceplaying.Dao.PlayerDao;
+import ouc.b304.com.fenceplaying.Dao.entity.MatrixScores;
+import ouc.b304.com.fenceplaying.Dao.entity.Player;
 import ouc.b304.com.fenceplaying.R;
 import ouc.b304.com.fenceplaying.adapter.MatrixAdapter;
-import ouc.b304.com.fenceplaying.device.Command;
+import ouc.b304.com.fenceplaying.adapter.SaveResultAdapter;
+import ouc.b304.com.fenceplaying.application.GreenDaoInitApplication;
 import ouc.b304.com.fenceplaying.device.Device;
 import ouc.b304.com.fenceplaying.device.Order;
 import ouc.b304.com.fenceplaying.thread.AutoCheckPower;
 import ouc.b304.com.fenceplaying.thread.ReceiveThread;
 import ouc.b304.com.fenceplaying.thread.Timer;
 import ouc.b304.com.fenceplaying.utils.DataAnalyzeUtils;
+import ouc.b304.com.fenceplaying.utils.IntegerToStringUtils;
 import ouc.b304.com.fenceplaying.utils.NumberUtils;
+import ouc.b304.com.fenceplaying.utils.PlayDaoUtils;
+import ouc.b304.com.fenceplaying.utils.ScoreUtils;
 
 import static ouc.b304.com.fenceplaying.thread.ReceiveThread.POWER_RECEIVE_THREAD;
 
@@ -98,6 +112,12 @@ public class MatrixActivity extends Activity {
     TextView tvTishi;
     @BindView(R.id.tv_beizhu)
     TextView tvBeizhu;
+    @BindView(R.id.showAvergeScore)
+    TextView showAvergeScore;
+    @BindView(R.id.avergeScore)
+    TextView avergeScore;
+    @BindView(R.id.bt_save)
+    Button btSave;
     private Context context;
     private Device device;
     private char deviceNum;
@@ -112,7 +132,7 @@ public class MatrixActivity extends Activity {
     private int trainTimes = 0;
 
     //选中的感应模式
-    private String actionModeOfString=null;
+    private String actionModeOfString = null;
 
     //训练次数下拉框适配器
     private ArrayAdapter<String> spTimesAdapter;
@@ -140,9 +160,10 @@ public class MatrixActivity extends Activity {
 
     //存储分好组的设备编号集合
     private List<ArrayList<Character>> listOfSubList;
+    //设置一个布尔变量控制保存按钮的可按与否，当一次训练结束后，可以点击该保存按钮进行保存，点击过之后，不能再次进行点击，除非先进行下一次训练并得到一组时间值；
+    private boolean saveBtnIsClickable=false;
 
-    //感应模式标识数字
-    private int flagOfMode=0;
+    private Player player;
 
 
     private Handler handler = new Handler() {
@@ -161,6 +182,10 @@ public class MatrixActivity extends Activity {
                     }
                     break;
                 case STOP_TRAINING:
+                    //在结束之前先计算平均值
+                    averageScore = ScoreUtils.calcAverageScore(timeList);
+                    //设置值
+                    avergeScore.setText(" " + averageScore + "毫秒");
                     stopTraining();
                     break;
                 case UPDATE_TIMES:
@@ -171,7 +196,19 @@ public class MatrixActivity extends Activity {
         }
     };
     private AutoCheckPower checkPowerThread;
+    private Date date;
+    private List<String> scoreList;
+    //对话框中listview的适配器
+    private SaveResultAdapter saveResultAdapter;
+    private List<String> nameList;
 
+    private PlayerDao playerDao;
+    private MatrixScores matrixScores;
+
+    private MatrixScoresDao matrixScoresDao;
+
+    /*平均值*/
+    private float averageScore = 0;
     private void stopTraining() {
         trainingBeginFlag = false;
         //停止接收线程
@@ -182,128 +219,49 @@ public class MatrixActivity extends Activity {
         //很重要的重置计数器
         counter = 0;
     }
+
     private void analyzeTimeData(String data) {
 
-                Log.d("analyzeTimeData", "analyzeTimeData Run");
-                Log.d("what's in data", data);
-                List<TimeInfo> infos = DataAnalyzeUtils.analyzeTimeData(data);
-                for (TimeInfo info : infos) {
-                    if (info.getDeviceNum() == listOfSubList.get(counter2 - 1).get(0)) {
-                        counter+=1;
-                        if (counter > trainTimes) {
-                            listOfSubList = listOfSubList(trainTimes);
-                            counter2=1;
-                            break;
-                        }
-                        Log.d("***infos.size***", infos.size()+"");
-                        /*Log.d("#######", counter+"");*/
-                        timeList.add(info.getTime());
-                        device.turnOffAllTheLight();
-                        turnOnLight2(listOfSubList.get(counter2).get(0),1,2);
-                        Log.d("开红灯的是：", listOfSubList.get(counter2).get(0)+"");
-                        turnOnLight2(listOfSubList.get(counter2).get(1),0,1);
-                        Log.d("开蓝灯的是：", listOfSubList.get(counter2).get(1)+"");
-                        counter2+=1;
-                        if (counter2 > listOfSubList.size()-1) {
-                            counter2=listOfSubList.size()-1;
-                        }
-                    }
-
+        Log.d("analyzeTimeData", "analyzeTimeData Run");
+        Log.d("what's in data", data);
+        List<TimeInfo> infos = DataAnalyzeUtils.analyzeTimeData(data);
+        for (TimeInfo info : infos) {
+            if (info.getDeviceNum() == listOfSubList.get(counter2 - 1).get(0)) {
+                counter += 1;
+                if (counter > trainTimes) {
+                    listOfSubList = listOfSubList(trainTimes);
+                    counter2 = 1;
+                    break;
                 }
-                Message msg=Message.obtain();
-                msg.what=UPDATE_TIMES;
-                msg.obj = "";
-                handler.sendMessage(msg);
-                if (isTrainingOver()) {
-                    Log.d("ifistrainingover", "has run"+counter);
-                    Message msg1 = Message.obtain();
-                    msg1.what = STOP_TRAINING;
-                    msg1.obj = "";
-                    handler.sendMessage(msg1);
+                Log.d("***infos.size***", infos.size() + "");
+                timeList.add(info.getTime());
+                device.turnOffAllTheLight();
+                turnOnLight2(listOfSubList.get(counter2).get(0), 1, 2);
+                Log.d("开红灯的是：", listOfSubList.get(counter2).get(0) + "");
+                turnOnLight2(listOfSubList.get(counter2).get(1), 0, 1);
+                Log.d("开蓝灯的是：", listOfSubList.get(counter2).get(1) + "");
+                counter2 += 1;
+                if (counter2 > listOfSubList.size() - 1) {
+                    counter2 = listOfSubList.size() - 1;
                 }
             }
 
+        }
+        Message msg = Message.obtain();
+        msg.what = UPDATE_TIMES;
+        msg.obj = "";
+        handler.sendMessage(msg);
+        if (isTrainingOver()) {
+            //训练结束后设置保存按钮可点击
+            saveBtnIsClickable = true;
+            Log.d("ifistrainingover", "has run" + counter);
+            Message msg1 = Message.obtain();
+            msg1.what = STOP_TRAINING;
+            msg1.obj = "";
+            handler.sendMessage(msg1);
+        }
+    }
 
-    /*public void analyzeTimeData(final String data) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Log.d("analyzeTimeData", "analyzeTimeData Run");
-                Log.d("what's in data", data);
-                List<TimeInfo> infos = DataAnalyzeUtils.analyzeTimeData(data);
-                for (TimeInfo info : infos) {
-                    counter+=1;
-                    if (counter > trainTimes) {
-                        listOfSubList = listOfSubList(trainTimes);
-                        counter2=1;
-                        break;
-                    }
-                     *//*Log.d("******", infos.size()+"");
-                    Log.d("#######", counter+"");*//*
-                    timeList.add(info.getTime());
-                    device.turnOffAllTheLight();
-                    turnOnLight2(listOfSubList.get(counter2).get(0),1,2);
-                    Log.d("开红灯的是：", listOfSubList.get(counter2).get(0)+"");
-                    turnOnLight2(listOfSubList.get(counter2).get(1),0,1);
-                    Log.d("开蓝灯的是：", listOfSubList.get(counter2).get(1)+"");
-                    counter2+=1;
-                    if (counter2 > listOfSubList.size()-1) {
-                        counter2=listOfSubList.size()-1;
-                    }
-                }
-                Message msg=Message.obtain();
-                msg.what=UPDATE_TIMES;
-                msg.obj = "";
-                handler.sendMessage(msg);
-                if (isTrainingOver()) {
-                    Log.d("ifistrainingover", "has run"+counter);
-                    Message msg1 = Message.obtain();
-                    msg1.what = STOP_TRAINING;
-                    msg1.obj = "";
-                    handler.sendMessage(msg1);
-                }
-            }
-        }).start();
-    }*/
-   /* public void analyzeTimeData(final String data) {
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Log.d("analyzeTimeData", "analyzeTimeData Run");
-                Log.d("what's in data", data);
-                List<TimeInfo> infos = DataAnalyzeUtils.analyzeTimeData(data);
-                for (TimeInfo info : infos) {
-                    counter += 1;
-                    if (counter > trainTimes) {
-                        listOfSubList = listOfSubList(trainTimes);
-                        counter2 = 1;
-                        break;
-                    }
-                    timeList.add(info.getTime());
-                    device.turnOffAllTheLight();
-                    //1是感应 0是常开
-                    //2 是红色 1是蓝色
-                    turnOnLight2(listOfSubList.get(counter2).get(0), 1, 2);
-                    turnOnLight2(listOfSubList.get(counter2).get(1), 0, 1);
-                    counter2 += 1;
-                    if (counter2 > listOfSubList.size() - 1) {
-                        counter2 = listOfSubList.size() - 1;
-                    }
-                }
-                Message msg = Message.obtain();
-                msg.what = UPDATE_TIMES;
-                msg.obj = "";
-                handler.sendMessage(msg);
-                if (isTrainingOver()) {
-                    Log.d("ifistrainingover", "has run" + counter);
-                    Message msg1 = Message.obtain();
-                    msg1.what = STOP_TRAINING;
-                    msg1.obj = "";
-                    handler.sendMessage(msg1);
-                }
-            }
-        }).start();
-    }*/
 
     private boolean isTrainingOver() {
         if (counter >= trainTimes)
@@ -319,8 +277,10 @@ public class MatrixActivity extends Activity {
         ButterKnife.bind(this);
         context = this.getApplicationContext();
         initDevices();
+        playerDao = GreenDaoInitApplication.getInstances().getDaoSession().getPlayerDao();
+        matrixScoresDao=GreenDaoInitApplication.getInstances().getDaoSession().getMatrixScoresDao();
         initView();
-        /* initData();*/
+        initData();
 
     }
 
@@ -367,7 +327,7 @@ public class MatrixActivity extends Activity {
         spDevicesmode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                actionModeOfString= (String) spDevicesmode.getSelectedItem();
+                actionModeOfString = (String) spDevicesmode.getSelectedItem();
                 Log.d("actionMode", actionModeOfString + "");
 
             }
@@ -399,6 +359,12 @@ public class MatrixActivity extends Activity {
         for (DeviceInfo info : Device.DEVICE_LIST) {
             list.add(info.getDeviceNum());
         }
+        timeList = new ArrayList<>();
+        //初始化String类型的时间列表
+        scoreList = new ArrayList<>();
+
+        //初始化String类型的运动员姓名列表
+        nameList = new ArrayList<>();
     }
 
     @Override
@@ -411,11 +377,7 @@ public class MatrixActivity extends Activity {
     protected void onResume() {
         super.onResume();
         Log.d(TAG, "---->onResume");
-        initData();
-       /* for (int i=0;i<listOfSubList.size();i++) {
-            Log.d("第" + i + "组", listOfSubList.get(i).get(0)+listOfSubList.get(i).get(1)+"");
 
-        }*/
     }
 
     @Override
@@ -434,7 +396,7 @@ public class MatrixActivity extends Activity {
         Log.d(TAG, "---->onDestroy");
     }
 
-    @OnClick({R.id.bt_run_cancel, R.id.layout_cancel, R.id.btn_turnon, R.id.btn_turnoff, R.id.btn_startrun, R.id.btn_stoprun})
+    @OnClick({R.id.bt_run_cancel, R.id.layout_cancel, R.id.btn_turnon, R.id.btn_turnoff, R.id.btn_startrun, R.id.btn_stoprun,R.id.img_btn_refresh,R.id.bt_save})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.bt_run_cancel:
@@ -479,36 +441,93 @@ public class MatrixActivity extends Activity {
                     btnTurnoff.setClickable(true);
                 }
                 break;
+            case R.id.img_btn_refresh:
+                Log.d("图片按钮被点击拉", "o");
+                updateData();
+                Toast.makeText(this, "可用设备已刷新", Toast.LENGTH_LONG).show();
+                break;
+            case R.id.bt_save:
+                if (saveBtnIsClickable) {
+                    if (timeList.size() == 0) {
+                        Toast.makeText(context, "成绩列表为空，无法进行保存！请先进行训练", Toast.LENGTH_SHORT).show();
+                    } else {
+                        //确定保存时间
+                        date = new Date();
+
+                        //将Integer类型的List转换成String类型
+                        IntegerToStringUtils.integerToString(timeList, scoreList);
+                        final AlertDialog saveDialog = new AlertDialog.Builder(this).create();
+                        //初始化对话中listview的布局
+                        View view2 = LayoutInflater.from(this).inflate(R.layout.listview_savedialog, null);
+
+                        final ListView lvSaveresult = view2.findViewById(R.id.lv_saveresult);
+                        //设置对话框中listview的适配器
+                        saveResultAdapter = new SaveResultAdapter(this);
+                        lvSaveresult.setAdapter(saveResultAdapter);
+                        //清空姓名list，防止重复出现
+                        nameList.clear();
+                        saveResultAdapter.setNameList(PlayDaoUtils.nameList(playerDao, nameList));
+                        /*saveResultAdapter.notifyDataSetChanged();*/
+                        //设置标题
+                        saveDialog.setTitle("数据保存");
+                        //添加布局
+                        saveDialog.setView(view2);
+                        //设置按键
+                        saveDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        });
+                        saveDialog.show();
+
+
+                        //为对话框中的listview设置子项单击事件
+
+                        lvSaveresult.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> adapterView, View view2, int position, long l) {
+                                //获取到点击项的值，此处为名字
+                                String name = String.valueOf(adapterView.getItemAtPosition(position));
+                                //根据名字获取到Player实体
+                                QueryBuilder query = playerDao.queryBuilder();
+                                query.where(PlayerDao.Properties.Name.eq(name));
+                                List<Player> nameList = query.list();
+                                player = nameList.get(0);
+                                //根据player实体设置一对多的ID
+                                matrixScores = new MatrixScores();
+                                matrixScores.setPlayerId(player.getId());
+
+                                matrixScores.setAverageScores(averageScore);
+                                matrixScores.setDate(date);
+                                matrixScores.setScoresList(scoreList);
+                                matrixScores.setTrainingTimes(trainTimes);
+                                //插入成绩实体
+                                matrixScoresDao.insert(matrixScores);
+                                //给出数据插入成功提示
+                                Toast.makeText(context, "数据插入成功", Toast.LENGTH_SHORT).show();
+                                //将保存按钮设置为不可点击
+                                saveBtnIsClickable = false;
+                                saveDialog.dismiss();
+                            }
+                        });
+                    }
+
+                } else {
+                    Toast.makeText(context, "请勿对该成绩进行二次保存,请进行下一次训练后再执行保存！", Toast.LENGTH_SHORT).show();
+                }
+                break;
 
 
         }
     }
-
- /*   public void turnOnLight(final char deviceNum) {
-        //实现Runnable接口
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Timer.sleep(500);
-                if (!trainingBeginFlag)
-                    return;
-                device.sendOrder(deviceNum,
-                        Order.LightColor.values()[1],
-                        Order.VoiceMode.values()[0],
-                        Order.BlinkModel.values()[0],
-                        Order.LightModel.OUTER,
-                        Order.ActionModel.values()[1],
-                        Order.EndVoice.values()[0]);
-            }
-        }).start();
-    }*/
 
     public void turnOnLight2(final char deviceNum, final int actionMode, final int color) {
         //实现Runnable接口
         new Thread(new Runnable() {
             @Override
             public void run() {
-                    Timer.sleep(5000);
+                Timer.sleep(5000);
                 if (!trainingBeginFlag)
                     return;
                 device.sendOrder(deviceNum,
@@ -524,11 +543,10 @@ public class MatrixActivity extends Activity {
 
     private void startTraining() {
         trainingBeginFlag = true;
-        timeList = new ArrayList<>(trainTimes);
+        //清空时间列表，防止将上次训练的成绩保存到下一次训练当中
+        timeList.clear();
         matrixAdapter.setTimeList(timeList);
         matrixAdapter.notifyDataSetChanged();
-        Command mCommand = new Command();
-
         //清除串口数据
         new ReceiveThread(handler, device.ftDev, ReceiveThread.CLEAR_DATA_THREAD, 0).start();
 
@@ -536,15 +554,13 @@ public class MatrixActivity extends Activity {
         new ReceiveThread(handler, device.ftDev, ReceiveThread.TIME_RECEIVE_THREAD, TIME_RECEIVE).start();
 
         for (int i = 0; i < 2; i++) {
-
-
             Log.d("第一次发送", "i:" + i);
             device.sendOrder(listOfSubList.get(0).get(i),
-                    Order.LightColor.values()[2-i],
+                    Order.LightColor.values()[2 - i],
                     Order.VoiceMode.values()[0],
                     Order.BlinkModel.values()[0],
                     Order.LightModel.OUTER,
-                    Order.ActionModel.values()[1-i],
+                    Order.ActionModel.values()[1 - i],
                     Order.EndVoice.values()[0]);
         }
 
@@ -562,6 +578,7 @@ public class MatrixActivity extends Activity {
         } else
             return false;
     }
+
     //返回生成包含两个不同随机设备编号的list
     public ArrayList<Character> randomSubList(List<Character> list) {
         List<Character> subList = new ArrayList<>();
@@ -583,19 +600,4 @@ public class MatrixActivity extends Activity {
         return subList;
     }
 
-
-    @OnClick(R.id.img_btn_refresh)
-    public void onViewClicked() {
-        Log.d("图片按钮被点击拉", "o");
-
-        updateData();
-        Toast.makeText(this, "可用设备已刷新", Toast.LENGTH_LONG).show();
-    }
-
-    public void setParmOfDevice(String actionModeOfString) {
-        if (actionModeOfString.equals("触碰")) {
-            flagOfMode=2;
-        }
-        else flagOfMode=1;
-    }
 }

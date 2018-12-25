@@ -297,8 +297,6 @@ public class SingleSpotActivity extends Activity {
                         //将Integer类型的List转换成String类型
                         IntegerToStringUtils.integerToString(timeList, scoreList);
                         final AlertDialog saveDialog = new AlertDialog.Builder(this).create();
-                        //设置对话框ICON
-                        /*saveDialog.setIcon();*/
                         //初始化对话中listview的布局
                         View view2 = LayoutInflater.from(this).inflate(R.layout.listview_savedialog, null);
 
