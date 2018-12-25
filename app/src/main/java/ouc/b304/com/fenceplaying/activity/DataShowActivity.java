@@ -149,11 +149,12 @@ public class DataShowActivity extends Activity {
     private LineChartData data = new LineChartData();
     Axis axisX = new Axis();//x轴
     Axis axisY = new Axis();//y轴
+    List<AxisValue> axisValuesOfLineChart=new ArrayList<>();
 
     //柱状图相关
 
     private List<Float> concreteScoreList = new ArrayList<>();//每次的具体成绩
-    /*private List<SubcolumnValue> columnValueList = new ArrayList<>();*/
+
     private List<Column> columns = new ArrayList<>();
     private ColumnChartData columnChartData = new ColumnChartData();
     Axis axisXColunm = new Axis();//x轴
@@ -642,9 +643,17 @@ public class DataShowActivity extends Activity {
         values.clear();
         lineList.clear();
         //2、添加点的数据
+        axisValuesOfLineChart.clear();
         for (int i = 0; i < averageScoreList.size(); i++) {
             values.add(new PointValue(i + 1, averageScoreList.get(i)));
+            axisValuesOfLineChart.add(new AxisValue(i).setLabel("第" + (i) + "次"));
+            if (i == averageScoreList.size() - 1) {
+                axisValuesOfLineChart.add(new AxisValue(i+1).setLabel("第" + (i+1) + "次"));
+            }
+
         }
+
+        axisX.setValues(axisValuesOfLineChart);
         line.setValues(values);//把点添加到线上
         lineList.add(line);
         data.setAxisXBottom(axisX);
