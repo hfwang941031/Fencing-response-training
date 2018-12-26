@@ -220,238 +220,262 @@ public class DataShowActivity extends Activity {
 
                 break;
             case R.id.btn_endtime:
-                endPVTime.show(view);
+                if (startDate != null) {
+                    endPVTime.show(view);
+                } else {
+                    Toast.makeText(context, "请先选择开始时间", Toast.LENGTH_SHORT).show();
+                }
+
                 break;
             case R.id.btn_show:
-                switch (selectedTrainMode) {
-                    case "单点训练":
+                if (selectedTrainMode != null&&selectedName!=null&&startDate!=null&&selectedTrainMode!=null) {
+                    switch (selectedTrainMode) {
+                        case "单点训练":
 
-                        //清除averageScoreList
-                        averageScoreList.clear();
-
-                        //首先清除beanlist,防止出现重复数据
-                        dataShowListBeans.clear();
-
-                        //1、根据选定的运动员姓名确定该运动员ID，2、通过运动员ID确定成绩表中的属于该运动员的成绩3、并存储到singleSpotScoresList
-                        QueryBuilder<Player> qb = playerDao.queryBuilder();
-                        playerList = qb.where(PlayerDao.Properties.Name.eq(selectedName)).list();
-                        long playerId = playerList.get(0).getId();
-                        QueryBuilder<SingleSpotScores> queryBuilder = singleSpotScoresDao.queryBuilder();
-                        singleSpotScoresList = queryBuilder.where(SingleSpotScoresDao.Properties.PlayerId.eq(playerId)).list();
-                        Log.d("Size of ScoreList", singleSpotScoresList.size() + "");
-                        if (singleSpotScoresList.size() <= 0) {
-                            Toast.makeText(context, "无当前运动员单点训练成绩，请先进行训练", Toast.LENGTH_SHORT).show();
-                        } else {
-                            for (SingleSpotScores s : singleSpotScoresList) {
-                                //将平均成绩添加到averageScoreList中
-                                averageScoreList.add(s.getAverageScores());
-
-                                dataShowListBean = new DataShowListBean();
-                                dataShowListBean.setName(selectedName);
-                                dataShowListBean.setTrainMode(selectedTrainMode);
-                                dataShowListBean.setTrainTimes(s.getTrainingTimes());
-                                dataShowListBean.setAverageScore(String.valueOf(s.getAverageScores()));
-                                dataShowListBeans.add(dataShowListBean);
+                            //清除averageScoreList
+                            if (averageScoreList.size() != 0) {
+                                averageScoreList.clear();
                             }
-                            dataShowAdapter.setBeansList(dataShowListBeans);
-                            dataShowAdapter.notifyDataSetChanged();
 
-                            //设置折线图属性
-                            setChartViewPara();
-                            //开始画图
-                            showLineChartView(linechartviewDatashow, averageScoreList, values, lines, line, data, axisX, axisY);
+                            //首先清除beanlist,防止出现重复数据
+                            if (dataShowListBeans.size() != 0) {
+                                dataShowListBeans.clear();
+                            }
 
 
-                            //设置listview子项的点击事件，通过点击该item形成对应的柱状图
-                            lvShowdata.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                @Override
-                                public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                                    //首先清空上次的具体成绩list
+                            //1、根据选定的运动员姓名确定该运动员ID，2、通过运动员ID确定成绩表中的属于该运动员的成绩3、并存储到singleSpotScoresList
+                            QueryBuilder<Player> qb = playerDao.queryBuilder();
+                            playerList = qb.where(PlayerDao.Properties.Name.eq(selectedName)).list();
+                            long playerId = playerList.get(0).getId();
+                            QueryBuilder<SingleSpotScores> queryBuilder = singleSpotScoresDao.queryBuilder();
+                            singleSpotScoresList = queryBuilder.where(SingleSpotScoresDao.Properties.PlayerId.eq(playerId)).list();
+                            Log.d("Size of ScoreList", singleSpotScoresList.size() + "");
+                            if (singleSpotScoresList.size() <= 0) {
+                                Toast.makeText(context, "无当前运动员单点训练成绩，请先进行训练", Toast.LENGTH_SHORT).show();
+                            } else {
+                                for (SingleSpotScores s : singleSpotScoresList) {
+                                    //将平均成绩添加到averageScoreList中
+                                    averageScoreList.add(s.getAverageScores());
+
+                                    dataShowListBean = new DataShowListBean();
+                                    dataShowListBean.setName(selectedName);
+                                    dataShowListBean.setTrainMode(selectedTrainMode);
+                                    dataShowListBean.setTrainTimes(s.getTrainingTimes());
+                                    dataShowListBean.setAverageScore(String.valueOf(s.getAverageScores()));
+                                    dataShowListBeans.add(dataShowListBean);
+                                }
+                                dataShowAdapter.setBeansList(dataShowListBeans);
+                                dataShowAdapter.notifyDataSetChanged();
+
+                                //设置折线图属性
+                                setChartViewPara();
+                                //开始画图
+                                showLineChartView(linechartviewDatashow, averageScoreList, values, lines, line, data, axisX, axisY);
 
 
-                                    DataShowListBean dataShowListBean1=dataShowAdapter.getItem(position);//通过当前点击的item位置找到该位置所对应的item实体
-                                    String tempAverageScore=dataShowListBean1.getAverageScore();//通过item实体找到平均成绩值
+                                //设置listview子项的点击事件，通过点击该item形成对应的柱状图
+                                lvShowdata.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                                        //首先清空上次的具体成绩list
 
-                                    String name=dataShowListBean1.getName();
-                                    int trainTimes = dataShowListBean1.getTrainTimes();//通过item实体找到训练次数
-                                    QueryBuilder<SingleSpotScores> queryBuilder1 = singleSpotScoresDao.queryBuilder();//新建一个查询
-                                    QueryBuilder<Player> queryBuilder2 = playerDao.queryBuilder();//新建一个关于运动员的查询
-                                    List<Player> playerList=queryBuilder2.where(PlayerDao.Properties.Name.eq(name)).list();
-                                    Long playerId=playerList.get(0).getId();
-                                    queryBuilder1.where(SingleSpotScoresDao.Properties.PlayerId.eq(playerId), queryBuilder1.and(SingleSpotScoresDao.Properties.TrainingTimes.eq(trainTimes), SingleSpotScoresDao.Properties.AverageScores.eq(tempAverageScore)));
+
+                                        DataShowListBean dataShowListBean1 = dataShowAdapter.getItem(position);//通过当前点击的item位置找到该位置所对应的item实体
+                                        String tempAverageScore = dataShowListBean1.getAverageScore();//通过item实体找到平均成绩值
+
+                                        String name = dataShowListBean1.getName();
+                                        int trainTimes = dataShowListBean1.getTrainTimes();//通过item实体找到训练次数
+                                        QueryBuilder<SingleSpotScores> queryBuilder1 = singleSpotScoresDao.queryBuilder();//新建一个查询
+                                        QueryBuilder<Player> queryBuilder2 = playerDao.queryBuilder();//新建一个关于运动员的查询
+                                        List<Player> playerList = queryBuilder2.where(PlayerDao.Properties.Name.eq(name)).list();
+                                        Long playerId = playerList.get(0).getId();
+                                        queryBuilder1.where(SingleSpotScoresDao.Properties.PlayerId.eq(playerId), queryBuilder1.and(SingleSpotScoresDao.Properties.TrainingTimes.eq(trainTimes), SingleSpotScoresDao.Properties.AverageScores.eq(tempAverageScore)));
 /*
                                     queryBuilder1.and(,);//通过组合查询训练次数和平均成绩找到该item对应的单点成绩实体
 */
-                                    List<SingleSpotScores> singleSpotScoresList=queryBuilder1.list();//列出单点成绩实体
-                                    concreteScoreList.clear();
-                                    for (String s:singleSpotScoresList.get(0).getScoresList()//将单点成绩中的具体成绩list中的每一个元素添加到具体成绩list中
-                                            ) {
-                                        concreteScoreList.add(Float.valueOf(s));
-                                    }
-                                    axisValuess.clear();
-                                    for (int i=0;i<concreteScoreList.size();i++) {
-                                        axisValuess.add(new AxisValue(i).setLabel("第" + (i + 1) + "次"));
-                                    }
+                                        List<SingleSpotScores> singleSpotScoresList = queryBuilder1.list();//列出单点成绩实体
+                                        concreteScoreList.clear();
+                                        for (String s : singleSpotScoresList.get(0).getScoresList()//将单点成绩中的具体成绩list中的每一个元素添加到具体成绩list中
+                                                ) {
+                                            concreteScoreList.add(Float.valueOf(s));
+                                        }
+                                        axisValuess.clear();
+                                        for (int i = 0; i < concreteScoreList.size(); i++) {
+                                            axisValuess.add(new AxisValue(i).setLabel("第" + (i + 1) + "次"));
+                                        }
 
-                                    //设置柱状图属性
-                                    setColumnChartViewPara();
-                                    //开始画图
-                                    showColumnChartView(columnchartviewDatashow,concreteScoreList,/*columnValueList,*/columns,columnChartData,axisXColunm,axisYColumn);
-                                }
-                            });
+                                        //设置柱状图属性
+                                        setColumnChartViewPara();
+                                        //开始画图
+                                        showColumnChartView(columnchartviewDatashow, concreteScoreList,/*columnValueList,*/columns, columnChartData, axisXColunm, axisYColumn);
+                                    }
+                                });
 
-                        }
-                        break;
-                    case "单列训练":
-                        //清除averageScoreList
-                        averageScoreList.clear();
-                        //首先清除beanlist,防止出现重复数据
-                        dataShowListBeans.clear();
-                        //1、根据选定的运动员姓名确定该运动员ID，2、通过运动员ID确定成绩表中的属于该运动员的成绩3、并存储到singleSpotScoresList
-                        QueryBuilder<Player> qb1 = playerDao.queryBuilder();
-                        playerList = qb1.where(PlayerDao.Properties.Name.eq(selectedName)).list();
-                        long playerId1 = playerList.get(0).getId();
-                        QueryBuilder<SingleLineScores> queryBuilder1 = singleLineScoresDao.queryBuilder();
-                        singleLineScoresList = queryBuilder1.where(SingleLineScoresDao.Properties.PlayerId.eq(playerId1)).list();
-                        Log.d("Size of ScoreList", singleLineScoresList.size() + "");
-                        if (singleLineScoresList.size() <= 0) {
-                            Toast.makeText(context, "无当前运动员单列训练成绩，请先进行训练", Toast.LENGTH_SHORT).show();
-                        } else {
-                            for (SingleLineScores s : singleLineScoresList) {
-                                //将平均成绩添加到averageScoreList中
-                                averageScoreList.add(s.getAverageScores());
-                                dataShowListBean = new DataShowListBean();
-                                dataShowListBean.setName(selectedName);
-                                dataShowListBean.setTrainMode(selectedTrainMode);
-                                dataShowListBean.setTrainTimes(s.getTrainingTimes());
-                                dataShowListBean.setAverageScore(String.valueOf(s.getAverageScores()));
-                                dataShowListBeans.add(dataShowListBean);
                             }
-                            dataShowAdapter.setBeansList(dataShowListBeans);
-                            dataShowAdapter.notifyDataSetChanged();
+                            break;
+                        case "单列训练":
+                            //清除averageScoreList
+                            if (averageScoreList.size() != 0) {
+                                averageScoreList.clear();
+                            }
 
-                            //开始画图
-                            showLineChartView(linechartviewDatashow, averageScoreList, values, lines, line, data, axisX, axisY);
+                            //首先清除beanlist,防止出现重复数据
+                            if (dataShowListBeans.size() != 0) {
+                                dataShowListBeans.clear();
+                            }
+                            //1、根据选定的运动员姓名确定该运动员ID，2、通过运动员ID确定成绩表中的属于该运动员的成绩3、并存储到singleSpotScoresList
+                            QueryBuilder<Player> qb1 = playerDao.queryBuilder();
+                            playerList = qb1.where(PlayerDao.Properties.Name.eq(selectedName)).list();
+                            long playerId1 = playerList.get(0).getId();
+                            QueryBuilder<SingleLineScores> queryBuilder1 = singleLineScoresDao.queryBuilder();
+                            singleLineScoresList = queryBuilder1.where(SingleLineScoresDao.Properties.PlayerId.eq(playerId1)).list();
+                            Log.d("Size of ScoreList", singleLineScoresList.size() + "");
+                            if (singleLineScoresList.size() <= 0) {
+                                Toast.makeText(context, "无当前运动员单列训练成绩，请先进行训练", Toast.LENGTH_SHORT).show();
+                            } else {
+                                for (SingleLineScores s : singleLineScoresList) {
+                                    //将平均成绩添加到averageScoreList中
+                                    averageScoreList.add(s.getAverageScores());
+                                    dataShowListBean = new DataShowListBean();
+                                    dataShowListBean.setName(selectedName);
+                                    dataShowListBean.setTrainMode(selectedTrainMode);
+                                    dataShowListBean.setTrainTimes(s.getTrainingTimes());
+                                    dataShowListBean.setAverageScore(String.valueOf(s.getAverageScores()));
+                                    dataShowListBeans.add(dataShowListBean);
+                                }
+                                dataShowAdapter.setBeansList(dataShowListBeans);
+                                dataShowAdapter.notifyDataSetChanged();
 
-                            //设置listview子项的点击事件，通过点击该item形成对应的柱状图
-                            lvShowdata.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                @Override
-                                public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                                    //首先清空上次的具体成绩list
+                                //开始画图
+                                showLineChartView(linechartviewDatashow, averageScoreList, values, lines, line, data, axisX, axisY);
+
+                                //设置listview子项的点击事件，通过点击该item形成对应的柱状图
+                                lvShowdata.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                                        //首先清空上次的具体成绩list
 
 
-                                    DataShowListBean dataShowListBean1=dataShowAdapter.getItem(position);//通过当前点击的item位置找到该位置所对应的item实体
-                                    String tempAverageScore=dataShowListBean1.getAverageScore();//通过item实体找到平均成绩值
+                                        DataShowListBean dataShowListBean1 = dataShowAdapter.getItem(position);//通过当前点击的item位置找到该位置所对应的item实体
+                                        String tempAverageScore = dataShowListBean1.getAverageScore();//通过item实体找到平均成绩值
 
-                                    String name=dataShowListBean1.getName();
-                                    int trainTimes = dataShowListBean1.getTrainTimes();//通过item实体找到训练次数
-                                    QueryBuilder<SingleLineScores> queryBuilder1 = singleLineScoresDao.queryBuilder();//新建一个查询
-                                    QueryBuilder<Player> queryBuilder2 = playerDao.queryBuilder();//新建一个关于运动员的查询
-                                    List<Player> playerList=queryBuilder2.where(PlayerDao.Properties.Name.eq(name)).list();
-                                    Long playerId=playerList.get(0).getId();
-                                    queryBuilder1.where(SingleLineScoresDao.Properties.PlayerId.eq(playerId), queryBuilder1.and(SingleLineScoresDao.Properties.TrainingTimes.eq(trainTimes), SingleLineScoresDao.Properties.AverageScores.eq(tempAverageScore)));
+                                        String name = dataShowListBean1.getName();
+                                        int trainTimes = dataShowListBean1.getTrainTimes();//通过item实体找到训练次数
+                                        QueryBuilder<SingleLineScores> queryBuilder1 = singleLineScoresDao.queryBuilder();//新建一个查询
+                                        QueryBuilder<Player> queryBuilder2 = playerDao.queryBuilder();//新建一个关于运动员的查询
+                                        List<Player> playerList = queryBuilder2.where(PlayerDao.Properties.Name.eq(name)).list();
+                                        Long playerId = playerList.get(0).getId();
+                                        queryBuilder1.where(SingleLineScoresDao.Properties.PlayerId.eq(playerId), queryBuilder1.and(SingleLineScoresDao.Properties.TrainingTimes.eq(trainTimes), SingleLineScoresDao.Properties.AverageScores.eq(tempAverageScore)));
 /*
                                     queryBuilder1.and(,);//通过组合查询训练次数和平均成绩找到该item对应的单点成绩实体
 */
-                                    List<SingleLineScores> singleLineScoresList=queryBuilder1.list();//列出单点成绩实体
-                                    concreteScoreList.clear();
-                                    for (String s:singleLineScoresList.get(0).getScoresList()//将单点成绩中的具体成绩list中的每一个元素添加到具体成绩list中
-                                            ) {
-                                        concreteScoreList.add(Float.valueOf(s));
+                                        List<SingleLineScores> singleLineScoresList = queryBuilder1.list();//列出单点成绩实体
+                                        concreteScoreList.clear();
+                                        for (String s : singleLineScoresList.get(0).getScoresList()//将单点成绩中的具体成绩list中的每一个元素添加到具体成绩list中
+                                                ) {
+                                            concreteScoreList.add(Float.valueOf(s));
+                                        }
+                                        axisValuess.clear();
+                                        for (int i = 0; i < concreteScoreList.size(); i++) {
+                                            axisValuess.add(new AxisValue(i).setLabel("第" + (i + 1) + "次"));
+                                        }
+
+                                        //设置柱状图属性
+                                        setColumnChartViewPara();
+                                        //开始画图
+                                        showColumnChartView(columnchartviewDatashow, concreteScoreList,/*columnValueList,*/columns, columnChartData, axisXColunm, axisYColumn);
                                     }
-                                    axisValuess.clear();
-                                    for (int i=0;i<concreteScoreList.size();i++) {
-                                        axisValuess.add(new AxisValue(i).setLabel("第" + (i + 1) + "次"));
-                                    }
+                                });
 
-                                    //设置柱状图属性
-                                    setColumnChartViewPara();
-                                    //开始画图
-                                    showColumnChartView(columnchartviewDatashow,concreteScoreList,/*columnValueList,*/columns,columnChartData,axisXColunm,axisYColumn);
-                                }
-                            });
-
-                        }
-                        break;
-                    case "抗干扰训练":
-                        //清除averageScoreList
-                        averageScoreList.clear();
-
-                        //首先清除beanlist,防止出现重复数据
-                        dataShowListBeans.clear();
-                        //1、根据选定的运动员姓名确定该运动员ID，2、通过运动员ID确定成绩表中的属于该运动员的成绩3、并存储到singleSpotScoresList
-                        QueryBuilder<Player> qb3 = playerDao.queryBuilder();
-                        playerList = qb3.where(PlayerDao.Properties.Name.eq(selectedName)).list();
-                        long playerId2 = playerList.get(0).getId();
-                        QueryBuilder<MatrixScores> queryBuilder2 = matrixScoresDao.queryBuilder();
-                        matrixScoresList = queryBuilder2.where(MatrixScoresDao.Properties.PlayerId.eq(playerId2)).list();
-                        Log.d("Size of ScoreList", matrixScoresList.size() + "");
-                        if (matrixScoresList.size() <= 0) {
-                            Toast.makeText(context, "无当前运动员单点训练成绩，请先进行训练", Toast.LENGTH_SHORT).show();
-                        } else {
-                            for (MatrixScores s : matrixScoresList) {
-                                //将平均成绩添加到averageScoreList中
-                                averageScoreList.add(s.getAverageScores());
-
-                                dataShowListBean = new DataShowListBean();
-                                dataShowListBean.setName(selectedName);
-                                dataShowListBean.setTrainMode(selectedTrainMode);
-                                dataShowListBean.setTrainTimes(s.getTrainingTimes());
-                                dataShowListBean.setAverageScore(String.valueOf(s.getAverageScores()));
-                                dataShowListBeans.add(dataShowListBean);
                             }
-                            dataShowAdapter.setBeansList(dataShowListBeans);
-                            dataShowAdapter.notifyDataSetChanged();
+                            break;
+                        case "抗干扰训练":
+                            //清除averageScoreList
+                            if (averageScoreList.size() != 0) {
+                                averageScoreList.clear();
+                            }
 
-                            //设置折线图属性
-                            setChartViewPara();
-                            //开始画图
-                            showLineChartView(linechartviewDatashow, averageScoreList, values, lines, line, data, axisX, axisY);
+                            //首先清除beanlist,防止出现重复数据
+                            if (dataShowListBeans.size() != 0) {
+                                dataShowListBeans.clear();
+                            }
+                            //1、根据选定的运动员姓名确定该运动员ID，2、通过运动员ID确定成绩表中的属于该运动员的成绩3、并存储到singleSpotScoresList
+                            QueryBuilder<Player> qb3 = playerDao.queryBuilder();
+                            playerList = qb3.where(PlayerDao.Properties.Name.eq(selectedName)).list();
+                            long playerId2 = playerList.get(0).getId();
+                            QueryBuilder<MatrixScores> queryBuilder2 = matrixScoresDao.queryBuilder();
+                            matrixScoresList = queryBuilder2.where(MatrixScoresDao.Properties.PlayerId.eq(playerId2)).list();
+                            Log.d("Size of ScoreList", matrixScoresList.size() + "");
+                            if (matrixScoresList.size() <= 0) {
+                                Toast.makeText(context, "无当前运动员单点训练成绩，请先进行训练", Toast.LENGTH_SHORT).show();
+                            } else {
+                                for (MatrixScores s : matrixScoresList) {
+                                    //将平均成绩添加到averageScoreList中
+                                    averageScoreList.add(s.getAverageScores());
+
+                                    dataShowListBean = new DataShowListBean();
+                                    dataShowListBean.setName(selectedName);
+                                    dataShowListBean.setTrainMode(selectedTrainMode);
+                                    dataShowListBean.setTrainTimes(s.getTrainingTimes());
+                                    dataShowListBean.setAverageScore(String.valueOf(s.getAverageScores()));
+                                    dataShowListBeans.add(dataShowListBean);
+                                }
+                                dataShowAdapter.setBeansList(dataShowListBeans);
+                                dataShowAdapter.notifyDataSetChanged();
+
+                                //设置折线图属性
+                                setChartViewPara();
+                                //开始画图
+                                showLineChartView(linechartviewDatashow, averageScoreList, values, lines, line, data, axisX, axisY);
 
 
-                            //设置listview子项的点击事件，通过点击该item形成对应的柱状图
-                            lvShowdata.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                                @Override
-                                public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
-                                    //首先清空上次的具体成绩list
+                                //设置listview子项的点击事件，通过点击该item形成对应的柱状图
+                                lvShowdata.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                                    @Override
+                                    public void onItemClick(AdapterView<?> adapterView, View view, int position, long l) {
+                                        //首先清空上次的具体成绩list
 
 
-                                    DataShowListBean dataShowListBean1=dataShowAdapter.getItem(position);//通过当前点击的item位置找到该位置所对应的item实体
-                                    String tempAverageScore=dataShowListBean1.getAverageScore();//通过item实体找到平均成绩值
+                                        DataShowListBean dataShowListBean1 = dataShowAdapter.getItem(position);//通过当前点击的item位置找到该位置所对应的item实体
+                                        String tempAverageScore = dataShowListBean1.getAverageScore();//通过item实体找到平均成绩值
 
-                                    String name=dataShowListBean1.getName();
-                                    int trainTimes = dataShowListBean1.getTrainTimes();//通过item实体找到训练次数
-                                    QueryBuilder<MatrixScores> queryBuilder1 = matrixScoresDao.queryBuilder();//新建一个查询
-                                    QueryBuilder<Player> queryBuilder2 = playerDao.queryBuilder();//新建一个关于运动员的查询
-                                    List<Player> playerList=queryBuilder2.where(PlayerDao.Properties.Name.eq(name)).list();
-                                    Long playerId=playerList.get(0).getId();
-                                    queryBuilder1.where(MatrixScoresDao.Properties.PlayerId.eq(playerId), queryBuilder1.and(MatrixScoresDao.Properties.TrainingTimes.eq(trainTimes), MatrixScoresDao.Properties.AverageScores.eq(tempAverageScore)));
+                                        String name = dataShowListBean1.getName();
+                                        int trainTimes = dataShowListBean1.getTrainTimes();//通过item实体找到训练次数
+                                        QueryBuilder<MatrixScores> queryBuilder1 = matrixScoresDao.queryBuilder();//新建一个查询
+                                        QueryBuilder<Player> queryBuilder2 = playerDao.queryBuilder();//新建一个关于运动员的查询
+                                        List<Player> playerList = queryBuilder2.where(PlayerDao.Properties.Name.eq(name)).list();
+                                        Long playerId = playerList.get(0).getId();
+                                        queryBuilder1.where(MatrixScoresDao.Properties.PlayerId.eq(playerId), queryBuilder1.and(MatrixScoresDao.Properties.TrainingTimes.eq(trainTimes), MatrixScoresDao.Properties.AverageScores.eq(tempAverageScore)));
 /*
                                     queryBuilder1.and(,);//通过组合查询训练次数和平均成绩找到该item对应的单点成绩实体
 */
-                                    List<MatrixScores> matrixScoresList=queryBuilder1.list();//列出单点成绩实体
-                                    concreteScoreList.clear();
-                                    for (String s:matrixScoresList.get(0).getScoresList()//将单点成绩中的具体成绩list中的每一个元素添加到具体成绩list中
-                                            ) {
-                                        concreteScoreList.add(Float.valueOf(s));
-                                    }
-                                    axisValuess.clear();
-                                    for (int i=0;i<concreteScoreList.size();i++) {
-                                        axisValuess.add(new AxisValue(i).setLabel("第" + (i + 1) + "次"));
-                                    }
+                                        List<MatrixScores> matrixScoresList = queryBuilder1.list();//列出单点成绩实体
+                                        concreteScoreList.clear();
+                                        for (String s : matrixScoresList.get(0).getScoresList()//将单点成绩中的具体成绩list中的每一个元素添加到具体成绩list中
+                                                ) {
+                                            concreteScoreList.add(Float.valueOf(s));
+                                        }
+                                        axisValuess.clear();
+                                        for (int i = 0; i < concreteScoreList.size(); i++) {
+                                            axisValuess.add(new AxisValue(i).setLabel("第" + (i + 1) + "次"));
+                                        }
 
-                                    //设置柱状图属性
-                                    setColumnChartViewPara();
-                                    //开始画图
-                                    showColumnChartView(columnchartviewDatashow,concreteScoreList,/*columnValueList,*/columns,columnChartData,axisXColunm,axisYColumn);
-                                }
-                            });
+                                        //设置柱状图属性
+                                        setColumnChartViewPara();
+                                        //开始画图
+                                        showColumnChartView(columnchartviewDatashow, concreteScoreList,/*columnValueList,*/columns, columnChartData, axisXColunm, axisYColumn);
+                                    }
+                                });
 
-                        }
-                        break;
-                    case "精准训练":
-                        break;
+                            }
+                            break;
+                        case "精准训练":
+                            break;
+                    }
+                } else {
+                    Toast.makeText(context,"请依次选择运动员、起始时间、终止时间、训练类别，再点击该按钮",Toast.LENGTH_SHORT).show();
                 }
+
                 break;
         }
     }
@@ -490,9 +514,14 @@ public class DataShowActivity extends Activity {
         spPlayername.setAdapter(spNameAdapter);
         spPlayername.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                selectedName = (String) adapterView.getSelectedItem();
-                Log.d("selectedName--", selectedName + "");
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+                if (position == 0) {
+                    Toast.makeText(context, "请先选择运动员", Toast.LENGTH_SHORT).show();
+                } else {
+                    selectedName = (String) adapterView.getSelectedItem();
+                    Log.d("selectedName--", selectedName + "");
+                }
+
             }
 
             @Override
@@ -512,14 +541,18 @@ public class DataShowActivity extends Activity {
         spTrainingmode.setAdapter(spTrainModeAdapter);
         spTrainingmode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
                 if (selectedName != null) {
                     if (startDate != null) {
                         if (endDate != null) {
-                            selectedTrainMode = (String) adapterView.getSelectedItem();
-                            Log.d("selectedTrainMode--", selectedTrainMode + "");
-
+                            if (selectedTrainMode==null) {
+                                selectedTrainMode = (String) adapterView.getSelectedItem();
+                                Log.d("selectedTrainMode--", selectedTrainMode + "");
+                            } else {
+                                selectedTrainMode = (String) adapterView.getSelectedItem();
+                            }
                         } else {
+
                             Toast.makeText(context, "请先选择终止时间", Toast.LENGTH_SHORT).show();
                         }
                     } else {

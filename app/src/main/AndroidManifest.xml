@@ -45,6 +45,7 @@
             android:windowSoftInputMode="stateHidden"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
         </activity>
+
         <activity
             android:name=".activity.AccuracySelectActivity"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
@@ -73,7 +74,10 @@
             android:name=".activity.DataCompareActivity"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
         </activity>
-
+        <activity
+            android:name=".activity.NewMain"
+            android:windowSoftInputMode="stateHidden">
+        </activity>
     </application>
 
 

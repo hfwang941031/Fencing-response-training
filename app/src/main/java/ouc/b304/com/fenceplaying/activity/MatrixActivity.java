@@ -226,8 +226,11 @@ public class MatrixActivity extends Activity {
         Log.d("what's in data", data);
         List<TimeInfo> infos = DataAnalyzeUtils.analyzeTimeData(data);
         for (TimeInfo info : infos) {
+            Log.i("编号", info.getDeviceNum() + "");
             if (info.getDeviceNum() == listOfSubList.get(counter2 - 1).get(0)) {
+                Log.i("counter",  counter+ "");
                 counter += 1;
+
                 if (counter > trainTimes) {
                     listOfSubList = listOfSubList(trainTimes);
                     counter2 = 1;
@@ -244,6 +247,8 @@ public class MatrixActivity extends Activity {
                 if (counter2 > listOfSubList.size() - 1) {
                     counter2 = listOfSubList.size() - 1;
                 }
+                Log.i("counter2",  counter2 +"");
+
             }
 
         }
@@ -542,6 +547,8 @@ public class MatrixActivity extends Activity {
     }
 
     private void startTraining() {
+        counter = 0;
+        counter2 = 1;
         trainingBeginFlag = true;
         //清空时间列表，防止将上次训练的成绩保存到下一次训练当中
         timeList.clear();
@@ -553,7 +560,7 @@ public class MatrixActivity extends Activity {
         //开启接收设备返回时间的监听线程
         new ReceiveThread(handler, device.ftDev, ReceiveThread.TIME_RECEIVE_THREAD, TIME_RECEIVE).start();
 
-        for (int i = 0; i < 2; i++) {
+      /*  for (int i = 0; i < 2; i++) {
             Log.d("第一次发送", "i:" + i);
             device.sendOrder(listOfSubList.get(0).get(i),
                     Order.LightColor.values()[2 - i],
@@ -562,7 +569,9 @@ public class MatrixActivity extends Activity {
                     Order.LightModel.OUTER,
                     Order.ActionModel.values()[1 - i],
                     Order.EndVoice.values()[0]);
-        }
+        }*/
+      device.sendOrder(listOfSubList.get(0).get(0),Order.LightColor.RED,Order.VoiceMode.NONE,Order.BlinkModel.NONE,Order.LightModel.OUTER,Order.ActionModel.LIGHT,Order.EndVoice.NONE);
+      device.sendOrder(listOfSubList.get(0).get(1),Order.LightColor.BLUE,Order.VoiceMode.NONE,Order.BlinkModel.NONE,Order.LightModel.OUTER,Order.ActionModel.NONE,Order.EndVoice.NONE);
 
         //获得当前的系统时间
         startTime = System.currentTimeMillis();

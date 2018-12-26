@@ -154,6 +154,7 @@ public class MainActivity extends Activity {
                 startActivity(new Intent(context, PlayerShowActivity.class));
                 break;
             case R.id.btn_progrgmSetting:
+                startActivity(new Intent(context, NewMain.class));
                 break;
             case R.id.btn_responsetraining:
                 startActivity(new Intent(context, ResponseSelect.class));
