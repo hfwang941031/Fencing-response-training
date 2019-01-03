@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/samecolorback">
+    <!--参数设置的文字-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:background="@color/blue"
+        android:layout_marginRight="10dp"
+
+        >
+
+        <TextView
+        android:id="@+id/paraset"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="参数设置"
+        android:textSize="28sp"
+        android:textColor="@color/white"
+            android:layout_gravity="center_horizontal"/>
+
+
+    </LinearLayout>
+
+    <!--详细参数组合-->
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="8"
+        android:orientation="vertical"
+        android:layout_marginTop="50dp">
+        <!--感应模式-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginLeft="150dp">
+            <TextView
+                android:id="@+id/tv_actionmode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="22sp"
+                android:text="感应模式："/>
+
+
+            <RadioGroup
+                android:id="@+id/rg_actionmode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <RadioButton
+                    android:id="@+id/rb_touch"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="触碰"
+                    android:textSize="18sp"
+                    android:textColor="@color/black"
+                    android:layout_weight="1"/>
+                <RadioButton
+                    android:id="@+id/rd_redline"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="红外"
+                    android:textSize="18sp"
+                    android:textColor="@color/black"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="30dp"/>
+                <RadioButton
+                    android:id="@+id/rb_touchandredline"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="同时"
+                    android:textSize="18sp"
+                    android:textColor="@color/black"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="30dp"/>
+            </RadioGroup>
+        </LinearLayout>
+
+        <!--设置目标灯颜色-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginLeft="150dp"
+            >
+            <TextView
+                android:id="@+id/tv_lightcolor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="22sp"
+                android:text="目标颜色："/>
+
+
+            <RadioGroup
+                android:id="@+id/rg_lightcolor"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+                <RadioButton
+                    android:id="@+id/rb_red"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="红"
+                    android:textSize="18sp"
+                    android:textColor="@color/black"
+                    android:layout_weight="1"/>
+                <RadioButton
+                    android:id="@+id/rd_blue"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="蓝"
+                    android:textSize="18sp"
+                    android:textColor="@color/black"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="150dp"/>
+                />
+            </RadioGroup>
+        </LinearLayout>
+
+        <!--灯圈模式-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:layout_marginLeft="150dp">
+            <TextView
+                android:id="@+id/tv_blinkmode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="@color/black"
+                android:textSize="22sp"
+                android:text="灯    圈："/>
+
+
+            <RadioGroup
+                android:id="@+id/rg_blinkmode"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:layout_marginLeft="30dp">
+                <RadioButton
+                    android:id="@+id/rb_out"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="外圈"
+                    android:textSize="18sp"
+                    android:textColor="@color/black"
+                    android:layout_weight="1"/>
+                <RadioButton
+                    android:id="@+id/rd_in"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="内圈"
+                    android:textSize="18sp"
+                    android:textColor="@color/black"
+                    android:layout_weight="1"
+                    android:layout_marginLeft="130dp"/>
+
+            </RadioGroup>
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</LinearLayout>

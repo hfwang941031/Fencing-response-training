@@ -14,10 +14,11 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -79,8 +80,6 @@ public class SingleSpotActivity extends Activity {
     Spinner spTimes;
     @BindView(R.id.btn_turnoff)
     Button btnTurnoff;
-    @BindView(R.id.edit_beizhu)
-    EditText editBeizhu;
     @BindView(R.id.tvTotalTime)
     TextView tvTotalTime;
     @BindView(R.id.btn_startrun)
@@ -99,6 +98,34 @@ public class SingleSpotActivity extends Activity {
     TextView avergeScore;
     @BindView(R.id.bt_save)
     Button btSave;
+    @BindView(R.id.paraset)
+    TextView paraset;
+    @BindView(R.id.tv_actionmode)
+    TextView tvActionmode;
+    @BindView(R.id.rb_touch)
+    RadioButton rbTouch;
+    @BindView(R.id.rd_redline)
+    RadioButton rdRedline;
+    @BindView(R.id.rb_touchandredline)
+    RadioButton rbTouchandredline;
+    @BindView(R.id.rg_actionmode)
+    RadioGroup rgActionmode;
+    @BindView(R.id.tv_lightcolor)
+    TextView tvLightcolor;
+    @BindView(R.id.rb_red)
+    RadioButton rbRed;
+    @BindView(R.id.rd_blue)
+    RadioButton rdBlue;
+    @BindView(R.id.rg_lightcolor)
+    RadioGroup rgLightcolor;
+    @BindView(R.id.tv_blinkmode)
+    TextView tvBlinkmode;
+    @BindView(R.id.rb_out)
+    RadioButton rbOut;
+    @BindView(R.id.rd_in)
+    RadioButton rdIn;
+    @BindView(R.id.rg_blinkmode)
+    RadioGroup rgBlinkmode;
 /*
     @BindView(R.id.lv_saveresult)
     ListView lvSaveresult;*/
@@ -161,6 +188,14 @@ public class SingleSpotActivity extends Activity {
 
     //设置一个布尔变量控制保存按钮的可按与否，当一次训练结束后，可以点击该保存按钮进行保存，点击过之后，不能再次进行点击，除非先进行下一次训练并得到一组时间值；
     private boolean saveBtnIsClickable = false;
+
+
+    //灯光颜色
+    private Order.LightColor lightColor=Order.LightColor.RED;
+    //灯光模式（内圈还是外圈凉）
+    private Order.LightModel lightModel= Order.LightModel.OUTER;
+    //感应模式（红外还是触碰还是同时）测试期间默认为红外模式
+    private Order.ActionModel actionModel=Order.ActionModel.LIGHT;
 
     private Handler handler = new Handler() {
         @Override
@@ -361,6 +396,9 @@ public class SingleSpotActivity extends Activity {
     }
 
     public void startTraining() {
+        Log.i("灯色", lightColor + "");
+        Log.i("感应", actionModel + "");
+
         Log.d(TAG, "startTraining has run");
         trainingBeginFlag = true;
         //清空时间列表，防止将上次训练的成绩保存到下一次训练当中
@@ -375,11 +413,11 @@ public class SingleSpotActivity extends Activity {
         new ReceiveThread(handler, device.ftDev, ReceiveThread.TIME_RECEIVE_THREAD, TIME_RECEIVE).start();
 
         device.sendOrder(deviceNum,
-                Order.LightColor.values()[1],
+                lightColor,
                 Order.VoiceMode.values()[0],
                 Order.BlinkModel.values()[0],
-                Order.LightModel.OUTER,
-                Order.ActionModel.values()[1],
+                lightModel,
+                actionModel,
                 Order.EndVoice.values()[0]);
 
         //获得当前的系统时间
@@ -454,11 +492,11 @@ public class SingleSpotActivity extends Activity {
                 if (!trainingBeginFlag)
                     return;
                 device.sendOrder(deviceNum,
-                        Order.LightColor.values()[1],
+                        lightColor,
                         Order.VoiceMode.values()[0],
                         Order.BlinkModel.values()[0],
-                        Order.LightModel.OUTER,
-                        Order.ActionModel.values()[1],
+                        lightModel,
+                        actionModel,
                         Order.EndVoice.values()[0]);
             }
         }).start();
@@ -518,6 +556,56 @@ public class SingleSpotActivity extends Activity {
         //初始化时间listview,即成绩显示列表
         singleSpotAdapter = new SingleSpotAdapter(this);
         lvTimes.setAdapter(singleSpotAdapter);
+
+        //设置感应模式
+        rgActionmode.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                switch (i) {
+                    case R.id.rb_touch:
+                        actionModel = Order.ActionModel.TOUCH;
+                        break;
+                    case R.id.rd_redline:
+                        actionModel = Order.ActionModel.LIGHT;
+                        break;
+                    case R.id.rb_touchandredline:
+                        actionModel = Order.ActionModel.ALL;
+                        break;
+
+
+                }
+            }
+        });
+        //设置单选按钮
+        rgLightcolor.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+
+                switch (i) {
+                    case R.id.rb_red:
+                        lightColor = Order.LightColor.RED;
+                        break;
+                    case R.id.rd_blue:
+                        lightColor = Order.LightColor.BLUE;
+                        break;
+
+                }
+            }
+        });
+
+        //设置灯光内外圈
+        rgBlinkmode.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                switch (i) {
+                    case R.id.rb_out:
+                        lightModel = Order.LightModel.OUTER;
+                        break;
+                    case R.id.rd_in:
+                        lightModel = Order.LightModel.CENTER;
+                }
+            }
+        });
 
 
     }
