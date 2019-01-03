@@ -48,40 +48,7 @@
                 android:layout_height="1dp"
                 android:background="#000"
                 />
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="80dp"
-                android:orientation="horizontal">
-                <EditText
-                    android:hint="请输入运动员姓名"
-                    android:layout_marginTop="10dp"
-                    android:layout_marginBottom="15dp"
-                    android:layout_marginLeft="20dp"
-                    android:id="@+id/edit_playerName"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="5"
-                    />
 
-                <LinearLayout
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="5">
-                    <Button
-                        android:background="@color/blue"
-                        android:id="@+id/btn_search"
-                        android:text="搜索"
-                        android:textSize="25sp"
-                        android:layout_width="150dp"
-                        android:layout_height="match_parent"
-                        android:layout_marginLeft="80dp"
-                        android:layout_marginTop="20dp"
-                        android:layout_marginBottom="20dp"
-                        android:layout_marginRight="10dp"
-                        />
-                </LinearLayout>
-
-            </LinearLayout>
             <!--黑线-->
             <ImageView
                 android:layout_width="fill_parent"
@@ -365,14 +332,7 @@
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="1">
-                        <Button
-                            android:layout_gravity="center_vertical"
-                            android:layout_marginLeft="100dp"
-                            android:id="@+id/btn_deleteAll"
-                            android:layout_width="100dp"
-                            android:layout_height="60dp"
-                            android:text="清空数据"
-                            android:background="@color/blue"/>
+
                     </LinearLayout>
                     <LinearLayout
                         android:layout_width="0dp"

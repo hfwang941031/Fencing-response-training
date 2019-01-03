@@ -21,12 +21,21 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.greenrobot.greendao.query.QueryBuilder;
+
+import java.util.List;
+
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ouc.b304.com.fenceplaying.Bean.Constant;
+import ouc.b304.com.fenceplaying.Dao.MatrixScoresDao;
 import ouc.b304.com.fenceplaying.Dao.PlayerDao;
+import ouc.b304.com.fenceplaying.Dao.SingleLineScoresDao;
+import ouc.b304.com.fenceplaying.Dao.SingleSpotScoresDao;
 import ouc.b304.com.fenceplaying.Dao.entity.Player;
+import ouc.b304.com.fenceplaying.Dao.entity.SingleLineScores;
+import ouc.b304.com.fenceplaying.Dao.entity.SingleSpotScores;
 import ouc.b304.com.fenceplaying.R;
 import ouc.b304.com.fenceplaying.adapter.PlayerShowAdapter;
 import ouc.b304.com.fenceplaying.application.GreenDaoInitApplication;
@@ -46,10 +55,6 @@ public class PlayerShowActivity extends Activity {
     LinearLayout llTitle;
     @BindView(R.id.tv_showPlayerInfo)
     TextView tvShowPlayerInfo;
-    @BindView(R.id.edit_playerName)
-    EditText editPlayerName;
-    @BindView(R.id.btn_search)
-    Button btnSearch;
     @BindView(R.id.lv_showPlayerInfo)
     ListView lvShowPlayerInfo;
     @BindView(R.id.ll_leftcontent)
@@ -90,8 +95,6 @@ public class PlayerShowActivity extends Activity {
     RadioButton radiobtnFoil;
     @BindView(R.id.radiobtn_sabre)
     RadioButton radiobtnSabre;
-    @BindView(R.id.btn_deleteAll)
-    Button btnDeleteAll;
     @BindView(R.id.btn_add)
     Button btnAdd;
     @BindView(R.id.ll_rightcontent)
@@ -117,6 +120,10 @@ public class PlayerShowActivity extends Activity {
     private ArrayAdapter<String> weightAdapter=null;
     private PlayerShowAdapter playerShowAdapter = null;
     private Player player;
+
+    private SingleSpotScoresDao singleSpotScoresDao;
+    private SingleLineScoresDao singleLineScoresDao;
+    private MatrixScoresDao matrixScoresDao;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -124,6 +131,9 @@ public class PlayerShowActivity extends Activity {
         ButterKnife.bind(this);
         context=getApplicationContext();
         playerDao= GreenDaoInitApplication.getInstances().getDaoSession().getPlayerDao();
+        singleSpotScoresDao = GreenDaoInitApplication.getInstances().getDaoSession().getSingleSpotScoresDao();
+        singleLineScoresDao = GreenDaoInitApplication.getInstances().getDaoSession().getSingleLineScoresDao();
+        matrixScoresDao = GreenDaoInitApplication.getInstances().getDaoSession().getMatrixScoresDao();
         initView();
         initAdapter();
 
@@ -149,20 +159,11 @@ public class PlayerShowActivity extends Activity {
         super.onDestroy();
     }
 
-    @OnClick({R.id.layout_cancel, R.id.btn_search, R.id.radiobtn_man, R.id.radiobtn_woman, R.id.radiobtn_epee, R.id.radiobtn_foil, R.id.radiobtn_sabre, R.id.btn_deleteAll, R.id.btn_add})
+    @OnClick({R.id.layout_cancel,  R.id.radiobtn_man, R.id.radiobtn_woman, R.id.radiobtn_epee, R.id.radiobtn_foil, R.id.radiobtn_sabre,  R.id.btn_add})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.layout_cancel:
                 this.finish();
-                break;
-            case R.id.btn_search:
-                String regex=editPlayerName.getText().toString();
-                Player player1 = playerDao.queryBuilder().where(PlayerDao.Properties.Name.eq(regex)).unique();
-                if (player1 == null) {
-                    Toast.makeText(this, "要查找的记录不存在", Toast.LENGTH_SHORT);
-                } else {
-
-                }
                 break;
             case R.id.radiobtn_man:
                 break;
@@ -173,10 +174,6 @@ public class PlayerShowActivity extends Activity {
             case R.id.radiobtn_foil:
                 break;
             case R.id.radiobtn_sabre:
-                break;
-            case R.id.btn_deleteAll:
-                playerDao.deleteAll();
-                Toast.makeText(this,"数据已清空",Toast.LENGTH_SHORT).show();
                 break;
                 /*添加信息按钮点击事件*/
             case R.id.btn_add:
@@ -200,7 +197,7 @@ public class PlayerShowActivity extends Activity {
                     player.setWeight(weight);
                     AlertDialog.Builder builder = new AlertDialog.Builder(PlayerShowActivity.this);
                     builder.setTitle("确认信息");
-                    builder.setMessage(name + age + groupId + "组" + height + weight + trainMode + gender);
+                    builder.setMessage(name +" "+age +" " + groupId + " 组 " + height+" " + weight +" "+ trainMode +" "+ gender);
                     builder.setNegativeButton("修改", new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
@@ -308,6 +305,50 @@ public class PlayerShowActivity extends Activity {
                 Log.d("initData方法", trainMode);
             }
         });
+
+        //设置listview的长按事件
+        lvShowPlayerInfo.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> adapterView, View view, int position, long l) {
+                final Player player2 = playerShowAdapter.getItem(position);
+                String name = player2.getName();
+                final Long playerId = player2.getId();
+                AlertDialog.Builder builder = new AlertDialog.Builder(PlayerShowActivity.this);
+                builder.setTitle("确认删除");
+                builder.setMessage("您确定要删除"+" "+name+" 个人信息及其所有个人成绩吗");
+                builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        dialogInterface.dismiss();
+                    }
+                });
+                builder.setPositiveButton("确认删除", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        //删除单点成绩
+                        QueryBuilder<SingleSpotScores> qbsingleSpot = singleSpotScoresDao.queryBuilder();
+                        List<SingleSpotScores> list1 = qbsingleSpot.where(SingleSpotScoresDao.Properties.PlayerId.eq(playerId)).list();
+                        for (SingleSpotScores s:list1
+                             ) {
+                            singleSpotScoresDao.delete(s);
+                        }
+
+                        //删除单列成绩
+                        QueryBuilder<SingleLineScores> qbsingleLine = singleLineScoresDao.queryBuilder();
+                        List<SingleLineScores> list2 = qbsingleLine.where(SingleLineScoresDao.Properties.PlayerId.eq(playerId)).list();
+                        for (SingleLineScores s:list2
+                                ) {
+                            singleLineScoresDao.delete(s);
+                        }
+                        playerDao.delete(player2);
+
+                    }
+                });
+                builder.show();
+                playerShowAdapter.notifyDataSetChanged();
+                return false;
+            }
+        });
     }
 
     /*初始化数据*/
@@ -342,4 +383,6 @@ public class PlayerShowActivity extends Activity {
         radioButton = findViewById(radioGroup.getCheckedRadioButtonId());
         trainMode = radioButton.getText().toString();
     }
+
+
 }
