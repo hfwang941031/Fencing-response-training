@@ -18,6 +18,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -81,8 +83,6 @@ public class SingleLineActivity extends Activity {
     TextView tvDevicenumbers;
     @BindView(R.id.img_btn_refresh)
     ImageButton imgBtnRefresh;
-    @BindView(R.id.tv_setdeviceparam)
-    TextView tvSetdeviceparam;
     @BindView(R.id.tvTotalTime)
     TextView tvTotalTime;
     @BindView(R.id.btn_startrun)
@@ -107,6 +107,34 @@ public class SingleLineActivity extends Activity {
     TextView avergeScore;
     @BindView(R.id.bt_save)
     Button btSave;
+    @BindView(R.id.paraset)
+    TextView paraset;
+    @BindView(R.id.tv_actionmode)
+    TextView tvActionmode;
+    @BindView(R.id.rb_touch)
+    RadioButton rbTouch;
+    @BindView(R.id.rd_redline)
+    RadioButton rdRedline;
+    @BindView(R.id.rb_touchandredline)
+    RadioButton rbTouchandredline;
+    @BindView(R.id.rg_actionmode)
+    RadioGroup rgActionmode;
+    @BindView(R.id.tv_lightcolor)
+    TextView tvLightcolor;
+    @BindView(R.id.rb_red)
+    RadioButton rbRed;
+    @BindView(R.id.rd_blue)
+    RadioButton rdBlue;
+    @BindView(R.id.rg_lightcolor)
+    RadioGroup rgLightcolor;
+    @BindView(R.id.tv_blinkmode)
+    TextView tvBlinkmode;
+    @BindView(R.id.rb_out)
+    RadioButton rbOut;
+    @BindView(R.id.rd_in)
+    RadioButton rdIn;
+    @BindView(R.id.rg_blinkmode)
+    RadioGroup rgBlinkmode;
 
     private Context context;
     private Device device;
@@ -150,6 +178,13 @@ public class SingleLineActivity extends Activity {
 
     //存放随机获取到的被选择list中的元素并组成一个新的randomList，元素个数为训练次数
     private List<Character> randomList = new ArrayList<>();
+
+    //灯光颜色
+    private Order.LightColor lightColor=Order.LightColor.RED;
+    //灯光模式（内圈还是外圈凉）
+    private Order.LightModel lightModel= Order.LightModel.OUTER;
+    //感应模式（红外还是触碰还是同时）测试期间默认为红外模式
+    private Order.ActionModel actionModel=Order.ActionModel.LIGHT;
 
     private Handler handler = new Handler() {
         @Override
@@ -207,15 +242,17 @@ public class SingleLineActivity extends Activity {
         playerDao = GreenDaoInitApplication.getInstances().getDaoSession().getPlayerDao();
         singleLineScoresDao = GreenDaoInitApplication.getInstances().getDaoSession().getSingleLineScoresDao();
         initDevices();
+        //初始化设备编号并存储到list中
+        initData();
         initView();
-        /*initData();*/
+
     }
 
     @Override
     protected void onStart() {
         Log.d(TAG, "---->onStart");
         super.onStart();
-        /*initData();*/
+
     }
 
     @Override
@@ -228,8 +265,7 @@ public class SingleLineActivity extends Activity {
     protected void onResume() {
         Log.d(TAG, "---->onResume");
         super.onResume();
-        //初始化设备编号并存储到list中
-        initData();
+
     }
 
     @Override
@@ -428,13 +464,16 @@ public class SingleLineActivity extends Activity {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 deviceAmount = Integer.parseInt((String) spDevicenumbers.getSelectedItem());
                 Log.d("deviceAmounts", deviceAmount + "");
-                for (int j = 0; j < deviceAmount; j++) {
-                    if (list.size() > 0) {
-                        selectedList.add(list.get(j));
-                        Log.d("编号", String.valueOf(list.get(j)));
+                if (deviceAmount <= list.size()) {
+                    for (int j = 0; j < deviceAmount; j++) {
+                        if (list.size() > 0) {
+                            selectedList.add(list.get(j));
+                            Log.d("编号", String.valueOf(list.get(j)));
+                        }
                     }
+                } else {
+                    Toast.makeText(context, "可用数量不足，请重新选择设备数量", Toast.LENGTH_SHORT).show();
                 }
-
             }
 
             @Override
@@ -445,6 +484,56 @@ public class SingleLineActivity extends Activity {
         singleLineAdapter = new SingleLineAdapter(this);
         lvTimes.setAdapter(singleLineAdapter);
         spDeviceAmountAdapter.notifyDataSetChanged();
+        //设置感应模式
+        rgActionmode.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                switch (i) {
+                    case R.id.rb_touch:
+                        actionModel = Order.ActionModel.TOUCH;
+                        break;
+                    case R.id.rd_redline:
+                        actionModel = Order.ActionModel.LIGHT;
+                        break;
+                    case R.id.rb_touchandredline:
+                        actionModel = Order.ActionModel.ALL;
+                        break;
+
+
+                }
+            }
+        });
+        //设置单选按钮
+        rgLightcolor.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+
+                switch (i) {
+                    case R.id.rb_red:
+                        lightColor = Order.LightColor.RED;
+                        break;
+                    case R.id.rd_blue:
+                        lightColor = Order.LightColor.BLUE;
+                        break;
+
+                }
+            }
+        });
+
+        //设置灯光内外圈
+        rgBlinkmode.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                switch (i) {
+                    case R.id.rb_out:
+                        lightModel = Order.LightModel.OUTER;
+                        break;
+                    case R.id.rd_in:
+                        lightModel = Order.LightModel.CENTER;
+                }
+            }
+        });
+
     }
 
     //存储可用的设备编号
@@ -498,11 +587,11 @@ public class SingleLineActivity extends Activity {
         new ReceiveThread(handler, device.ftDev, ReceiveThread.TIME_RECEIVE_THREAD, TIME_RECEIVE).start();
 
         device.sendOrder(randomList.get(0),       //randomList的第一个元素
-                Order.LightColor.values()[1],//此处需要更改设备颜色
+                lightColor,//此处需要更改设备颜色
                 Order.VoiceMode.values()[0],
                 Order.BlinkModel.values()[0],
-                Order.LightModel.OUTER,
-                Order.ActionModel.values()[1],//此处需要更改感应模式  0是无动作  1是感应
+                lightModel,
+                actionModel,//此处需要更改感应模式  0是无动作  1是感应
                 Order.EndVoice.values()[0]);
 
 
@@ -568,11 +657,11 @@ public class SingleLineActivity extends Activity {
     //开单个设备
     public void turnOnLightByDeviceNum(Character deviceNum) {
         device.sendOrder(deviceNum,
-                Order.LightColor.BLUE,
+                lightColor,
                 Order.VoiceMode.NONE,
                 Order.BlinkModel.NONE,
-                Order.LightModel.OUTER,
-                Order.ActionModel.values()[1],
+                lightModel,
+                actionModel,
                 Order.EndVoice.NONE);
     }
 
