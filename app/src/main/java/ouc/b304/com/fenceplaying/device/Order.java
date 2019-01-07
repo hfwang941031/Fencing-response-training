@@ -12,7 +12,7 @@ public class Order {
     public static enum LightColor
     {
         /*无、蓝色、红色、绿色、品红*/
-        NONE, BLUE,RED, GREEN,BLUE_RED,BLUE_GREEN,RED_GREEN,BLUE_RED_GREEN
+        NONE, BLUE,RED, GREEN,BLUE_RED,BLUE_GREEN,RED_GREEN,BLUE_RED_GREEN,YELLOW
     }
 
     /*红外高度*/

@@ -18,6 +18,8 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RadioButton;
+import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -90,34 +92,49 @@ public class MatrixActivity extends Activity {
     TextView tvDevicenumbers;
     @BindView(R.id.img_btn_refresh)
     ImageButton imgBtnRefresh;
-    @BindView(R.id.tv_setdeviceparam)
-    TextView tvSetdeviceparam;
-    @BindView(R.id.tv_setdevicemode)
-    TextView tvSetdevicemode;
-    @BindView(R.id.sp_devicesmode)
-    Spinner spDevicesmode;
-    @BindView(R.id.tv_setdevicemaincolor)
-    TextView tvSetdevicemaincolor;
-    @BindView(R.id.sp_devicemaincolor)
-    Spinner spDevicemaincolor;
-    @BindView(R.id.tv_setdevicesecondcolor)
-    TextView tvSetdevicesecondcolor;
-    @BindView(R.id.sp_devicessecondcolor)
-    Spinner spDevicessecondcolor;
-    @BindView(R.id.tv_setlightmode)
-    TextView tvSetlightmode;
-    @BindView(R.id.sp_setlightmode)
-    Spinner spSetlightmode;
-    @BindView(R.id.tv_tishi)
-    TextView tvTishi;
-    @BindView(R.id.tv_beizhu)
-    TextView tvBeizhu;
     @BindView(R.id.showAvergeScore)
     TextView showAvergeScore;
     @BindView(R.id.avergeScore)
     TextView avergeScore;
     @BindView(R.id.bt_save)
     Button btSave;
+    @BindView(R.id.paraset)
+    TextView paraset;
+    @BindView(R.id.tv_actionmode)
+    TextView tvActionmode;
+    @BindView(R.id.rb_touch)
+    RadioButton rbTouch;
+    @BindView(R.id.rd_redline)
+    RadioButton rdRedline;
+    @BindView(R.id.rb_touchandredline)
+    RadioButton rbTouchandredline;
+    @BindView(R.id.rg_actionmode)
+    RadioGroup rgActionmode;
+    @BindView(R.id.tv_lightcolor)
+    TextView tvLightcolor;
+    @BindView(R.id.rb_red)
+    RadioButton rbRed;
+    @BindView(R.id.rd_blue)
+    RadioButton rdBlue;
+    @BindView(R.id.rg_lightcolor)
+    RadioGroup rgLightcolor;
+    @BindView(R.id.tv_blinkmode)
+    TextView tvBlinkmode;
+    @BindView(R.id.rb_out)
+    RadioButton rbOut;
+    @BindView(R.id.rd_in)
+    RadioButton rdIn;
+    @BindView(R.id.rg_blinkmode)
+    RadioGroup rgBlinkmode;
+    @BindView(R.id.tv_wronglightcolor)
+    TextView tvWronglightcolor;
+
+    @BindView(R.id.rg_wronglightcolor)
+    RadioGroup rgWronglightcolor;
+    @BindView(R.id.rb_green)
+    RadioButton rbGreen;
+    @BindView(R.id.rd_yellow)
+    RadioButton rdYellow;
     private Context context;
     private Device device;
     private char deviceNum;
@@ -131,14 +148,8 @@ public class MatrixActivity extends Activity {
     //选中的训练次数
     private int trainTimes = 0;
 
-    //选中的感应模式
-    private String actionModeOfString = null;
-
     //训练次数下拉框适配器
     private ArrayAdapter<String> spTimesAdapter;
-
-    //感应模式选择适配器
-    private ArrayAdapter spModeAdapter;
 
     //每次训练的时间集合
     private ArrayList<Integer> timeList;
@@ -148,9 +159,6 @@ public class MatrixActivity extends Activity {
 
     //计数器
     private int counter = 0;
-    //第二个计数器
-    private int counter2 = 1;
-
     private Timer timer;
 
     //训练开始标志
@@ -161,7 +169,7 @@ public class MatrixActivity extends Activity {
     //存储分好组的设备编号集合
     private List<ArrayList<Character>> listOfSubList;
     //设置一个布尔变量控制保存按钮的可按与否，当一次训练结束后，可以点击该保存按钮进行保存，点击过之后，不能再次进行点击，除非先进行下一次训练并得到一组时间值；
-    private boolean saveBtnIsClickable=false;
+    private boolean saveBtnIsClickable = false;
 
     private Player player;
 
@@ -209,6 +217,16 @@ public class MatrixActivity extends Activity {
 
     /*平均值*/
     private float averageScore = 0;
+
+    //灯光颜色
+    private Order.LightColor lightColor=Order.LightColor.RED;
+    //灯光模式（内圈还是外圈凉）
+    private Order.LightModel lightModel= Order.LightModel.OUTER;
+    //感应模式（红外还是触碰还是同时）测试期间默认为红外模式
+    private Order.ActionModel actionModel=Order.ActionModel.LIGHT;
+    //干扰灯光色
+    private Order.LightColor wrongLightColor = Order.LightColor.GREEN;
+
     private void stopTraining() {
         trainingBeginFlag = false;
         //停止接收线程
@@ -218,6 +236,9 @@ public class MatrixActivity extends Activity {
 
         //很重要的重置计数器
         counter = 0;
+        //清空sublist
+        subList.clear();
+        listOfSubList.clear();
     }
 
     private void analyzeTimeData(String data) {
@@ -227,28 +248,18 @@ public class MatrixActivity extends Activity {
         List<TimeInfo> infos = DataAnalyzeUtils.analyzeTimeData(data);
         for (TimeInfo info : infos) {
             Log.i("编号", info.getDeviceNum() + "");
-            if (info.getDeviceNum() == listOfSubList.get(counter2 - 1).get(0)) {
-                Log.i("counter",  counter+ "");
+            if (info.getDeviceNum() == listOfSubList.get(counter).get(0)) {
+                Log.i("counter", counter + "");
                 counter += 1;
-
-                if (counter > trainTimes) {
-                    listOfSubList = listOfSubList(trainTimes);
-                    counter2 = 1;
-                    break;
-                }
                 Log.d("***infos.size***", infos.size() + "");
                 timeList.add(info.getTime());
                 device.turnOffAllTheLight();
-                turnOnLight2(listOfSubList.get(counter2).get(0), 1, 2);
-                Log.d("开红灯的是：", listOfSubList.get(counter2).get(0) + "");
-                turnOnLight2(listOfSubList.get(counter2).get(1), 0, 1);
-                Log.d("开蓝灯的是：", listOfSubList.get(counter2).get(1) + "");
-                counter2 += 1;
-                if (counter2 > listOfSubList.size() - 1) {
-                    counter2 = listOfSubList.size() - 1;
-                }
-                Log.i("counter2",  counter2 +"");
-
+                if (counter>=trainTimes)
+                    break;
+                device.sendOrder(listOfSubList.get(counter).get(0), lightColor, Order.VoiceMode.NONE, Order.BlinkModel.NONE, lightModel, actionModel, Order.EndVoice.NONE);
+                device.sendOrder(listOfSubList.get(counter).get(1), wrongLightColor, Order.VoiceMode.NONE, Order.BlinkModel.NONE, lightModel, Order.ActionModel.NONE, Order.EndVoice.NONE);
+                Log.d("开目标灯是：", listOfSubList.get(counter).get(0) + ""+listOfSubList.indexOf(listOfSubList.get(counter).get(0)));
+                Log.d("开干扰灯的是：", listOfSubList.get(counter).get(1) + ""+listOfSubList.indexOf(listOfSubList.get(counter).get(1)));
             }
 
         }
@@ -257,6 +268,9 @@ public class MatrixActivity extends Activity {
         msg.obj = "";
         handler.sendMessage(msg);
         if (isTrainingOver()) {
+            //训练结束后，清空sublist
+            subList.clear();
+            listOfSubList.clear();
             //训练结束后设置保存按钮可点击
             saveBtnIsClickable = true;
             Log.d("ifistrainingover", "has run" + counter);
@@ -283,7 +297,7 @@ public class MatrixActivity extends Activity {
         context = this.getApplicationContext();
         initDevices();
         playerDao = GreenDaoInitApplication.getInstances().getDaoSession().getPlayerDao();
-        matrixScoresDao=GreenDaoInitApplication.getInstances().getDaoSession().getMatrixScoresDao();
+        matrixScoresDao = GreenDaoInitApplication.getInstances().getDaoSession().getMatrixScoresDao();
         initView();
         initData();
 
@@ -325,25 +339,73 @@ public class MatrixActivity extends Activity {
 
             }
         });
-        //设置spinner感应模式适配器
-        spModeAdapter = new ArrayAdapter(this, R.layout.spinner_item, Constant.action_model);
-        spDevicesmode.setAdapter(spModeAdapter);
-        //将选中的感应模式存储到变量actionMode中
-        spDevicesmode.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                actionModeOfString = (String) spDevicesmode.getSelectedItem();
-                Log.d("actionMode", actionModeOfString + "");
 
+        matrixAdapter = new MatrixAdapter(this);
+        lvTimes.setAdapter(matrixAdapter);
+
+        //设置感应模式
+        rgActionmode.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                switch (i) {
+                    case R.id.rb_touch:
+                        actionModel = Order.ActionModel.TOUCH;
+                        break;
+                    case R.id.rd_redline:
+                        actionModel = Order.ActionModel.LIGHT;
+                        break;
+                    case R.id.rb_touchandredline:
+                        actionModel = Order.ActionModel.ALL;
+                        break;
+
+
+                }
             }
-
+        });
+        //设置单选按钮
+        rgLightcolor.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
             @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+
+                switch (i) {
+                    case R.id.rb_red:
+                        lightColor = Order.LightColor.RED;
+                        break;
+                    case R.id.rd_blue:
+                        lightColor = Order.LightColor.BLUE;
+                        break;
+
+                }
+            }
+        });
+
+        //设置灯光内外圈
+        rgBlinkmode.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                switch (i) {
+                    case R.id.rb_out:
+                        lightModel = Order.LightModel.OUTER;
+                        break;
+                    case R.id.rd_in:
+                        lightModel = Order.LightModel.CENTER;
+                }
+            }
+        });
+
+        rgWronglightcolor.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup radioGroup, int i) {
+                switch (i) {
+                    case R.id.rb_green:
+                        wrongLightColor = Order.LightColor.GREEN;
+                        break;
+                    case R.id.rd_yellow:
+                        wrongLightColor = Order.LightColor.YELLOW;
+                }
 
             }
         });
-        matrixAdapter = new MatrixAdapter(this);
-        lvTimes.setAdapter(matrixAdapter);
     }
 
     public void updateData() {
@@ -401,7 +463,7 @@ public class MatrixActivity extends Activity {
         Log.d(TAG, "---->onDestroy");
     }
 
-    @OnClick({R.id.bt_run_cancel, R.id.layout_cancel, R.id.btn_turnon, R.id.btn_turnoff, R.id.btn_startrun, R.id.btn_stoprun,R.id.img_btn_refresh,R.id.bt_save})
+    @OnClick({R.id.bt_run_cancel, R.id.layout_cancel, R.id.btn_turnon, R.id.btn_turnoff, R.id.btn_startrun, R.id.btn_stoprun, R.id.img_btn_refresh, R.id.bt_save})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.bt_run_cancel:
@@ -527,28 +589,8 @@ public class MatrixActivity extends Activity {
         }
     }
 
-    public void turnOnLight2(final char deviceNum, final int actionMode, final int color) {
-        //实现Runnable接口
-        new Thread(new Runnable() {
-            @Override
-            public void run() {
-                Timer.sleep(5000);
-                if (!trainingBeginFlag)
-                    return;
-                device.sendOrder(deviceNum,
-                        Order.LightColor.values()[color],
-                        Order.VoiceMode.values()[0],
-                        Order.BlinkModel.values()[0],
-                        Order.LightModel.OUTER,
-                        Order.ActionModel.values()[actionMode],
-                        Order.EndVoice.values()[0]);
-            }
-        }).start();
-    }
-
     private void startTraining() {
         counter = 0;
-        counter2 = 1;
         trainingBeginFlag = true;
         //清空时间列表，防止将上次训练的成绩保存到下一次训练当中
         timeList.clear();
@@ -560,18 +602,9 @@ public class MatrixActivity extends Activity {
         //开启接收设备返回时间的监听线程
         new ReceiveThread(handler, device.ftDev, ReceiveThread.TIME_RECEIVE_THREAD, TIME_RECEIVE).start();
 
-      /*  for (int i = 0; i < 2; i++) {
-            Log.d("第一次发送", "i:" + i);
-            device.sendOrder(listOfSubList.get(0).get(i),
-                    Order.LightColor.values()[2 - i],
-                    Order.VoiceMode.values()[0],
-                    Order.BlinkModel.values()[0],
-                    Order.LightModel.OUTER,
-                    Order.ActionModel.values()[1 - i],
-                    Order.EndVoice.values()[0]);
-        }*/
-      device.sendOrder(listOfSubList.get(0).get(0),Order.LightColor.RED,Order.VoiceMode.NONE,Order.BlinkModel.NONE,Order.LightModel.OUTER,Order.ActionModel.LIGHT,Order.EndVoice.NONE);
-      device.sendOrder(listOfSubList.get(0).get(1),Order.LightColor.BLUE,Order.VoiceMode.NONE,Order.BlinkModel.NONE,Order.LightModel.OUTER,Order.ActionModel.NONE,Order.EndVoice.NONE);
+        //第一次发送为目标 第二次发送为干扰灯
+        device.sendOrder(listOfSubList.get(0).get(0), lightColor, Order.VoiceMode.NONE, Order.BlinkModel.NONE, lightModel, actionModel, Order.EndVoice.NONE);
+        device.sendOrder(listOfSubList.get(0).get(1), wrongLightColor, Order.VoiceMode.NONE, Order.BlinkModel.NONE, lightModel, Order.ActionModel.NONE, Order.EndVoice.NONE);
 
         //获得当前的系统时间
         startTime = System.currentTimeMillis();
@@ -597,7 +630,9 @@ public class MatrixActivity extends Activity {
             random2 = NumberUtils.randomNumber(list.size());
         }
         subList.add(list.get(random1));
+        Log.d("zi1", list.get(random1)+"");
         subList.add(list.get(random2));
+        Log.d("zi2", list.get(random2)+"");
         return (ArrayList<Character>) subList;
     }
 
@@ -605,6 +640,7 @@ public class MatrixActivity extends Activity {
     public List<ArrayList<Character>> listOfSubList(int trainTimes) {
         for (int i = 0; i < trainTimes; i++) {
             subList.add(randomSubList(list));
+            Log.d("listofsublist"+i, subList.get(i) + "");
         }
         return subList;
     }
