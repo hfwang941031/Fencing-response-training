@@ -15,6 +15,12 @@
 
         >
 
+
+        <ImageView
+            android:id="@+id/img_setting"
+            android:layout_width="50dp"
+            android:layout_height="match_parent"
+            android:src="@drawable/action_settings"/>
         <TextView
         android:id="@+id/paraset"
         android:layout_width="wrap_content"
