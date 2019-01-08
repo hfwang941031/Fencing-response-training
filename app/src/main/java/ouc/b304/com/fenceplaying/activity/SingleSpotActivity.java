@@ -530,6 +530,9 @@ public class SingleSpotActivity extends Activity {
         for (DeviceInfo info : Device.DEVICE_LIST) {
             list.add(info.getDeviceNum());
         }
+        if (list.size() < 1) {
+            Toast.makeText(context, "可用设备不足一个，无法进行训练！", Toast.LENGTH_LONG).show();
+        }
 
         //初始化String类型的时间列表
         scoreList = new ArrayList<>();

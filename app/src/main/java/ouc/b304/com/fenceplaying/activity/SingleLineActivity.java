@@ -543,17 +543,16 @@ public class SingleLineActivity extends Activity {
         for (DeviceInfo info : Device.DEVICE_LIST) {
             list.add(info.getDeviceNum());
         }
+        if (list.size() < 2) {
+            Toast.makeText(context, "可用设备不足两个，无法进行训练！", Toast.LENGTH_LONG).show();
+        }
         //初始化String类型的时间列表
         scoreList = new ArrayList<>();
 
         //初始化String类型的运动员姓名列表
         nameList = new ArrayList<>();
         timeList = new ArrayList<>();
-               /*//根据选择的设备数量，从list中顺序取出前设备数量个元素存储到selectdList中
-               for (int i=0;i<deviceAmount;i++) {
-                   selectedList.add(list.get(i));
-                   Log.d("编号", String.valueOf(list.get(i)));
-               }*/
+
     }
 
 

@@ -426,6 +426,9 @@ public class MatrixActivity extends Activity {
         for (DeviceInfo info : Device.DEVICE_LIST) {
             list.add(info.getDeviceNum());
         }
+        if (list.size() < 4) {
+            Toast.makeText(context, "可用设备不足四个，无法进行训练！", Toast.LENGTH_LONG).show();
+        }
         timeList = new ArrayList<>();
         //初始化String类型的时间列表
         scoreList = new ArrayList<>();

@@ -61,12 +61,13 @@ public class Device {
             Toast.makeText(context, "还未插入协调器,请插入协调器!", Toast.LENGTH_SHORT).show();
             return false;
         }
-        if (DEVICE_LIST.isEmpty() || DEVICE_LIST.size() == 0)
-        {
+        if (DEVICE_LIST.isEmpty() || DEVICE_LIST.size() == 0) {
             Toast.makeText(context, "未检测到任何设备,请开启设备!", Toast.LENGTH_SHORT).show();
             return false;
+        } else {
+
+            Toast.makeText(context, "检测到设备插入", Toast.LENGTH_SHORT).show();
         }
-        else Toast.makeText(context,"检测到设备插入",Toast.LENGTH_SHORT).show();
         return true;
     }
 
