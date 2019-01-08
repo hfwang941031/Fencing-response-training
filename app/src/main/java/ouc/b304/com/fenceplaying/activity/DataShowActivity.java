@@ -677,7 +677,7 @@ public class DataShowActivity extends Activity {
         linechartviewDatashow.setZoomEnabled(true);//设置是否支持缩放
         linechartviewDatashow.setInteractive(true);//设置图表是否可以与用户互动
         linechartviewDatashow.setValueSelectionEnabled(true);//设置图表数据是否选中进行显示
-        linechartviewDatashow.setBackgroundColor(ChartUtils.pickColor());
+        linechartviewDatashow.setBackgroundColor(Color.WHITE);
         line.setCubic(false);//设置为直线而非平滑线
         line.setPointColor(Color.RED);//设置点的颜色
         line.setHasLabels(true);
@@ -736,7 +736,7 @@ public class DataShowActivity extends Activity {
         columnchartviewDatashow.setZoomEnabled(true);//设置是否支持缩放
         columnchartviewDatashow.setInteractive(true);//设置图表是否可以与用户互动
         columnchartviewDatashow.setValueSelectionEnabled(true);//设置图表数据是否选中进行显示
-        columnchartviewDatashow.setBackgroundColor(ChartUtils.COLOR_BLUE);//设置柱状图背景颜色
+        columnchartviewDatashow.setBackgroundColor(Color.WHITE);//设置柱状图背景颜色
 
 
         //设置坐标轴各类属性
