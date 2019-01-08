@@ -253,10 +253,11 @@ public class DataShowActivity extends Activity {
                                         playerList = qb.where(PlayerDao.Properties.Name.eq(selectedName)).list();
                                         long playerId = playerList.get(0).getId();
                                         QueryBuilder<SingleSpotScores> queryBuilder = singleSpotScoresDao.queryBuilder();
-                                        singleSpotScoresList = queryBuilder.where(SingleSpotScoresDao.Properties.PlayerId.eq(playerId)).list();
+                                        singleSpotScoresList = queryBuilder.where(queryBuilder.and(SingleSpotScoresDao.Properties.PlayerId.eq(playerId),SingleSpotScoresDao.Properties.Date.between(startDate,endDate))).list();
                                         Log.d("Size of ScoreList", singleSpotScoresList.size() + "");
                                         if (singleSpotScoresList.size() <= 0) {
                                             Toast.makeText(context, "无当前运动员单点训练成绩，请先进行训练", Toast.LENGTH_SHORT).show();
+                                            dataShowAdapter.notifyDataSetChanged();
                                         } else {
                                             for (SingleSpotScores s : singleSpotScoresList) {
                                                 //将平均成绩添加到averageScoreList中
@@ -333,7 +334,7 @@ public class DataShowActivity extends Activity {
                                         playerList = qb1.where(PlayerDao.Properties.Name.eq(selectedName)).list();
                                         long playerId1 = playerList.get(0).getId();
                                         QueryBuilder<SingleLineScores> queryBuilder1 = singleLineScoresDao.queryBuilder();
-                                        singleLineScoresList = queryBuilder1.where(SingleLineScoresDao.Properties.PlayerId.eq(playerId1)).list();
+                                        singleLineScoresList = queryBuilder1.where(queryBuilder1.and(SingleLineScoresDao.Properties.PlayerId.eq(playerId1),SingleLineScoresDao.Properties.Date.between(startDate,endDate))).list();
                                         Log.d("Size of ScoreList", singleLineScoresList.size() + "");
                                         if (singleLineScoresList.size() <= 0) {
                                             Toast.makeText(context, "无当前运动员单列训练成绩，请先进行训练", Toast.LENGTH_SHORT).show();
@@ -372,7 +373,7 @@ public class DataShowActivity extends Activity {
                                                     Long playerId = playerList.get(0).getId();
                                                     queryBuilder1.where(SingleLineScoresDao.Properties.PlayerId.eq(playerId), queryBuilder1.and(SingleLineScoresDao.Properties.TrainingTimes.eq(trainTimes), SingleLineScoresDao.Properties.AverageScores.eq(tempAverageScore)));
 /*
-                                    queryBuilder1.and(,);//通过组合查询训练次数和平均成绩找到该item对应的单点成绩实体
+                                   //通过组合查询训练次数和平均成绩找到该item对应的单点成绩实体
 */
                                                     List<SingleLineScores> singleLineScoresList = queryBuilder1.list();//列出单点成绩实体
                                                     concreteScoreList.clear();
@@ -409,7 +410,7 @@ public class DataShowActivity extends Activity {
                                         playerList = qb3.where(PlayerDao.Properties.Name.eq(selectedName)).list();
                                         long playerId2 = playerList.get(0).getId();
                                         QueryBuilder<MatrixScores> queryBuilder2 = matrixScoresDao.queryBuilder();
-                                        matrixScoresList = queryBuilder2.where(MatrixScoresDao.Properties.PlayerId.eq(playerId2)).list();
+                                        matrixScoresList = queryBuilder2.where(queryBuilder2.and(MatrixScoresDao.Properties.PlayerId.eq(playerId2),MatrixScoresDao.Properties.Date.between(startDate,endDate))).list();
                                         Log.d("Size of ScoreList", matrixScoresList.size() + "");
                                         if (matrixScoresList.size() <= 0) {
                                             Toast.makeText(context, "无当前运动员单点训练成绩，请先进行训练", Toast.LENGTH_SHORT).show();
