@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
@@ -126,6 +127,12 @@ public class SingleSpotActivity extends Activity {
     RadioButton rdIn;
     @BindView(R.id.rg_blinkmode)
     RadioGroup rgBlinkmode;
+    @BindView(R.id.tv_avalibledevices)
+    TextView tvAvalibledevices;
+    @BindView(R.id.tv_devicenumbers)
+    TextView tvDevicenumbers;
+    @BindView(R.id.img_btn_refresh)
+    ImageButton imgBtnRefresh;
 /*
     @BindView(R.id.lv_saveresult)
     ListView lvSaveresult;*/
@@ -191,11 +198,11 @@ public class SingleSpotActivity extends Activity {
 
 
     //灯光颜色
-    private Order.LightColor lightColor=Order.LightColor.RED;
+    private Order.LightColor lightColor = Order.LightColor.RED;
     //灯光模式（内圈还是外圈凉）
-    private Order.LightModel lightModel= Order.LightModel.OUTER;
+    private Order.LightModel lightModel = Order.LightModel.OUTER;
     //感应模式（红外还是触碰还是同时）测试期间默认为红外模式
-    private Order.ActionModel actionModel=Order.ActionModel.LIGHT;
+    private Order.ActionModel actionModel = Order.ActionModel.LIGHT;
 
     private Handler handler = new Handler() {
         @Override
@@ -278,7 +285,7 @@ public class SingleSpotActivity extends Activity {
         super.onDestroy();
     }
 
-    @OnClick({R.id.bt_run_cancel, R.id.btn_turnon, R.id.btn_turnoff, R.id.btn_startrun, R.id.btn_stoprun, R.id.bt_save})
+    @OnClick({R.id.bt_run_cancel, R.id.btn_turnon, R.id.btn_turnoff, R.id.btn_startrun, R.id.btn_stoprun, R.id.bt_save,R.id.img_btn_refresh})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.bt_run_cancel:
@@ -392,7 +399,23 @@ public class SingleSpotActivity extends Activity {
                 }
 
                 break;
+            case R.id.img_btn_refresh:
+                updateData();
+                Toast.makeText(this, "可用设备已刷新", Toast.LENGTH_LONG).show();
+                break;
         }
+    }
+
+    //刷新可用设备名称——
+    public void updateData() {
+        StringBuffer stringBuffer = new StringBuffer(list.size());
+        for (int i = 0; i < list.size(); i++) {
+            stringBuffer.append(list.get(i));
+            stringBuffer.append(" ");
+        }
+        tvDevicenumbers.setText("");
+        tvDevicenumbers.setText(stringBuffer.toString());
+
     }
 
     public void startTraining() {
@@ -611,4 +634,7 @@ public class SingleSpotActivity extends Activity {
     }
 
 
+    @OnClick()
+    public void onViewClicked() {
+    }
 }
