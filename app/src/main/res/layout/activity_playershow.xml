@@ -42,6 +42,9 @@
                     android:layout_height="40dp"
                     android:background="@color/blue"/>
             </LinearLayout>
+
+
+
             <!--黑线-->
             <ImageView
                 android:layout_width="fill_parent"
@@ -49,6 +52,7 @@
                 android:background="#000"
                 />
 
+            <include layout="@layout/part_tvshowplayerinfo" />
             <!--黑线-->
             <ImageView
                 android:layout_width="fill_parent"
@@ -100,15 +104,17 @@
                     android:layout_height="0dp"
                     android:layout_weight="1"
                     android:orientation="horizontal">
+
                     <TextView
                         android:id="@+id/tv_playerName"
-                        android:text="运动员姓名："
-                        android:textSize="25sp"
-                        android:gravity="right"
-                        android:textColor="@color/black"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="3"/>
+                        android:layout_gravity="center_vertical"
+                        android:layout_weight="3"
+                        android:gravity="right"
+                        android:text="运动员姓名："
+                        android:textColor="@color/black"
+                        android:textSize="25sp" />
 
                     <EditText
                         android:hint="请输入运动员姓名"
@@ -137,7 +143,8 @@
                         android:gravity="right"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="3"/>
+                        android:layout_weight="3"
+                        android:layout_gravity="center_vertical"/>
                     <EditText
                         android:hint="请输入运动员组别"
                         android:id="@+id/edt_playerGroup"
@@ -164,7 +171,8 @@
                         android:gravity="right"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="3"/>
+                        android:layout_weight="3"
+                        android:layout_gravity="center_vertical"/>
                     <Spinner
                         android:id="@+id/spinner_age"
                         android:layout_width="0dp"
@@ -190,7 +198,8 @@
                         android:gravity="right"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="3"/>
+                        android:layout_weight="3"
+                        android:layout_gravity="center_vertical"/>
                     <Spinner
                         android:id="@+id/spinner_height"
                         android:layout_width="0dp"
@@ -216,7 +225,8 @@
                         android:gravity="right"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="3"/>
+                        android:layout_weight="3"
+                        android:layout_gravity="center_vertical"/>
                     <Spinner
                         android:id="@+id/spinner_weight"
                         android:layout_width="0dp"
@@ -242,7 +252,8 @@
                         android:gravity="right"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="3"/>
+                        android:layout_weight="3"
+                        android:layout_gravity="center_vertical"/>
                     <RadioGroup
                         android:id="@+id/radiogroup_gender"
                         android:layout_width="0dp"
@@ -284,7 +295,8 @@
                         android:gravity="right"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="3"/>
+                        android:layout_weight="3"
+                        android:layout_gravity="center_vertical"/>
                     <RadioGroup
                         android:id="@+id/radiogroup_trainmode"
                         android:layout_width="0dp"
