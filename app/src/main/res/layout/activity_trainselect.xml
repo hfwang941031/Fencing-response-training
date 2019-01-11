@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    >
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="0dp"
+    android:layout_weight="1"></LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:background="@drawable/home_tab">
+        <RelativeLayout
+            android:id="@+id/rl_responsetrain"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="20dp"
+            android:layout_weight="1"
+            android:background="@drawable/home_tab_bg">
+
+            <ImageView
+                android:id="@+id/img_icon_responsetrain"
+                android:layout_width="125dp"
+                android:layout_height="108dp"
+                android:layout_centerInParent="true"
+                android:layout_marginLeft="20dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/home_tab1" />
+
+            <TextView
+                android:id="@+id/tv_responsetrain"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/img_icon_responsetrain"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="5px"
+                android:text="敏捷训练"
+                android:textColor="@color/black"
+                android:textSize="30sp" />
+        </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/rl_accuracytrain"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="20dp"
+            android:layout_weight="1"
+            android:background="@drawable/home_tab_bg">
+
+            <ImageView
+                android:id="@+id/img_icon_accuracytrain"
+                android:layout_width="125dp"
+                android:layout_height="108dp"
+                android:layout_centerInParent="true"
+                android:layout_marginLeft="20dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/home_tab2" />
+
+            <TextView
+                android:id="@+id/tv_accuracy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/img_icon_accuracytrain"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="5px"
+                android:text="精准训练"
+                android:textColor="@color/black"
+                android:textSize="30sp" />
+        </RelativeLayout>
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"></LinearLayout>
+
+
+
+</LinearLayout>

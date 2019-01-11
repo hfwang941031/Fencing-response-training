@@ -33,11 +33,11 @@
                 android:layout_height="40dp"
                 android:layout_gravity="center">
                 <TextView
-                    android:text="展示运动员信息"
+                    android:text="展示教练员信息"
                     android:textColor="@color/white"
                     android:textSize="25sp"
                     android:gravity="center"
-                    android:id="@+id/tv_showPlayerInfo"
+                    android:id="@+id/tv_showCoachInfo"
                     android:layout_width="match_parent"
                     android:layout_height="40dp"
                     android:background="@color/blue"/>
@@ -52,7 +52,7 @@
                 android:background="#000"
                 />
 
-            <include layout="@layout/part_tvshowplayerinfo" />
+            <include layout="@layout/part_tvshowcoachinfo" />
             <!--黑线-->
             <ImageView
                 android:layout_width="fill_parent"
@@ -60,7 +60,7 @@
                 android:background="#000"
                 />
             <ListView
-                android:id="@+id/lv_showPlayerInfo"
+                android:id="@+id/lv_showCoachInfo"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
@@ -81,11 +81,11 @@
             android:layout_weight="5"
             android:orientation="vertical">
             <TextView
-                android:text="添加运动员信息"
+                android:text="添加教练员信息"
                 android:textColor="@color/white"
                 android:textSize="25sp"
                 android:gravity="center"
-                android:id="@+id/tv_addPlayerInfo"
+                android:id="@+id/tv_addCoachInfo"
                 android:layout_width="match_parent"
                 android:layout_height="40dp"
                 android:background="@color/blue"/>
@@ -106,19 +106,19 @@
                     android:orientation="horizontal">
 
                     <TextView
-                        android:id="@+id/tv_playerName"
+                        android:id="@+id/tv_coachName"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_gravity="center_vertical"
                         android:layout_weight="3"
                         android:gravity="right"
-                        android:text="运动员姓名："
+                        android:text="教练员姓名："
                         android:textColor="@color/black"
                         android:textSize="25sp" />
 
                     <EditText
-                        android:hint="请输入运动员姓名"
-                        android:id="@+id/edt_playerName"
+                        android:hint="请输入教练员姓名"
+                        android:id="@+id/edt_coachName"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
                         android:layout_weight="5"/>
@@ -135,8 +135,8 @@
                     android:layout_weight="1"
                     android:orientation="horizontal">
                     <TextView
-                        android:id="@+id/tv_playerGroup"
-                        android:text="运动员组别："
+                        android:id="@+id/tv_coachGroup"
+                        android:text="教练员等级："
                         android:textSize="25sp"
                         android:textColor="@color/black"
 
@@ -145,12 +145,12 @@
                         android:layout_height="match_parent"
                         android:layout_weight="3"
                         android:layout_gravity="center_vertical"/>
-                    <EditText
-                        android:hint="请输入运动员组别"
-                        android:id="@+id/edt_playerGroup"
+                    <Spinner
+                        android:id="@+id/spinner_level"
                         android:layout_width="0dp"
                         android:layout_height="match_parent"
-                        android:layout_weight="5"/>
+                        android:layout_weight="5"
+                        android:background="@drawable/set_group_spinner"/>
                 </LinearLayout>
                 <ImageView
                     android:layout_width="fill_parent"
@@ -163,8 +163,8 @@
                     android:layout_weight="1"
                     android:orientation="horizontal">
                     <TextView
-                        android:id="@+id/tv_playerAge"
-                        android:text="运动员年龄："
+                        android:id="@+id/tv_coachAge"
+                        android:text="教练员年龄："
                         android:textColor="@color/black"
 
                         android:textSize="25sp"
@@ -191,8 +191,8 @@
                     android:layout_weight="1"
                     android:orientation="horizontal">
                     <TextView
-                        android:id="@+id/tv_playerHeight"
-                        android:text="运动员身高："
+                        android:id="@+id/tv_coachHeight"
+                        android:text="教练员身高："
                         android:textColor="@color/black"
 
                         android:textSize="25sp"
@@ -219,8 +219,8 @@
                     android:layout_weight="1"
                     android:orientation="horizontal">
                     <TextView
-                        android:id="@+id/tv_playerWeight"
-                        android:text="运动员体重："
+                        android:id="@+id/tv_coachWeight"
+                        android:text="教练员体重："
                         android:textColor="@color/black"
 
                         android:textSize="25sp"
@@ -247,8 +247,8 @@
                     android:layout_weight="1"
                     android:orientation="horizontal">
                     <TextView
-                        android:id="@+id/tv_playerGender"
-                        android:text="运动员性别："
+                        android:id="@+id/tv_coachGender"
+                        android:text="教练员性别："
                         android:textColor="@color/black"
 
                         android:textSize="25sp"
@@ -291,7 +291,7 @@
                     android:layout_weight="1">
                     <TextView
                         android:id="@+id/tv_playMode"
-                        android:text="训练方式："
+                        android:text="剑种："
                         android:textColor="@color/black"
 
                         android:textSize="25sp"

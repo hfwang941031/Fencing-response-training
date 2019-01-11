@@ -28,7 +28,7 @@ public class PowerAdapter extends BaseAdapter {
         if (Device.DEVICE_LIST == null)
             return 0;
         return Math.min(MAX_ITEM_COUNT,Device.DEVICE_LIST.size());
-//        return Device.DEVICE_LIST.size();
+//
     }
 
     @Override
@@ -51,11 +51,8 @@ public class PowerAdapter extends BaseAdapter {
         TextView tvPower =  view1.findViewById(R.id.tv_power);
         ImageView imgPower =  view1.findViewById(R.id.img_power);
         DeviceInfo info = Device.DEVICE_LIST.get(i);
-        tvDeviceNum.setText("设备" + info.getDeviceNum());
-        /*if (info.getPower() == 0)
-           tvPower.setText("5%");
-       else
-            tvPower.setText(info.getPower() + "0%");*/
+        tvDeviceNum.setText("" + info.getDeviceNum());
+
         switch (info.getPower())
         {
             case 0:

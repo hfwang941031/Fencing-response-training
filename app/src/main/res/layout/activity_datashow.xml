@@ -24,15 +24,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:textSize="22sp"
                 android:text="运动员"
-                android:gravity="center_horizontal"/>
+                android:gravity="center_horizontal"
+                android:background="@drawable/proportion_text_background"/>
             <Spinner
                 android:id="@+id/sp_playername"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"></Spinner>
+                android:layout_weight="1"
+                android:background="@drawable/set_group_spinner"></Spinner>
         </LinearLayout>
         <View
             android:layout_width="1dp"
@@ -50,15 +52,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:textSize="22sp"
                 android:text="起始时间"
-                android:gravity="center_horizontal"/>
+                android:gravity="center_horizontal"
+                android:background="@drawable/proportion_text_background"/>
             <Button
                 android:id="@+id/btn_starttime"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"></Button>
+                android:layout_weight="1"
+                ></Button>
         </LinearLayout>
         <View
             android:layout_width="1dp"
@@ -76,10 +80,11 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:textSize="22sp"
                 android:text="终止时间"
-                android:gravity="center_horizontal"/>
+                android:gravity="center_horizontal"
+                android:background="@drawable/proportion_text_background"/>
             <Button
                 android:id="@+id/btn_endtime"
                 android:layout_width="match_parent"
@@ -102,15 +107,17 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:textColor="@color/black"
+                android:textColor="@color/white"
                 android:textSize="22sp"
                 android:text="训练类别"
-                android:gravity="center_horizontal"/>
+                android:gravity="center_horizontal"
+                android:background="@drawable/proportion_text_background"/>
             <Spinner
                 android:id="@+id/sp_trainingmode"
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
-                android:layout_weight="1"></Spinner>
+                android:layout_weight="1"
+                android:background="@drawable/set_group_spinner"></Spinner>
         </LinearLayout>
         <View
             android:layout_width="1dp"
@@ -131,6 +138,7 @@
                 android:textSize="22sp"
                 android:textColor="@color/black"
                 android:gravity="center"
+                android:background="@drawable/shape_buttonred"
                 ></Button>
         </LinearLayout>
     </LinearLayout>

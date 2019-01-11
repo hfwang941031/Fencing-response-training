@@ -1,12 +1,10 @@
 package ouc.b304.com.fenceplaying.activity;
 
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.animation.Animation;
 import android.view.animation.ScaleAnimation;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 
 import org.jetbrains.annotations.Nullable;
@@ -27,7 +25,7 @@ public class SplashActivity extends Activity {
         ButterKnife.bind(this);
         //缩放动画
         ScaleAnimation scaleAnimation = new ScaleAnimation(0, 1, 0, 1, Animation.RELATIVE_TO_SELF, 0.5f, Animation.RELATIVE_TO_SELF, 0.5f);
-        scaleAnimation.setDuration(2000);
+        scaleAnimation.setDuration(1000);
         llSplash.startAnimation(scaleAnimation);
         scaleAnimation.setAnimationListener(new Animation.AnimationListener() {
             @Override
@@ -38,7 +36,7 @@ public class SplashActivity extends Activity {
             @Override
             public void onAnimationEnd(Animation animation) {
 
-                startActivity(new Intent(getApplicationContext(),MainActivity.class));
+                startActivity(new Intent(getApplicationContext(),NewMainActivity.class));
                 /*防止返回到欢迎页*/
                 finish();
 

@@ -91,20 +91,24 @@
                 android:orientation="horizontal">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:id="@+id/tv_devicenumber"
+                    android:layout_width="150dp"
+                    android:layout_height="40dp"
                     android:layout_gravity="center"
                     android:layout_marginLeft="20dp"
                     android:text="选择设备"
-                    android:textColor="@color/black"
-                    android:textSize="22sp" />
+                    android:textColor="@color/white"
+                    android:textSize="22sp"
+                    android:background="@drawable/proportion_text_background"
+                    android:gravity="center_horizontal"/>
 
                 <Spinner
                     android:id="@+id/sp_devices"
                     android:layout_width="280dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginLeft="20dp"></Spinner>
+                    android:layout_marginLeft="20dp"
+                    android:background="@drawable/set_group_spinner"></Spinner>
 
                 <Button
                     android:id="@+id/btn_turnon"
@@ -124,20 +128,23 @@
                 android:layout_weight="1">
 
                 <TextView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
+                    android:layout_width="150dp"
+                    android:layout_height="40dp"
                     android:layout_gravity="center"
                     android:layout_marginLeft="20dp"
                     android:text="训练次数"
-                    android:textColor="@color/black"
-                    android:textSize="22sp" />
+                    android:textColor="@color/white"
+                    android:textSize="22sp"
+                    android:gravity="center_horizontal"
+                    android:background="@drawable/proportion_text_background"/>
 
                 <Spinner
                     android:id="@+id/sp_times"
                     android:layout_width="280dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
-                    android:layout_marginLeft="20dp"></Spinner>
+                    android:layout_marginLeft="20dp"
+                    android:background="@drawable/set_group_spinner"></Spinner>
 
                 <Button
                     android:id="@+id/btn_turnoff"

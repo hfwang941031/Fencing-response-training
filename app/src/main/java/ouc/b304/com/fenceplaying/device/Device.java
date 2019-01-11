@@ -33,13 +33,10 @@ public class Device {
     byte dataBit = 8; /* 8:8bit, 7: 7bit */
     byte parity = 0; /* 0: none, 1: odd, 2: even, 3: mark, 4: space */
 
-    public Device(Context context)
-    {
-        try
-        {
+    public Device(Context context) {
+        try {
             ftdid2xx = D2xxManager.getInstance(context);
-        } catch (D2xxManager.D2xxException e)
-        {
+        } catch (D2xxManager.D2xxException e) {
             e.printStackTrace();
         }
     }
@@ -54,10 +51,8 @@ public class Device {
     }
 
     //检测设备
-    public boolean checkDevice(Context context)
-    {
-        if (devCount <= 0)
-        {
+    public boolean checkDevice(Context context) {
+        if (devCount <= 0) {
             Toast.makeText(context, "还未插入协调器,请插入协调器!", Toast.LENGTH_SHORT).show();
             return false;
         }
@@ -72,24 +67,18 @@ public class Device {
     }
 
     // 关闭activity时调用该方法
-    public void disconnect()
-    {
+    public void disconnect() {
         devCount = -1;
         //currentIndex = -1;
-        try
-        {
+        try {
             Thread.sleep(50);
-        } catch (InterruptedException e)
-        {
+        } catch (InterruptedException e) {
             e.printStackTrace();
         }
 
-        if (ftDev != null)
-        {
-            synchronized (ftDev)
-            {
-                if (true == ftDev.isOpen())
-                {
+        if (ftDev != null) {
+            synchronized (ftDev) {
+                if (true == ftDev.isOpen()) {
                     ftDev.close();
                 }
             }
@@ -97,10 +86,8 @@ public class Device {
         Log.d("Method", "断开连接方法被启用");
     }
 
-    public void initConfig()
-    {
-        if (ftDev == null || !ftDev.isOpen())
-        {
+    public void initConfig() {
+        if (ftDev == null || !ftDev.isOpen()) {
             Log.e("j2xx", "SetConfig: device not open");
             return;
         }
@@ -117,16 +104,12 @@ public class Device {
     }
 
     //连接
-    public void connect(Context context)
-    {
+    public void connect(Context context) {
         index = 0;
-        if (null == ftDev)
-        {
+        if (null == ftDev) {
             ftDev = ftdid2xx.openByIndex(context, index);
-        } else
-        {
-            synchronized (ftDev)
-            {
+        } else {
+            synchronized (ftDev) {
                 ftDev = ftdid2xx.openByIndex(context, index);
             }
         }
@@ -136,18 +119,14 @@ public class Device {
     }
 
     // 更新连接设备列表，当重新打开程序或是熄灭屏幕之后重新打开都会执行此方法，应该次列表的设备数量一般情况下为1
-    public void createDeviceList(Context context)
-    {
+    public void createDeviceList(Context context) {
         // 获取D2XX设备的数量，可以使用这个函数来确定连接到系统上的设备的数量
         int tempDevCount = ftdid2xx.createDeviceInfoList(context);
-        if (tempDevCount > 0)
-        {
-            if (devCount != tempDevCount)
-            {
+        if (tempDevCount > 0) {
+            if (devCount != tempDevCount) {
                 devCount = tempDevCount;
             }
-        } else
-        {
+        } else {
             devCount = -1;
             index = -1;
         }
@@ -157,8 +136,7 @@ public class Device {
     /**
      * 区全部设备信息 电量、编号、短地址
      */
-    public void sendGetDeviceInfo()
-    {
+    public void sendGetDeviceInfo() {
         Log.d(Constant.LOG_TAG, " send get All DeviceInfo Order!");
         // 获取全部设备电量指令
         String data = "+04a";
@@ -166,8 +144,7 @@ public class Device {
     }
 
     //修改灯的PAN_ID 和 num
-    public void changeLightPANID(String PAN_ID, char num, String address)
-    {
+    public void changeLightPANID(String PAN_ID, char num, String address) {
         String order = "+14*" + PAN_ID + num + address;
 
         Log.d(Constant.LOG_TAG, "order:" + order);
@@ -175,20 +152,17 @@ public class Device {
     }
 
     //修改协调器PANID
-    public void changeControllerPANID(String PAN_ID)
-    {
+    public void changeControllerPANID(String PAN_ID) {
         sendMessage("+08b" + PAN_ID);
     }
 
-    public void getControllerPAN_ID()
-    {
+    public void getControllerPAN_ID() {
         sendMessage("+08c");
     }
-/*打开全部灯*/
+    /*打开全部灯*/
 
     public void turnOnAllTheLight() {
-        for (DeviceInfo info : Device.DEVICE_LIST)
-        {
+        for (DeviceInfo info : Device.DEVICE_LIST) {
             sendOrder(info.getDeviceNum(),
                     Order.LightColor.BLUE,
                     Order.VoiceMode.NONE,
@@ -200,16 +174,11 @@ public class Device {
     }
 
 
-
-
-/*关闭全部灯*/
-    public void turnOffAllTheLight()
-    {
+    /*关闭全部灯*/
+    public void turnOffAllTheLight() {
         //关闭全部灯
-        if (devCount > 0)
-        {
-            for (DeviceInfo info : Device.DEVICE_LIST)
-            {
+        if (devCount > 0) {
+            for (DeviceInfo info : Device.DEVICE_LIST) {
                 sendOrder(info.getDeviceNum(),
                         Order.LightColor.NONE,
                         Order.VoiceMode.NONE,
@@ -222,21 +191,18 @@ public class Device {
     }
 
     public void sendOrder(char lightId, Order.LightColor color, Order.VoiceMode voiceMode, Order.BlinkModel blinkModel,
-                          Order.LightModel lightModel, Order.ActionModel actionModel, Order.EndVoice endVoice)
-    {
+                          Order.LightModel lightModel, Order.ActionModel actionModel, Order.EndVoice endVoice) {
         String order = Order.getOrder(lightId, color, voiceMode, blinkModel, lightModel, actionModel, endVoice);
         if (order.equals(""))
             return;
         sendMessage(order);
     }
 
-    private synchronized void sendMessage(String data)
-    {
+    private synchronized void sendMessage(String data) {
         Timer.sleep(20);
         Log.d(Constant.LOG_TAG, "send message:" + data);
 
-        if (ftDev.isOpen() == false)
-        {
+        if (ftDev.isOpen() == false) {
             Log.e("j2xx", "SendMessage: device not open");
             return;
         }

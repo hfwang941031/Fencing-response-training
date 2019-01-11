@@ -126,20 +126,23 @@
                 >
                     <TextView
                         android:id="@+id/tv_traintimes"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="170dp"
+                        android:layout_height="40dp"
                         android:layout_gravity="center"
-                        android:layout_marginLeft="70dp"
+                        android:gravity="center_horizontal"
+                        android:layout_marginLeft="50dp"
                         android:text="训练次数"
-                        android:textColor="@color/black"
-                        android:textSize="22sp" />
+                        android:textColor="@color/white"
+                        android:textSize="22sp"
+                        android:background="@drawable/proportion_text_background"/>
 
                     <Spinner
                         android:id="@+id/sp_times"
                         android:layout_width="170dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginLeft="250dp"></Spinner>
+                        android:layout_marginLeft="200dp"
+                        android:background="@drawable/set_group_spinner"></Spinner>
 
                 </LinearLayout>
                 <LinearLayout
@@ -150,13 +153,14 @@
                     >
                     <TextView
                         android:id="@+id/tv_devicenumber"
-
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
+                        android:layout_width="170dp"
+                        android:layout_height="40dp"
                         android:layout_gravity="center"
-                        android:layout_marginLeft="70dp"
+                        android:gravity="center_horizontal"
+                        android:layout_marginLeft="50dp"
+                        android:background="@drawable/proportion_text_background"
                         android:text="选择设备数量"
-                        android:textColor="@color/black"
+                        android:textColor="@color/white"
                         android:textSize="22sp" />
 
                     <Spinner
@@ -164,7 +168,8 @@
                         android:layout_width="170dp"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center"
-                        android:layout_marginLeft="205dp"></Spinner>
+                        android:layout_marginLeft="200dp"
+                        android:background="@drawable/set_group_spinner"></Spinner>
                 </LinearLayout>
 
 
