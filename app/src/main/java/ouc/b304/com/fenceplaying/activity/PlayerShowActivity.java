@@ -341,11 +341,13 @@ public class PlayerShowActivity extends Activity {
                             singleLineScoresDao.delete(s);
                         }
                         playerDao.delete(player2);
+                        playerShowAdapter.update();
+                        Toast.makeText(context,"删除成功！",Toast.LENGTH_SHORT).show();
+
 
                     }
                 });
                 builder.show();
-                playerShowAdapter.notifyDataSetChanged();
                 return false;
             }
         });

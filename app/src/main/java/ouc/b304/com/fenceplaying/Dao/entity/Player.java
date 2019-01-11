@@ -36,6 +36,8 @@ public class Player {
 
     private String age;
 
+    private Long coachId;
+
     @ToMany(referencedJoinProperty = "playerId")
     private List<SingleSpotScores> singleSpotScores;
 
@@ -58,9 +60,9 @@ public class Player {
     @Generated(hash = 2108114900)
     private transient PlayerDao myDao;
 
-    @Generated(hash = 991533776)
-    public Player(Long Id, String name, String gender, String trainMode,
-            String groupId, String height, String weight, String age) {
+    @Generated(hash = 1763133379)
+    public Player(Long Id, String name, String gender, String trainMode, String groupId, String height,
+            String weight, String age, Long coachId) {
         this.Id = Id;
         this.name = name;
         this.gender = gender;
@@ -69,6 +71,7 @@ public class Player {
         this.height = height;
         this.weight = weight;
         this.age = age;
+        this.coachId = coachId;
     }
     @Generated(hash = 30709322)
     public Player() {
@@ -264,6 +267,12 @@ public class Player {
     @Generated(hash = 1095514738)
     public synchronized void resetLScores() {
         lScores = null;
+    }
+    public Long getCoachId() {
+        return this.coachId;
+    }
+    public void setCoachId(Long coachId) {
+        this.coachId = coachId;
     }
     
 }

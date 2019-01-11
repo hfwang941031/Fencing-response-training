@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="30dp"
+    android:orientation="horizontal">
+
+
+    <TextView
+        android:id="@+id/tv_coachShowName"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1.5"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:gravity="center"/>
+
+    <ImageView
+        android:layout_width="1dp"
+        android:layout_height="50dp"
+        android:background="@color/black" />
+
+    <TextView
+        android:id="@+id/tv_coachLevel"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:textColor="@color/black"
+        android:textSize="22sp"
+        android:gravity="center"/>
+
+    <ImageView
+        android:layout_width="1dp"
+        android:layout_height="50dp"
+        android:background="@color/black" />
+
+    <TextView
+        android:id="@+id/tv_coachShowAge"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:textColor="@color/black"
+        android:textSize="22sp"
+        android:gravity="center"/>
+
+    <ImageView
+        android:layout_width="1dp"
+        android:layout_height="50dp"
+        android:background="@color/black" />
+
+    <TextView
+        android:id="@+id/tv_coachShowHeight"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:textColor="@color/black"
+        android:textSize="22sp"
+        android:gravity="center" />
+
+    <ImageView
+        android:layout_width="1dp"
+        android:layout_height="50dp"
+        android:background="@color/black" />
+
+    <TextView
+        android:id="@+id/tv_coachShowWeight"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:textColor="@color/black"
+        android:textSize="22sp"
+        android:gravity="center" />
+
+    <ImageView
+        android:layout_width="1dp"
+        android:layout_height="50dp"
+        android:background="@color/black" />
+
+    <TextView
+        android:id="@+id/tv_coachShowGender"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:textColor="@color/black"
+        android:textSize="22sp"
+        android:gravity="center"/>
+
+    <ImageView
+        android:layout_width="1dp"
+        android:layout_height="50dp"
+        android:background="@color/black" />
+
+    <TextView
+        android:id="@+id/tv_coachShowTrainMode"
+        android:layout_width="0dp"
+        android:layout_height="match_parent"
+        android:layout_weight="1"
+        android:textColor="@color/black"
+        android:textSize="22sp"
+        android:gravity="center" />
+
+</LinearLayout>
