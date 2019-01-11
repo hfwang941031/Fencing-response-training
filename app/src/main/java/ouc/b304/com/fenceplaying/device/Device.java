@@ -202,12 +202,15 @@ public class Device {
         Timer.sleep(20);
         Log.d(Constant.LOG_TAG, "send message:" + data);
 
-        if (ftDev.isOpen() == false) {
-            Log.e("j2xx", "SendMessage: device not open");
-            return;
+        if (ftDev != null) {
+            if (ftDev.isOpen() == false) {
+                Log.e("j2xx", "SendMessage: device not open");
+                return;
+            }
+            ftDev.setLatencyTimer((byte) 128);
+            byte[] OutData = data.getBytes();
+            ftDev.write(OutData, data.length());
         }
-        ftDev.setLatencyTimer((byte) 128);
-        byte[] OutData = data.getBytes();
-        ftDev.write(OutData, data.length());
+
     }
 }

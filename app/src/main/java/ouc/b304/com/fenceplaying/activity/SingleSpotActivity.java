@@ -400,8 +400,11 @@ public class SingleSpotActivity extends Activity {
 
                 break;
             case R.id.img_btn_refresh:
-                updateData();
-                Toast.makeText(this, "可用设备已刷新", Toast.LENGTH_LONG).show();
+
+                    updateData();
+                    Toast.makeText(this, "可用设备已刷新", Toast.LENGTH_LONG).show();
+
+
                 break;
         }
     }

@@ -8,10 +8,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/tv_avalibledevices"
-            android:text="可用感应器编号： "
-            android:textColor="@color/black"
+            android:text="可用编号： "
+            android:textColor="@color/white"
             android:textSize="22sp"
-            android:layout_gravity="center_vertical"/>
+            android:layout_gravity="center_vertical"
+            android:background="@drawable/proportion_text_background"/>
         <TextView
             android:layout_width="370dp"
             android:layout_height="wrap_content"

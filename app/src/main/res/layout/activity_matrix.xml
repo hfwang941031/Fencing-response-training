@@ -231,7 +231,8 @@
                     android:gravity="center"
                     android:text="总时间:00:00:00"
                     android:textColor="@color/black"
-                    android:textSize="25sp" />
+                    android:textSize="25sp"
+                    android:background="@color/white"/>
             </LinearLayout>
 
             <View
@@ -303,8 +304,9 @@
                     android:layout_gravity="center"
                     android:layout_marginLeft="288dp"
                     android:text="训练结果"
-                    android:textColor="@color/black"
-                    android:textSize="22sp" />
+                    android:textColor="@color/white"
+                    android:textSize="28sp"
+                    android:background="@drawable/proportion_text_background"/>
             </LinearLayout>
 
             <View
@@ -326,8 +328,9 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:text="完成序列编号"
-                    android:textColor="@color/black"
-                    android:textSize="22sp" />
+                    android:textColor="@color/white"
+                    android:textSize="22sp"
+                    android:background="@drawable/proportion_text_background"/>
 
                 <TextView
                     android:layout_width="0dp"
@@ -337,8 +340,9 @@
                     android:layout_weight="1"
                     android:gravity="center"
                     android:text="用时(毫秒)"
-                    android:textColor="@color/black"
-                    android:textSize="22sp" />
+                    android:textColor="@color/white"
+                    android:textSize="22sp"
+                    android:background="@drawable/proportion_text_background"/>
             </LinearLayout>
 
             <LinearLayout
