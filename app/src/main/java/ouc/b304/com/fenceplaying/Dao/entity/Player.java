@@ -14,6 +14,7 @@ import ouc.b304.com.fenceplaying.Dao.SingleSpotScoresDao;
 import ouc.b304.com.fenceplaying.Dao.SingleLineScoresDao;
 import ouc.b304.com.fenceplaying.Dao.LScoresDao;
 import ouc.b304.com.fenceplaying.Dao.MatrixScoresDao;
+import ouc.b304.com.fenceplaying.Dao.AccuracyScoresDao;
 
 @Entity
 public class Player {
@@ -49,6 +50,10 @@ public class Player {
 
     @ToMany(referencedJoinProperty ="playerId")
     private List<LScores> lScores;
+
+    @ToMany(referencedJoinProperty ="playerId")
+    private List<AccuracyScores> accuracyScores;
+
 
 
     /** Used to resolve relations */
@@ -273,6 +278,32 @@ public class Player {
     }
     public void setCoachId(Long coachId) {
         this.coachId = coachId;
+    }
+    /**
+     * To-many relationship, resolved on first access (and after reset).
+     * Changes to to-many relations are not persisted, make changes to the target entity.
+     */
+    @Generated(hash = 483741235)
+    public List<AccuracyScores> getAccuracyScores() {
+        if (accuracyScores == null) {
+            final DaoSession daoSession = this.daoSession;
+            if (daoSession == null) {
+                throw new DaoException("Entity is detached from DAO context");
+            }
+            AccuracyScoresDao targetDao = daoSession.getAccuracyScoresDao();
+            List<AccuracyScores> accuracyScoresNew = targetDao._queryPlayer_AccuracyScores(Id);
+            synchronized (this) {
+                if (accuracyScores == null) {
+                    accuracyScores = accuracyScoresNew;
+                }
+            }
+        }
+        return accuracyScores;
+    }
+    /** Resets a to-many relationship, making the next get call to query for a fresh result. */
+    @Generated(hash = 271157214)
+    public synchronized void resetAccuracyScores() {
+        accuracyScores = null;
     }
     
 }

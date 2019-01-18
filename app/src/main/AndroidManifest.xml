@@ -102,6 +102,9 @@
         <activity
             android:name=".activity.CoachShowActivity"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"></activity>
+        <activity
+            android:name=".activity.AccuracyActivity"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"></activity>
     </application>
 
 

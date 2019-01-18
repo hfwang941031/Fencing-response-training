@@ -82,7 +82,7 @@ public class TrainTypeSelectActivity extends Activity {
 
                 break;
             case R.id.rl_accuracytrain:
-                startActivity(new Intent(context, LAccuracyActivity.class));
+                startActivity(new Intent(context, AccuracyActivity.class));
 
                 break;
         }
