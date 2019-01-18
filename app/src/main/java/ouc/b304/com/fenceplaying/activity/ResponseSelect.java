@@ -5,7 +5,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -16,16 +18,29 @@ import ouc.b304.com.fenceplaying.R;
  * @author 王海峰 on 2018/9/17 10:46
  */
 public class ResponseSelect extends Activity {
-    @BindView(R.id.btn_singlespot)
-    Button btnSinglespot;
-    @BindView(R.id.btn_singlecolumn)
-    Button btnSinglecolumn;
-    @BindView(R.id.btn_matrix)
-    Button btnMatrix;
+
+    @BindView(R.id.img_icon_responsetrain)
+    ImageView imgIconResponsetrain;
+    @BindView(R.id.tv_singlesopt)
+    TextView tvSinglesopt;
+    @BindView(R.id.rl_singlespot)
+    RelativeLayout rlSinglespot;
+    @BindView(R.id.img_icon_singleline)
+    ImageView imgIconSingleline;
+    @BindView(R.id.tv_singleline)
+    TextView tvSingleline;
+    @BindView(R.id.rl_singleline)
+    RelativeLayout rlSingleline;
+    @BindView(R.id.img_icon_matrix)
+    ImageView imgIconMatrix;
+    @BindView(R.id.tv_matrix)
+    TextView tvMatrix;
+    @BindView(R.id.rl_matrix)
+    RelativeLayout rlMatrix;
     private Context context;
 
     @Override
-    protected void onCreate( Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_responseselect);
         ButterKnife.bind(this);
@@ -52,17 +67,22 @@ public class ResponseSelect extends Activity {
         super.onDestroy();
     }
 
-    @OnClick({R.id.btn_singlespot, R.id.btn_singlecolumn, R.id.btn_matrix})
+
+
+    @OnClick({R.id.rl_singlespot, R.id.rl_singleline, R.id.rl_matrix})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.btn_singlespot:
-                startActivity(new Intent(context,SingleSpotActivity.class));
+            case R.id.rl_singlespot:
+                startActivity(new Intent(context, SingleSpotActivity.class));
+
                 break;
-            case R.id.btn_singlecolumn:
-                startActivity(new Intent(context,SingleLineActivity.class));
+            case R.id.rl_singleline:
+                startActivity(new Intent(context, SingleLineActivity.class));
+
                 break;
-            case R.id.btn_matrix:
-                startActivity(new Intent(context,MatrixActivity.class));
+            case R.id.rl_matrix:
+                startActivity(new Intent(context, MatrixActivity.class));
+
                 break;
         }
     }

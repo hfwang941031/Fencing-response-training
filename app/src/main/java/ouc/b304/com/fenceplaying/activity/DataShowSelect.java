@@ -6,7 +6,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.view.View;
-import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -19,10 +21,18 @@ import ouc.b304.com.fenceplaying.R;
 public class DataShowSelect extends Activity {
 
 
-    @BindView(R.id.btn_datashow)
-    Button btnDatashow;
-    @BindView(R.id.btn_datacompare)
-    Button btnDatacompare;
+    @BindView(R.id.img_icon_datashow)
+    ImageView imgIconDatashow;
+    @BindView(R.id.tv_datashow)
+    TextView tvDatashow;
+    @BindView(R.id.rl_datashow)
+    RelativeLayout rlDatashow;
+    @BindView(R.id.img_icon_datacompare)
+    ImageView imgIconDatacompare;
+    @BindView(R.id.tv_datacompare)
+    TextView tvDatacompare;
+    @BindView(R.id.rl_datacompare)
+    RelativeLayout rlDatacompare;
 
     private Context context;
 
@@ -31,7 +41,7 @@ public class DataShowSelect extends Activity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_datashowselect);
         ButterKnife.bind(this);
-        this.context=getApplicationContext();
+        this.context = getApplicationContext();
     }
 
     @Override
@@ -64,14 +74,18 @@ public class DataShowSelect extends Activity {
         super.onDestroy();
     }
 
-    @OnClick({R.id.btn_datashow, R.id.btn_datacompare})
+
+
+    @OnClick({R.id.rl_datashow, R.id.rl_datacompare})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.btn_datashow:
+            case R.id.rl_datashow:
                 startActivity(new Intent(context, DataShowActivity.class));
+
                 break;
-            case R.id.btn_datacompare:
+            case R.id.rl_datacompare:
                 startActivity(new Intent(context, DataCompareActivity.class));
+
                 break;
         }
     }

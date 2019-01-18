@@ -9,13 +9,13 @@
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
 
     <application
+        android:name=".application.GreenDaoInitApplication"
         android:allowBackup="true"
         android:icon="@drawable/icon_launcher"
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/QMUI.Compat.NoActionBar"
-        android:name=".application.GreenDaoInitApplication">
+        android:theme="@style/QMUI.Compat.NoActionBar">
         <!--<activity
             android:name=".activity.MainActivity"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
@@ -50,12 +50,12 @@
 
         <activity
             android:name=".activity.SingleSpotActivity"
-            android:windowSoftInputMode="stateHidden"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"></activity>
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:windowSoftInputMode="stateHidden"></activity>
         <activity
             android:name=".activity.MatrixActivity"
-            android:windowSoftInputMode="stateHidden"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"></activity>
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
+            android:windowSoftInputMode="stateHidden"></activity>
 
         <activity
             android:name=".activity.AccuracySelectActivity"
@@ -78,9 +78,7 @@
         <activity
             android:name=".activity.DataCompareActivity"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"></activity>
-      <!--  <activity
-            android:name=".activity.NewMainActivity"
-            android:theme="@style/QMUI.Compat" />-->
+
         <activity
             android:name=".activity.NewMainActivity"
             android:theme="@style/QMUI.Compat">
@@ -90,16 +88,17 @@
             <intent-filter>
                 <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
             </intent-filter>
+
             <meta-data
                 android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
                 android:resource="@xml/device_filter" />
         </activity>
         <activity
-        android:name=".activity.TrainTypeSelectActivity"
-        android:theme="@style/QMUI.Compat"></activity>
+            android:name=".activity.TrainTypeSelectActivity"
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"></activity>
         <activity
             android:name=".activity.InfoSelectActivity"
-            android:theme="@style/QMUI.Compat"></activity>
+            android:theme="@android:style/Theme.NoTitleBar.Fullscreen"></activity>
         <activity
             android:name=".activity.CoachShowActivity"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"></activity>

@@ -1,41 +1,113 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
+    android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/home_tab"
     >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"
+       ></LinearLayout>
 
-    <Button
-        android:id="@+id/btn_singlespot"
-        android:layout_width="0dp"
-        android:layout_height="350dp"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
         android:layout_weight="1"
-        android:text="单点训练"
-        android:textSize="50sp"
-        android:layout_gravity="center"
-        android:layout_marginLeft="50dp"/>
-    <View
-        android:layout_width="10dp"
-        android:layout_height="350dp"/>
-    <Button
-        android:id="@+id/btn_singlecolumn"
-        android:layout_width="0dp"
-        android:layout_height="350dp"
-        android:layout_weight="1"
-        android:text="单列训练"
-        android:textSize="50sp"
-        android:layout_gravity="center"/>
-    <View
-        android:layout_width="10dp"
-        android:layout_height="350dp"/>
-    <Button
-        android:id="@+id/btn_matrix"
-        android:layout_width="0dp"
-        android:layout_height="350dp"
-        android:layout_weight="1"
-        android:text="方阵训练"
-        android:textSize="50sp"
-        android:layout_gravity="center"
-        android:layout_marginRight="50dp"/>
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal"
+        >
+        <RelativeLayout
+            android:id="@+id/rl_singlespot"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="20dp"
+            android:layout_weight="1"
+            android:background="@drawable/home_tab_bg">
+
+            <ImageView
+                android:id="@+id/img_icon_responsetrain"
+                android:layout_width="125dp"
+                android:layout_height="108dp"
+                android:layout_centerInParent="true"
+                android:layout_marginLeft="20dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/home_tab1" />
+
+            <TextView
+                android:id="@+id/tv_singlesopt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/img_icon_responsetrain"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="5px"
+                android:text="固定点训练"
+                android:textColor="@color/black"
+                android:textSize="30sp" />
+        </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/rl_singleline"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="20dp"
+            android:layout_weight="1"
+            android:background="@drawable/home_tab_bg">
+
+            <ImageView
+                android:id="@+id/img_icon_singleline"
+                android:layout_width="125dp"
+                android:layout_height="108dp"
+                android:layout_centerInParent="true"
+                android:layout_marginLeft="20dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/home_tab2" />
+
+            <TextView
+                android:id="@+id/tv_singleline"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/img_icon_singleline"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="5px"
+                android:text="非固定点训练"
+                android:textColor="@color/black"
+                android:textSize="30sp" />
+        </RelativeLayout>
+        <RelativeLayout
+            android:id="@+id/rl_matrix"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:layout_marginRight="20dp"
+            android:layout_weight="1"
+            android:background="@drawable/home_tab_bg">
+
+            <ImageView
+                android:id="@+id/img_icon_matrix"
+                android:layout_width="125dp"
+                android:layout_height="108dp"
+                android:layout_centerInParent="true"
+                android:layout_marginLeft="20dp"
+                android:scaleType="centerCrop"
+                android:src="@drawable/home_tab2" />
+
+            <TextView
+                android:id="@+id/tv_matrix"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/img_icon_matrix"
+                android:layout_centerInParent="true"
+                android:layout_marginTop="5px"
+                android:text="视觉干扰训练"
+                android:textColor="@color/black"
+                android:textSize="30sp" />
+        </RelativeLayout>
+
+    </LinearLayout>
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1"></LinearLayout>
+
 
 
 </LinearLayout>

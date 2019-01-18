@@ -41,8 +41,6 @@ public class SettingActivity extends Activity {
     ImageView imgHelp;
     @BindView(R.id.img_save)
     ImageView imgSave;
-    @BindView(R.id.ll_setParam)
-    LinearLayout llSetParam;
     @BindView(R.id.tv_default_device_num)
     TextView tvDefaultDeviceNum;
     @BindView(R.id.tv_edit_device_num)
@@ -108,16 +106,15 @@ public class SettingActivity extends Activity {
     }
 
     public void initView() {
-        tvTitle.setText("设置");
+        tvTitle.setText("关于本系统");
         tvDefaultDeviceNum.setText("" + Math.min(12, Device.DEVICE_LIST.size()));
         tvVersion.setText("当前版本" + VersionUtils.getVerCode(settingContext));
     }
 
-    @OnClick({R.id.ll_setParam, R.id.ll_about, R.id.btn_turn_on_all_lights, R.id.btn_turn_off_all_lights})
+    @OnClick({ R.id.ll_about, R.id.btn_turn_on_all_lights, R.id.btn_turn_off_all_lights})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.ll_setParam:
-                break;
+
             case R.id.ll_about:
                 break;
             case R.id.btn_turn_on_all_lights:

@@ -148,7 +148,7 @@
                     android:layout_below="@id/img_icon_setting"
                     android:layout_centerInParent="true"
                     android:layout_marginTop="5px"
-                    android:text="设置"
+                    android:text="关于"
                     android:textColor="@color/black"
                     android:textSize="30sp" />
             </RelativeLayout>

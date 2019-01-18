@@ -52,7 +52,7 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:text="单列敏捷训练"
+                    android:text="非固定点训练"
                     android:textColor="@color/blue"
                     android:textSize="30sp"
                     android:textStyle="bold" />
