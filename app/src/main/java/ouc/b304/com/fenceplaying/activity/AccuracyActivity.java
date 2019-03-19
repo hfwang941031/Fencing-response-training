@@ -206,7 +206,7 @@ public class AccuracyActivity extends Activity {
                     if (timer.time >= trainingTime * 1000) {
                         stopTraining();
                         saveBtnIsClickable=true;
-                        hitRate = counterForMatrixTraining / (counterForWrongNum + counterForMatrixTraining);
+                        hitRate = (float)counterForMatrixTraining / (float)(counterForWrongNum + counterForMatrixTraining);
                         /*//成绩保存，只有在训练时间全部结束时才保存，手动结束时不保存
                         GradeForAccuracy grade = new GradeForAccuracy();
                         grade.setTrainingTime((int) (trainingTime/60));
@@ -453,36 +453,25 @@ public class AccuracyActivity extends Activity {
         Random random = new Random();
         int randomMiddleLight = random.nextInt(12);
         nowLightListForMatrix.clear();
-        interfenceTerm1 = 0;
-        interfenceTerm2 = 0;
         nowLightListForMatrix.add(list.get(randomMiddleLight));
         inputInterfenceTerm(randomMiddleLight);
 
-        while (interfenceTerm1 == 0 || interfenceTerm2 == 0 || interfenceTerm1 == interfenceTerm2) {
-            interfenceTerm1 = random.nextInt(nowLightListForMatrix.size());
-            interfenceTerm2 = random.nextInt(nowLightListForMatrix.size());
+        Log.i("promise", randomMiddleLight + "========" + nowLightListForMatrix);
+        device.sendOrder(list.get(randomMiddleLight),
+                Order.LightColor.BLUE,
+                Order.VoiceMode.values()[0],
+                Order.BlinkModel.values()[0],
+                Order.LightModel.OUTER,
+                Order.ActionModel.ALL,
+                Order.EndVoice.values()[0]);
+        for (int i = 1;i<nowLightListForMatrix.size();i++) {
+            device.sendOrder(nowLightListForMatrix.get(i), Order.LightColor.RED,
+                    Order.VoiceMode.values()[0],
+                    Order.BlinkModel.values()[0],
+                    Order.LightModel.OUTER,
+                    Order.ActionModel.ALL,
+                    Order.EndVoice.values()[0]);
         }
-        Log.i("promise", randomMiddleLight + "========" + interfenceTerm1 + "======" + interfenceTerm2 + "=======" + nowLightListForMatrix);
-        device.sendOrder(list.get(randomMiddleLight), lightColor,
-                Order.VoiceMode.values()[0],
-                Order.BlinkModel.values()[0],
-                lightModel,
-                actionModel,
-                Order.EndVoice.values()[0]);
-        device.sendOrder(nowLightListForMatrix.get(interfenceTerm1), wrongLightColor,
-                Order.VoiceMode.values()[0],
-                Order.BlinkModel.values()[0],
-                lightModel,
-                actionModel,
-                Order.EndVoice.values()[0]);
-        device.sendOrder(nowLightListForMatrix.get(interfenceTerm2), wrongLightColor,
-                Order.VoiceMode.values()[0],
-                Order.BlinkModel.values()[0],
-                lightModel,
-                actionModel,
-                Order.EndVoice.values()[0]);
-
-
     }
 
     private void turnOffNowLight() {
