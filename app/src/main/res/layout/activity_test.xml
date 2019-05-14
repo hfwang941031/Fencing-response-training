@@ -5,6 +5,7 @@
     android:layout_height="match_parent"
     android:orientation="vertical"
     android:background="@color/white"
+    tools:context=".activity.newVersion.Test"
     >
 
     <FrameLayout
@@ -13,23 +14,25 @@
         android:background="@drawable/home_tab"
         android:paddingTop="25dp">
 
+        <ImageView
+            android:id="@+id/newback"
+            android:layout_width="100dp"
+            android:layout_height="match_parent"
+            android:padding="18dp"
+            android:src="@mipmap/back" />
+
         <TextView
             android:id="@+id/tv_title"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_alignParentTop="true"
             android:gravity="center"
-            android:text="测试页面"
+            android:text="设置"
             android:textColor="@color/white"
-            android:textSize="20dp"
+            android:textSize="20sp"
             android:textStyle="bold" />
 
-        <ImageView
-            android:id="@+id/back"
-            android:layout_width="95dp"
-            android:layout_height="match_parent"
-            android:padding="18dp"
-            android:src="@mipmap/back" />
+
     </FrameLayout>
 
     <LinearLayout

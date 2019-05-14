@@ -13,6 +13,7 @@ import android.support.annotation.Nullable;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.StaggeredGridLayoutManager;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -35,8 +36,6 @@ import ouc.b304.com.fenceplaying.R;
 import ouc.b304.com.fenceplaying.adapter.LightOperateAdapter;
 import ouc.b304.com.fenceplaying.adapter.NewPowerAdapter;
 import ouc.b304.com.fenceplaying.adapter.OrderAdapter;
-
-import ouc.b304.com.fenceplaying.adapter.PowerAdapter;
 import ouc.b304.com.fenceplaying.adapter.ShockInfoAdapter;
 import ouc.b304.com.fenceplaying.adapter.TimeInfoAdapter;
 import ouc.b304.com.fenceplaying.dialog.AlterDeviceDialog;
@@ -47,7 +46,6 @@ import ouc.b304.com.fenceplaying.entity.DbLight;
 import ouc.b304.com.fenceplaying.entity.ShockInfo;
 import ouc.b304.com.fenceplaying.entity.TimeInfo;
 import ouc.b304.com.fenceplaying.order.CommandNew;
-import ouc.b304.com.fenceplaying.order.CommandRules;
 import ouc.b304.com.fenceplaying.order.Order;
 import ouc.b304.com.fenceplaying.order.OrderUtils;
 import ouc.b304.com.fenceplaying.utils.newUtils.AppConfig;
@@ -59,7 +57,7 @@ import ouc.b304.com.fenceplaying.utils.newUtils.RealmUtils;
 public class Test extends BaseActivity {
     @BindView(R.id.tv_title)
     TextView tvTitle;
-    @BindView(R.id.back)
+    @BindView(R.id.newback)
     ImageView back;
     @BindView(R.id.sleep)
     Button sleep;
@@ -319,8 +317,6 @@ public class Test extends BaseActivity {
     };
 
 
-
-
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -451,17 +447,20 @@ public class Test extends BaseActivity {
         super.startActivity(intent);
     }
 
+
     @Override
-    public void finish() {
-        super.finish();
+    public void onBackPressed() {
+        backFinish();
     }
 
     @OnClick({R.id.sleep, R.id.send, R.id.turnOn, R.id.turnOff, R.id.selectAll, R.id.selectNone, R.id.beforeOutBlinkNone, R.id.beforeOutBlinkAlways, R.id.beforeOutBlinkSlow, R.id.beforeOutBlinkFast, R.id.beforeOutBlink, R.id.beforeOutColorBlue, R.id.beforeOutColorRed, R.id.beforeOutColorGreen, R.id.beforeOutColorPurple, R.id.beforeOutColor1, R.id.beforeOutColorCyan, R.id.beforeOutColorYellow, R.id.beforeOutColorWhite, R.id.beforeOutColor2, R.id.beforeInBlinkNone, R.id.beforeInBlinkAlways, R.id.beforeInBlinkSlow, R.id.beforeInBlinkFast, R.id.beforeInBlink, R.id.beforeInColorBlue, R.id.beforeInColorRed, R.id.beforeInColorPurple, R.id.beforeInColor, R.id.infraredEmissionOn, R.id.infraredEmissionOff, R.id.infraredEmission, R.id.infraredInductionOn, R.id.infraredInductionOff, R.id.infraredInduction, R.id.infraredModelNormal, R.id.infraredModelContend, R.id.infraredModel, R.id.infraredHeightLow, R.id.infraredHeight_5cm, R.id.infraredHeight_30cm, R.id.infraredHeightHigh, R.id.infraredHeight, R.id.vibrationInducedOn, R.id.vibrationInducedOff, R.id.vibrationInduced, R.id.vibrationIntensityL, R.id.vibrationIntensityM, R.id.vibrationIntensityH, R.id.vibrationIntensity, R.id.vibrationDetailsOn, R.id.vibrationDetailsOff, R.id.vibrationDetails, R.id.buzzerNone, R.id.buzzerShort, R.id.buzzer_1s, R.id.buzzer_2s, R.id.buzzer, R.id.afterOutBlinkNone, R.id.afterOutBlinkAlways, R.id.afterOutBlinkSlow, R.id.afterOutBlinkFast, R.id.afterOutBlink, R.id.afterOutColorBlue, R.id.afterOutColorRed, R.id.afterOutColorGreen, R.id.afterOutColorPurple, R.id.afterOutColor1, R.id.afterOutColorCyan, R.id.afterOutColorYellow, R.id.afterOutColorWhite, R.id.afterOutColor2, R.id.afterInBlinkNone, R.id.afterInBlinkAlways, R.id.afterInBlinkSlow, R.id.afterInBlinkFast, R.id.afterInBlink, R.id.afterInColorBlue, R.id.afterInColorRed, R.id.afterInColorPurple, R.id.afterInColor, R.id.afterBuzzerNone, R.id.afterBuzzerShort, R.id.afterBuzzer_1s, R.id.afterBuzzer_2s, R.id.afterBuzzer, R.id.alter, R.id.resetCoordinator, R.id.clearData})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.back:
+            /*case R.id.newback:
+                Log.d("back", "返回被点击");
                 backFinish();
-                break;
+
+                break;*/
             case R.id.sleepOrder:
                 mAlterSleepDialog = new AlterSleepDialog(mContext, new AlterSleepDialog.SetOnDialogListener() {
                     @Override
@@ -505,7 +504,7 @@ public class Test extends BaseActivity {
             case R.id.selectNone:
                 selectNone();
                 break;
-            
+
             case R.id.alter:
                 if (AppConfig.sDevice != null) {
                     showHintDialog("是否对该协调器下的光标进行编辑？");
@@ -555,6 +554,7 @@ public class Test extends BaseActivity {
     private void backFinish() {
         finish();
     }
+
     private void sendCommand() {
         if (mSelectLight.size() > 0) {
             List<Order> orderList = new ArrayList<>();
@@ -683,6 +683,11 @@ public class Test extends BaseActivity {
             }
         });
 
+    }
+
+    @OnClick(R.id.newback)
+    public void onViewClicked() {
+        backFinish();
     }
 
     class PowerRunnable implements Runnable {

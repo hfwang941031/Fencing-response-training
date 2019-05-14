@@ -12,6 +12,7 @@ import org.jetbrains.annotations.Nullable;
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import ouc.b304.com.fenceplaying.R;
+import ouc.b304.com.fenceplaying.activity.newVersion.NewMain;
 
 public class SplashActivity extends Activity {
 
@@ -36,7 +37,7 @@ public class SplashActivity extends Activity {
             @Override
             public void onAnimationEnd(Animation animation) {
 
-                startActivity(new Intent(getApplicationContext(),NewMainActivity.class));
+                startActivity(new Intent(getApplicationContext(),NewMain.class));
                 /*防止返回到欢迎页*/
                 finish();
 

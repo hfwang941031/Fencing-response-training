@@ -50,7 +50,7 @@ import static ouc.b304.com.fenceplaying.thread.ReceiveThread.POWER_RECEIVE_THREA
 /**
  * @author 王海峰 on 2019/1/9 16:31
  */
-public class NewMainActivity extends Activity {
+public class NewMainActivity extends BaseActivity {
     @BindView(R.id.img_icon_playerinfo)
     ImageView imgIconPlayerinfo;
     @BindView(R.id.tv_manageplayinfo)
@@ -173,6 +173,9 @@ public class NewMainActivity extends Activity {
         /*if (checkPowerThread != null) {
             checkPowerThread.interrupt();
         }*/
+        if (mRealm != null) {
+            mRealm.close();
+        }
         mSafLightReceiver.usbUnregisterReceiver(context);
 
     }

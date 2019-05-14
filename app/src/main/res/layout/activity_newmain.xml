@@ -2,26 +2,21 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:orientation="horizontal">
+    android:orientation="vertical">
     <!--左边条-->
     <LinearLayout
         android:orientation="vertical"
-        android:layout_width="70dp"
-        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        android:layout_height="70dp"
         android:background="@drawable/proportion_text_background">
         <ImageButton
             android:id="@+id/img_btn_initdevice"
             android:layout_width="70dp"
             android:layout_height="70dp"
             android:src="@drawable/refresh_18dp"/>
-        <ListView
-            android:id="@+id/lv_battery"
-            android:layout_width="60dp"
-            android:layout_height="match_parent"
-            android:scrollbars="none"
-            >
 
-        </ListView>
+
+
     </LinearLayout>
     <!--右边块-->
     <LinearLayout
@@ -31,15 +26,13 @@
         android:orientation="vertical">
 
 
-
-
         <!--按钮区-->
         <LinearLayout
             android:layout_width="800dp"
             android:layout_height="230dp"
             android:layout_gravity="bottom"
             android:layout_marginBottom="50dp"
-            android:layout_marginLeft="150dp"
+            android:layout_marginLeft="250dp"
             android:layout_marginTop="500dp"
             android:background="@drawable/home_tab"
             android:orientation="horizontal">
