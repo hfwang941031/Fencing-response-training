@@ -24,19 +24,26 @@ import android.widget.Toast;
 
 import java.util.Collections;
 import java.util.List;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.ScheduledThreadPoolExecutor;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
+import io.realm.Realm;
 import ouc.b304.com.fenceplaying.Bean.Constant;
 import ouc.b304.com.fenceplaying.Bean.DeviceInfo;
 import ouc.b304.com.fenceplaying.Bean.PowerInfoComparetor;
 import ouc.b304.com.fenceplaying.R;
+import ouc.b304.com.fenceplaying.activity.newVersion.BaseActivity;
+import ouc.b304.com.fenceplaying.activity.newVersion.Test;
 import ouc.b304.com.fenceplaying.adapter.PowerAdapter;
 import ouc.b304.com.fenceplaying.device.Device;
+import ouc.b304.com.fenceplaying.dialog.CusProgressDialog;
 import ouc.b304.com.fenceplaying.thread.AutoCheckPower;
 import ouc.b304.com.fenceplaying.thread.Timer;
 import ouc.b304.com.fenceplaying.utils.DataAnalyzeUtils;
+import ouc.b304.com.fenceplaying.utils.newUtils.SafLightReceiver;
 
 import static ouc.b304.com.fenceplaying.thread.ReceiveThread.POWER_RECEIVE_THREAD;
 
@@ -72,6 +79,8 @@ public class NewMainActivity extends Activity {
     ImageButton imgBtnInitdevice;
     @BindView(R.id.lv_battery)
     ListView lvBattery;
+    /*@BindView(R.id.name)
+    TextView name;*/
     private Context context;
     private Device device;
     private Boolean isLeave = false;
@@ -92,6 +101,11 @@ public class NewMainActivity extends Activity {
             }
         }
     };
+    /*新版本增加的字段*/
+    private Realm mRealm;
+    private ExecutorService mExecutorService;
+    private SafLightReceiver mSafLightReceiver;
+    /**/
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -101,16 +115,23 @@ public class NewMainActivity extends Activity {
         context = this.getApplicationContext();
         powerAdapter = new PowerAdapter(context);
         device = new Device(this);
-
         Log.d(TAG, "---->onCreate");
-        //设置全局广播监听--->USB插拔
+        /*//设置全局广播监听--->USB插拔
         IntentFilter filter = new IntentFilter();
         filter.addAction(UsbManager.ACTION_USB_DEVICE_DETACHED);
         filter.addAction(UsbManager.ACTION_USB_DEVICE_ATTACHED);
         filter.setPriority(500);
-        this.registerReceiver(mUsbReceiver, filter);
-        initDevice();
+        this.registerReceiver(mUsbReceiver, filter);*/
+        /*initDevice();*/
         initView();
+
+        /*新版本*/
+        mExecutorService = new ScheduledThreadPoolExecutor(2);
+        mRealm = Realm.getDefaultInstance();
+        //注册广播
+        mSafLightReceiver = new SafLightReceiver(mRealm);
+        mSafLightReceiver.usbRegisterReceiver(context);
+        /*  */
     }
 
 
@@ -149,13 +170,14 @@ public class NewMainActivity extends Activity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
-        if (checkPowerThread != null) {
+        /*if (checkPowerThread != null) {
             checkPowerThread.interrupt();
-        }
-        this.unregisterReceiver(mUsbReceiver);
+        }*/
+        mSafLightReceiver.usbUnregisterReceiver(context);
+
     }
 
-    @OnClick({R.id.rl_playerinfo, R.id.rl_train, R.id.rl_histroydata, R.id.rl_setting,R.id.img_btn_initdevice})
+    @OnClick({R.id.rl_playerinfo, R.id.rl_train, R.id.rl_histroydata, R.id.rl_setting, R.id.img_btn_initdevice})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.rl_playerinfo:
@@ -174,12 +196,12 @@ public class NewMainActivity extends Activity {
 
                 break;
             case R.id.img_btn_initdevice:
-
+                startActivity(new Intent(context, Test.class));
                 break;
         }
     }
 
-    private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
+    /*private final BroadcastReceiver mUsbReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             String TAG = "FragL";
@@ -189,7 +211,7 @@ public class NewMainActivity extends Activity {
                 notifyUSBDeviceDetach();
             }
         }
-    };
+    };*/
 
     /*拔出usb设备后 直接断开连接*/
     public void notifyUSBDeviceDetach() {
@@ -246,7 +268,6 @@ public class NewMainActivity extends Activity {
         setPowerFlag();
         Log.i("AAA", powerInfos.size() + "");
     }
-
 
 
     private void setPowerFlag() {

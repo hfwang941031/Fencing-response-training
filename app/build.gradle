@@ -1,5 +1,6 @@
 apply plugin: 'com.android.application'
 apply plugin: 'org.greenrobot.greendao'
+apply plugin: 'realm-android'
 
 
 
@@ -41,6 +42,9 @@ dependencies {
     implementation 'com.github.lecho:hellocharts-library:1.5.8@aar'
     implementation 'com.github.ozodrukh:CircularReveal:2.0.1@aar'
     implementation 'com.github.yalantis:Side-Menu.Android:1.0.1'
+    /*适配页面*/
+    implementation 'com.zhy:autolayout:1.4.5'
+    implementation 'com.readystatesoftware.systembartint:systembartint:1.0.3'
 }
 greendao {
     schemaVersion 4//数据库版本号

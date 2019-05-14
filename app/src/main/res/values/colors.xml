@@ -6,8 +6,24 @@
     <color name="blue">#33A1C9</color>
     <color name="grey2">#F0FFFF</color>
     <color name="black">#000</color>
-    <color name="white">#fff</color>
+
     <color name="content_color">#666666</color>
+
+
+
+
+    <color name="logo_color">#7dbf5d</color>
+    <color name="white">#FFFFFF</color>
+    <color name="home_bottom_bg">#9b9b9b</color>
+    <color name="home_tab_text">#22222D</color>
+    <color name="app_white">#ffffff</color>
+    <color name="app_block">#000000</color>
+    <color name="dialog_background">#39000000</color>
+    <color name="app_theme">#262634</color>
+    <color name="edittext_hint_color">#7A7A7A</color>
+    <color name="setting_frame_color">#13111c</color>
+    <color name="setting_frame_color2">#0b0c0e</color>
+    <color name="app_green">#7dbe5d</color>
 
 
 </resources>

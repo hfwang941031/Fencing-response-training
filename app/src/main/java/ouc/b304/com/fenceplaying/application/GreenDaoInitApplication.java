@@ -1,10 +1,18 @@
 package ouc.b304.com.fenceplaying.application;
 
+import android.app.Activity;
 import android.app.Application;
 import android.database.sqlite.SQLiteDatabase;
 
+import java.util.LinkedList;
+import java.util.List;
+
+import io.realm.Realm;
+import io.realm.RealmConfiguration;
 import ouc.b304.com.fenceplaying.Dao.DaoMaster;
 import ouc.b304.com.fenceplaying.Dao.DaoSession;
+import ouc.b304.com.fenceplaying.usbUtils.UsbConfig;
+import ouc.b304.com.fenceplaying.utils.newUtils.Utils;
 
 
 public class GreenDaoInitApplication extends Application {
@@ -15,14 +23,29 @@ public class GreenDaoInitApplication extends Application {
     private DaoSession mDaoSession;
     //静态单例
     public static GreenDaoInitApplication instances;
+    public List<Activity> mActivityList = new LinkedList<>();
     @Override
     public void onCreate() {
         super.onCreate();
+        Utils.init(this);
+        Realm.init(this);
+        RealmConfiguration config = new RealmConfiguration.Builder()
+                //文件名
+                .name("SafLightSample.realm")
+                //版本号
+                .schemaVersion(1)
+                .deleteRealmIfMigrationNeeded()
+                .build();
+        Realm.setDefaultConfiguration(config);
+        UsbConfig.getInstance().init(this);
+        //////////////////////////////////////
         instances = this;
         setDatabase();
     }
     public static GreenDaoInitApplication getInstances(){
+
         return instances;
+
     }
 
     /**
@@ -44,5 +67,29 @@ public class GreenDaoInitApplication extends Application {
     }
     public SQLiteDatabase getDb() {
         return db;
+    }
+    /**
+     * 添加Activity到容器中
+     */
+    public void addActivityOrder(Activity activity) {
+        mActivityList.add(activity);
+    }
+
+    /**
+     * 遍历所有的activity并finish
+     */
+    public void exitOrder() {
+        for (Activity activity : mActivityList) {
+            activity.finish();
+        }
+        mActivityList.clear();
+    }
+
+    /**
+     * 关闭最后一个页面
+     */
+    public void finish() {
+        mActivityList.get(mActivityList.size() - 1).finish();
+        mActivityList.remove(mActivityList.size() - 1);
     }
 }

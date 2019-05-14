@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="120px"
+    android:background="@mipmap/home_tab"
+    android:paddingTop="30px">
+
+    <ImageView
+        android:id="@+id/back"
+        android:layout_width="80px"
+        android:layout_height="80px"
+        android:layout_marginLeft="60px"
+        android:paddingBottom="13px"
+        android:paddingLeft="28.5px"
+        android:paddingRight="28.5px"
+        android:paddingTop="23px"
+        android:src="@mipmap/back" />
+
+    <TextView
+        android:id="@+id/backName"
+        android:layout_width="wrap_content"
+        android:layout_height="match_parent"
+        android:layout_toRightOf="@+id/back"
+        android:gravity="center"
+        android:text="返回"
+        android:textColor="@color/app_white"
+        android:textSize="40px" />
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="210px"
+        android:layout_height="80px"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:text="单元测试"
+        android:textSize="40px"
+        android:textColor="@color/app_white"/>
+</RelativeLayout>
