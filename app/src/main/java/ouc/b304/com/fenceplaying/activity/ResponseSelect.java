@@ -13,6 +13,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ouc.b304.com.fenceplaying.R;
+import ouc.b304.com.fenceplaying.activity.newVersion.NewSingleSpotActivity;
 
 /**
  * @author 王海峰 on 2018/9/17 10:46
@@ -73,7 +74,7 @@ public class ResponseSelect extends Activity {
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.rl_singlespot:
-                startActivity(new Intent(context, SingleSpotActivity.class));
+                startActivity(new Intent(context, NewSingleSpotActivity.class));
 
                 break;
             case R.id.rl_singleline:
