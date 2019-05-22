@@ -3,6 +3,7 @@ package ouc.b304.com.fenceplaying.adapter;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,6 +14,7 @@ import java.util.List;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
+import ouc.b304.com.fenceplaying.Bean.Light;
 import ouc.b304.com.fenceplaying.R;
 import ouc.b304.com.fenceplaying.entity.DbLight;
 
@@ -70,6 +72,7 @@ public class NewPowerAdapter extends RecyclerView.Adapter<NewPowerAdapter.ViewHo
         Integer power = Integer.valueOf(dbLight.getPower(), 16);
         if (!dbLight.getName().equals("00")) {
             viewHolder.mName.setText(dbLight.getName());
+            Log.d("LightName", dbLight.getName());
         } else {
             viewHolder.mName.setText(i + 1 + "");
         }

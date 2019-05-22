@@ -65,6 +65,7 @@ import ouc.b304.com.fenceplaying.utils.IntegerToStringUtils;
 import ouc.b304.com.fenceplaying.utils.PlayDaoUtils;
 import ouc.b304.com.fenceplaying.utils.ScoreUtils;
 import ouc.b304.com.fenceplaying.utils.newUtils.AppConfig;
+import ouc.b304.com.fenceplaying.utils.newUtils.RealmUtils;
 import ouc.b304.com.fenceplaying.utils.newUtils.ToastUtils;
 
 import static android.widget.Toast.LENGTH_SHORT;
@@ -241,6 +242,8 @@ public class NewSingleSpotActivity extends BaseActivity {
 
     private CommandRules.OutColor lightColor = CommandRules.OutColor.BLUE;
 
+    DbLight selectedLight = null;
+
 
     /**
      * 广播监听
@@ -352,6 +355,7 @@ public class NewSingleSpotActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        unregisterReceiver(mBroadcastReceiver);
     }
 
     @Override
@@ -374,28 +378,22 @@ public class NewSingleSpotActivity extends BaseActivity {
                 break;
             case R.id.btn_turnon:
                 //开选中的灯
-                DbLight selectedLight = null;
-                for (DbLight light : AppConfig.sDbLights) {
-                    if (light.getName() == deviceNum) {
-                        selectedLight = light;
-                        break;
-                    }
+                if (selectedLight == null) {
+                    ToastUtils.makeText(mContext, "请先选择一个设备！", Toast.LENGTH_SHORT);
+                } else {
+                    Log.d("开灯设备编号", deviceNum);
+                    OrderUtils.getInstance().turnOnLight(selectedLight);
                 }
-                OrderUtils.getInstance().turnOnLight(selectedLight);
                 break;
             case R.id.btn_turnoff:
                 //关选中的灯
-                DbLight selectedCloseLight = null;
-                for (DbLight light : AppConfig.sDbLights) {
-                    if (light.getName() == deviceNum) {
-                        selectedCloseLight = light;
-                        break;
-                    }
-                }
-                OrderUtils.getInstance().turnOnLight(selectedCloseLight);
+                OrderUtils.getInstance().turnOffLightList(AppConfig.sDbLights);
+
                 break;
             case R.id.img_btn_refresh:
-                tesst();
+                //刷新当前页面的灯及其编号
+                getSaveLight();
+                ToastUtils.makeText(mContext, "设备已刷新", Toast.LENGTH_SHORT).show();
                 break;
             case R.id.btn_startrun:
                 //训练开始的时候把上次的成绩置空
@@ -490,9 +488,7 @@ public class NewSingleSpotActivity extends BaseActivity {
 
     }
 
-    /**
-     * 解析时间
-     * */
+    //解析时间
     private void analyzeTimeData(TimeInfo timeInfo) {
             Log.d("ana", "时间解析");
             if (timeInfo.getName() == deviceNum) {
@@ -535,6 +531,7 @@ public class NewSingleSpotActivity extends BaseActivity {
 
     }
 
+    //判断训练是否结束
     private boolean isTrainingOver() {
         if (counter >= trainTimes)
             return true;
@@ -546,7 +543,10 @@ public class NewSingleSpotActivity extends BaseActivity {
             ToastUtils.makeText(mContext, "可用设备不足一个,无法进行训练！", Toast.LENGTH_SHORT);
         }
     }
+    //初始化数据
     public void initData() {
+        //先刷新当前页面的灯编号
+        getSaveLight();
         //获取当前可用的设备编号，存储到list当中
         for (int i=0;i<AppConfig.sDbLights.size();i++) {
             String name = AppConfig.sDbLights.get(i).getName();
@@ -564,6 +564,7 @@ public class NewSingleSpotActivity extends BaseActivity {
 
     }
 
+    //初始化控件
     private void initView() {
         //设置spinner设备号适配器
         spDeviceAdapter = new ArrayAdapter(this, R.layout.spinner_item, list);
@@ -578,6 +579,12 @@ public class NewSingleSpotActivity extends BaseActivity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 deviceNum =  (String) spDevices.getSelectedItem();
+                for (DbLight dbLight : AppConfig.sDbLights) {
+                    if (dbLight.getName() == deviceNum) {
+                        selectedLight = dbLight;
+                        break;
+                    }
+                }
                 Log.d("deviceNum", deviceNum + "");
             }
 
@@ -658,6 +665,7 @@ public class NewSingleSpotActivity extends BaseActivity {
     }
 
 
+    //停止训练
     public void stopTraining() {
         trainingBeginFlag = false;
         endFlag=true;
@@ -683,6 +691,7 @@ public class NewSingleSpotActivity extends BaseActivity {
         OrderUtils.getInstance().sendCommand(orderList);
     }
 
+    //开始训练
     public void startTraining() {
         Log.d(TAG, "startTraining has run");
         //首先清除时间列表
@@ -727,6 +736,25 @@ public class NewSingleSpotActivity extends BaseActivity {
         timer = new Timer(handler);
         timer.setBeginTime(startTime);
         timer.start();
+
+    }
+
+    //更新灯及其编号
+    private void getSaveLight() {
+        RealmUtils.queryDevice(mRealm, AppConfig.sDevice.getPanId(), new RealmUtils.SetOnIsHaveListener() {
+            @Override
+            public void onIsHaveListener(Boolean flag) {
+                if (!flag) {
+                    RealmUtils.saveDevice(mRealm, AppConfig.sDevice, new RealmUtils.SetOnSaveListener() {
+                        @Override
+                        public void onSaveListener(Boolean flag) {
+                            if (!flag) {
+                            }
+                        }
+                    });
+                }
+            }
+        });
 
     }
 

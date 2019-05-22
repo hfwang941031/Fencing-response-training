@@ -125,7 +125,7 @@ public class AlterDeviceDialog extends Dialog {
         }
     };
 
-    public AlterDeviceDialog(Context context, Realm realm, SetOnDialogListener onDialogListener) {
+    public  AlterDeviceDialog(Context context, Realm realm, SetOnDialogListener onDialogListener) {
         super(context, R.style.Dialog);
         setCancelable(false);
         mContext = context;

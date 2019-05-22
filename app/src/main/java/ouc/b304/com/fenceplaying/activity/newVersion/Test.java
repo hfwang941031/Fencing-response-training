@@ -32,6 +32,8 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.Realm;
+import io.realm.RealmChangeListener;
+import io.realm.RealmResults;
 import ouc.b304.com.fenceplaying.R;
 import ouc.b304.com.fenceplaying.adapter.LightOperateAdapter;
 import ouc.b304.com.fenceplaying.adapter.NewPowerAdapter;
@@ -278,6 +280,7 @@ public class Test extends BaseActivity {
     private CommandNew mCommandNew;
     private CusProgressDialog mCusProgressDialog;
     private Realm mRealm;
+    private List<DbLight> latestDblightList=new ArrayList<>();
 
 
     private void showAlterDialog() {
@@ -331,7 +334,10 @@ public class Test extends BaseActivity {
         /*initListener();*/
         initAdapter();
         setDevice();
+        //每次打开当前页面都要从数据库中读取灯的编号，否则编号默认为递增的自然数
+        getSaveLight();
     }
+
 
     private void initAdapter() {
         for (DbLight dbLight : AppConfig.sDbLights) {
@@ -351,7 +357,7 @@ public class Test extends BaseActivity {
         });
         lightList.setAdapter(mLightOperateAdapter);
         deviceList.setLayoutManager(new LinearLayoutManager(mContext));
-        mPowerAdapter = new NewPowerAdapter(mContext, AppConfig.sDbLights);
+        mPowerAdapter = new NewPowerAdapter(mContext,AppConfig.sDbLights);
         deviceList.setAdapter(mPowerAdapter);
         mExecutorService.scheduleAtFixedRate(new PowerRunnable(), 5, 5, TimeUnit.SECONDS);
 
