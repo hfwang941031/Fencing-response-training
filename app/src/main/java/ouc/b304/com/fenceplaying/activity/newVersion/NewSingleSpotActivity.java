@@ -223,31 +223,18 @@ public class NewSingleSpotActivity extends BaseActivity {
 
     //结束标记
     private boolean endFlag = false;
-
-    private final int TIME_RECEIVE = 1;
-    private final int POWER_RECEIVE = 2;
     private final int UPDATE_TIMES = 3;
     private final int STOP_TRAINING = 4;
-
     private Timer timer;
-
     //存储在当前页面中可以用的设备编号，以方便在Spinner中选择设备
     private List<String> list = new ArrayList<>();
-    //灯光颜色
-    /*private Order.LightColor lightColor = Order.LightColor.RED;*/
-    //灯光模式（内圈还是外圈凉）
-    /*private Order.LightModel lightModel = Order.LightModel.OUTER;*/
-    //感应模式（红外还是触碰还是同时）测试期间默认为红外模式
-    /*private Order.ActionModel actionModel = Order.ActionModel.LIGHT;*/
-
     private CommandRules.OutColor lightColor = CommandRules.OutColor.BLUE;
+    private DbLight selectedLight = null;
+    private CommandNew commandNew = new CommandNew();
+    private boolean isLength = false;
 
-    DbLight selectedLight = null;
 
-
-    /**
-     * 广播监听
-     */
+    //广播监听
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -270,17 +257,19 @@ public class NewSingleSpotActivity extends BaseActivity {
         ButterKnife.bind(this);
         mContext = this;
         mRealm = Realm.getDefaultInstance();
-
         mExecutorService = new ScheduledThreadPoolExecutor(2);
         registerReceiver();
         playerDao = GreenDaoInitApplication.getInstances().getDaoSession().getPlayerDao();
         singleSpotScoresDao = GreenDaoInitApplication.getInstances().getDaoSession().getSingleSpotScoresDao();
-        //初始化数据
+        updateLightName();
+        //initData位于initView之前，因为initData的数据是Spinner中所需要的
         initData();
         initView();
+
+
     }
 
-    /*注册广播*/
+    //注册广播
     private void registerReceiver() {
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(AppConfig.ACTION_TIME_INFO);
@@ -293,14 +282,6 @@ public class NewSingleSpotActivity extends BaseActivity {
                 case Timer.TIMER_FLAG:
                     String time = msg.obj.toString();
                     tvTotalTime.setText("总时间" + time);
-                    break;
-                //接收到返回的时间
-               case TIME_RECEIVE:
-                    String data = msg.obj.toString();
-                    if (data.length() > 7) {
-                        //解析数据
-                        /*analyzeTimeData(data);*/
-                    }
                     break;
                 case STOP_TRAINING:
                     //在结束之前先计算平均值
@@ -451,7 +432,6 @@ public class NewSingleSpotActivity extends BaseActivity {
 
 
                         //为对话框中的listview设置子项单击事件
-
                         lvSaveresult.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                             @Override
                             public void onItemClick(AdapterView<?> adapterView, View view2, int position, long l) {
@@ -491,29 +471,32 @@ public class NewSingleSpotActivity extends BaseActivity {
     //解析时间
     private void analyzeTimeData(TimeInfo timeInfo) {
             Log.d("ana", "时间解析");
-            if (timeInfo.getName() == deviceNum) {
+/*
+            if (timeInfo.getName() == selectedLight.getName()) {
+*/
                 counter += 1;
                 Log.d("******", timeInfo.getName() + timeInfo.getTime() );
-                Log.d("#######", counter + "");
+
                 if (counter > trainTimes) {
                     endFlag = true;
                 }
+                Log.d("#######", counter + "");
                 timeList.add((int) timeInfo.getTime());
+                Log.d("再次开灯前状态", selectedLight.toString() );
                 List<Order> orderList = new ArrayList<>();
-                DbLight light = AppConfig.sDbLights.get(1);
-                light.setOpen(true);
-                CommandNew commandNew = new CommandNew();
+                selectedLight.setOpen(true);
                 commandNew.setBeforeOutColor(lightColor);
                 commandNew.setInfraredEmission(CommandRules.InfraredEmission.OPEN);
                 commandNew.setInfraredInduction(CommandRules.InfraredInduction.OPEN);
                 commandNew.setInfraredModel(CommandRules.InfraredModel.NORMAL);
                 Order order = new Order();
-                order.setLight(light);
+                order.setLight(selectedLight);
                 order.setCommandNew(commandNew);
                 orderList.add(order);
                 OrderUtils.getInstance().sendCommand(orderList);
+                Log.d("ananlyze中开灯", selectedLight.toString() );
 
-            }
+          //  }
 
         Message msg = Message.obtain();
         msg.what = UPDATE_TIMES;
@@ -531,13 +514,8 @@ public class NewSingleSpotActivity extends BaseActivity {
 
     }
 
-    //判断训练是否结束
-    private boolean isTrainingOver() {
-        if (counter >= trainTimes)
-            return true;
-        else return false;
-    }
-    /*检测灯数量*/
+
+    //检测灯数量
     public void checkLightNumber() {
         if (AppConfig.sDbLights.size() < 1) {
             ToastUtils.makeText(mContext, "可用设备不足一个,无法进行训练！", Toast.LENGTH_SHORT);
@@ -545,8 +523,7 @@ public class NewSingleSpotActivity extends BaseActivity {
     }
     //初始化数据
     public void initData() {
-        //先刷新当前页面的灯编号
-        getSaveLight();
+
         //获取当前可用的设备编号，存储到list当中
         for (int i=0;i<AppConfig.sDbLights.size();i++) {
             String name = AppConfig.sDbLights.get(i).getName();
@@ -578,14 +555,24 @@ public class NewSingleSpotActivity extends BaseActivity {
         spDevices.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                deviceNum =  (String) spDevices.getSelectedItem();
-                for (DbLight dbLight : AppConfig.sDbLights) {
-                    if (dbLight.getName() == deviceNum) {
-                        selectedLight = dbLight;
-                        break;
+                //通过Spinner选择编号，
+                deviceNum =  (String) spDevices.getItemAtPosition(i);
+                if (AppConfig.sDbLights != null && AppConfig.sDbLights.size() > 0) {
+                    for (DbLight dbLight : AppConfig.sDbLights) {
+                        //此处原本有Bug，用中间变量存储以后，bug修复
+                        String name = dbLight.getName();
+                        if (name.equals(deviceNum)) {
+                                selectedLight = dbLight;
+                                break;
+                            }
+                    }
+                    if (selectedLight == null) {
+                        ToastUtils.makeText(mContext, "可用设备不足一个", Toast.LENGTH_SHORT).show();
+                    } else {
+                        Log.d("deviceNum", selectedLight.getName() + "");
                     }
                 }
-                Log.d("deviceNum", deviceNum + "");
+
             }
 
             @Override
@@ -665,32 +652,6 @@ public class NewSingleSpotActivity extends BaseActivity {
     }
 
 
-    //停止训练
-    public void stopTraining() {
-        trainingBeginFlag = false;
-        endFlag=true;
-        OrderUtils.getInstance().turnOffLightList(AppConfig.sDbLights);
-        if (timer != null) {
-            timer.stopTimer();
-        }
-        //很重要的重置计数器
-        counter = 0;
-    }
-
-    public void tesst() {
-        List<Order> orderList = new ArrayList<>();
-        DbLight light = AppConfig.sDbLights.get(1);
-        light.setOpen(true);
-        CommandNew commandNew = new CommandNew();
-        commandNew.setBeforeOutColor(lightColor);
-
-        Order order = new Order();
-        order.setLight(light);
-        order.setCommandNew(commandNew);
-        orderList.add(order);
-        OrderUtils.getInstance().sendCommand(orderList);
-    }
-
     //开始训练
     public void startTraining() {
         Log.d(TAG, "startTraining has run");
@@ -702,35 +663,20 @@ public class NewSingleSpotActivity extends BaseActivity {
         singleSpotAdapter.setTimeList(timeList);
         singleSpotAdapter.notifyDataSetChanged();
         /////
+        Log.d("开始训练前被选灯的状态", selectedLight.toString());
+        endFlag=false;
         List<Order> orderList = new ArrayList<>();
-        DbLight light = AppConfig.sDbLights.get(1);
-        light.setOpen(true);
-        CommandNew commandNew = new CommandNew();
+        selectedLight.setOpen(true);
         commandNew.setBeforeOutColor(lightColor);
         commandNew.setInfraredEmission(CommandRules.InfraredEmission.OPEN);
         commandNew.setInfraredInduction(CommandRules.InfraredInduction.OPEN);
         commandNew.setInfraredModel(CommandRules.InfraredModel.NORMAL);
         Order order = new Order();
-        order.setLight(light);
+        order.setLight(selectedLight);
         order.setCommandNew(commandNew);
         orderList.add(order);
         OrderUtils.getInstance().sendCommand(orderList);
-       /* //清除串口数据
-        new ReceiveThread(handler, device.ftDev, ReceiveThread.CLEAR_DATA_THREAD, 0).start();*/
-
-        //开启接收设备返回时间的监听线程
-/*
-        new ReceiveThread(handler, device.ftDev, ReceiveThread.TIME_RECEIVE_THREAD, TIME_RECEIVE).start();
-*/
-
-      /*  device.sendOrder(deviceNum,
-                lightColor,
-                Order.VoiceMode.values()[0],
-                Order.BlinkModel.values()[0],
-                lightModel,
-                actionModel,
-                Order.EndVoice.values()[0]);*/
-
+        Log.d("开始训练设置命令后", selectedLight.toString());
         //获得当前的系统时间
         startTime = System.currentTimeMillis();
         timer = new Timer(handler);
@@ -738,6 +684,32 @@ public class NewSingleSpotActivity extends BaseActivity {
         timer.start();
 
     }
+
+    //判断训练是否结束
+    private boolean isTrainingOver() {
+        if (counter >= trainTimes) {
+            return true;
+        } else {
+            return false;
+        }
+    }
+
+    //停止训练
+    public void stopTraining() {
+        trainingBeginFlag = false;
+        endFlag=true;
+        OrderUtils.getInstance().turnOffLightList(AppConfig.sDbLights);
+        Log.d("停止训练灯状态", selectedLight.toString());
+        if (timer != null) {
+            timer.stopTimer();
+        }
+        //很重要的重置计数器
+        counter = 0;
+        Log.d("counter:" , counter+"");
+
+    }
+
+
 
     //更新灯及其编号
     private void getSaveLight() {
@@ -757,6 +729,15 @@ public class NewSingleSpotActivity extends BaseActivity {
         });
 
     }
+    //在oncreate中更新设备编号
+    private void updateLightName() {
+        //判空操作，否则进入Test报空指针
+        if (AppConfig.sDevice != null) {
+            //每次打开当前页面都要从数据库中读取灯的编号，否则编号默认为递增的自然数
+            getSaveLight();
+        }
+    }
+
 
 
 }

@@ -334,8 +334,7 @@ public class Test extends BaseActivity {
         /*initListener();*/
         initAdapter();
         setDevice();
-        //每次打开当前页面都要从数据库中读取灯的编号，否则编号默认为递增的自然数
-        getSaveLight();
+        updateLightName();
     }
 
 
@@ -462,11 +461,6 @@ public class Test extends BaseActivity {
     @OnClick({R.id.sleep, R.id.send, R.id.turnOn, R.id.turnOff, R.id.selectAll, R.id.selectNone, R.id.beforeOutBlinkNone, R.id.beforeOutBlinkAlways, R.id.beforeOutBlinkSlow, R.id.beforeOutBlinkFast, R.id.beforeOutBlink, R.id.beforeOutColorBlue, R.id.beforeOutColorRed, R.id.beforeOutColorGreen, R.id.beforeOutColorPurple, R.id.beforeOutColor1, R.id.beforeOutColorCyan, R.id.beforeOutColorYellow, R.id.beforeOutColorWhite, R.id.beforeOutColor2, R.id.beforeInBlinkNone, R.id.beforeInBlinkAlways, R.id.beforeInBlinkSlow, R.id.beforeInBlinkFast, R.id.beforeInBlink, R.id.beforeInColorBlue, R.id.beforeInColorRed, R.id.beforeInColorPurple, R.id.beforeInColor, R.id.infraredEmissionOn, R.id.infraredEmissionOff, R.id.infraredEmission, R.id.infraredInductionOn, R.id.infraredInductionOff, R.id.infraredInduction, R.id.infraredModelNormal, R.id.infraredModelContend, R.id.infraredModel, R.id.infraredHeightLow, R.id.infraredHeight_5cm, R.id.infraredHeight_30cm, R.id.infraredHeightHigh, R.id.infraredHeight, R.id.vibrationInducedOn, R.id.vibrationInducedOff, R.id.vibrationInduced, R.id.vibrationIntensityL, R.id.vibrationIntensityM, R.id.vibrationIntensityH, R.id.vibrationIntensity, R.id.vibrationDetailsOn, R.id.vibrationDetailsOff, R.id.vibrationDetails, R.id.buzzerNone, R.id.buzzerShort, R.id.buzzer_1s, R.id.buzzer_2s, R.id.buzzer, R.id.afterOutBlinkNone, R.id.afterOutBlinkAlways, R.id.afterOutBlinkSlow, R.id.afterOutBlinkFast, R.id.afterOutBlink, R.id.afterOutColorBlue, R.id.afterOutColorRed, R.id.afterOutColorGreen, R.id.afterOutColorPurple, R.id.afterOutColor1, R.id.afterOutColorCyan, R.id.afterOutColorYellow, R.id.afterOutColorWhite, R.id.afterOutColor2, R.id.afterInBlinkNone, R.id.afterInBlinkAlways, R.id.afterInBlinkSlow, R.id.afterInBlinkFast, R.id.afterInBlink, R.id.afterInColorBlue, R.id.afterInColorRed, R.id.afterInColorPurple, R.id.afterInColor, R.id.afterBuzzerNone, R.id.afterBuzzerShort, R.id.afterBuzzer_1s, R.id.afterBuzzer_2s, R.id.afterBuzzer, R.id.alter, R.id.resetCoordinator, R.id.clearData})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            /*case R.id.newback:
-                Log.d("back", "返回被点击");
-                backFinish();
-
-                break;*/
             case R.id.sleepOrder:
                 mAlterSleepDialog = new AlterSleepDialog(mContext, new AlterSleepDialog.SetOnDialogListener() {
                     @Override
@@ -689,6 +683,15 @@ public class Test extends BaseActivity {
             }
         });
 
+    }
+
+    //在oncreate中更新设备编号
+    private void updateLightName() {
+        //判空操作，否则进入Test报空指针
+        if (AppConfig.sDevice != null) {
+            //每次打开当前页面都要从数据库中读取灯的编号，否则编号默认为递增的自然数
+            getSaveLight();
+        }
     }
 
     @OnClick(R.id.newback)
