@@ -2,12 +2,6 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="ouc.b304.com.fenceplaying">
 
-    <!--<uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
-    <uses-permission android:name="android.permission.MODIFY_AUDIO_SETTINGS" />
-    <uses-permission android:name="android.permission.RECORD_AUDIO" />
-    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />-->
-
     <application
         android:name=".application.GreenDaoInitApplication"
         android:allowBackup="true"
@@ -16,20 +10,7 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <!--<activity
-            android:name=".activity.MainActivity"
-            android:theme="@android:style/Theme.NoTitleBar.Fullscreen">
-            <intent-filter>
-                <action android:name="android.hardware.usb.action.USB_ACCESSORY_ATTACHED" />
-            </intent-filter>
-            <intent-filter>
-                <action android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED" />
-            </intent-filter>
 
-            <meta-data
-                android:name="android.hardware.usb.action.USB_DEVICE_ATTACHED"
-                android:resource="@xml/device_filter" />
-        </activity>-->
         <meta-data
             android:name="design_width"
             android:value="1920" />
@@ -124,8 +105,11 @@
             android:theme="@style/AppTheme"></activity>
         <activity
             android:name=".activity.newVersion.NewSingleSpotActivity"
-            android:theme="@style/AppTheme"></activity>
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"></activity>
 
+        <activity
+            android:name=".activity.newVersion.NewSingleLineActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"></activity>
         <!-- 读取串口数据 -->
         <service android:name=".service.ReadDataService" />
     </application>

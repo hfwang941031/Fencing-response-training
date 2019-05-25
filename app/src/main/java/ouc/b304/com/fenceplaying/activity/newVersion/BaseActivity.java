@@ -20,7 +20,7 @@ import ouc.b304.com.fenceplaying.set.StatusBarSet;
 
 public class BaseActivity extends AutoLayoutActivity {
 
-    private Boolean mDeviceFlag = false;
+
     private String mClassName;
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -45,28 +45,13 @@ public class BaseActivity extends AutoLayoutActivity {
      */
     protected void onReconnect() {
         Log.d("FIFIFIOA", "断网重连: ");
-//        device.disconnect();
-//        if (mDeviceFlag) {
-//            device.createDeviceList(this);
-//            //判断是否插入协调器
-//            if (device.devCount() > 0) {
-//                device.connect(this);
-//                device.initConfig();
-//            }
-//        }
+
     }
 
     @Override
     protected void onRestart() {
         super.onRestart();
-//        if (mDeviceFlag) {
-//            device.createDeviceList(this);
-//            //判断是否插入协调器
-//            if (device.devCount() > 0) {
-//                device.connect(this);
-//                device.initConfig();
-//            }
-//        }
+
 
         Log.d("ActivityLife", mClassName + "：base_onRestart");
     }
@@ -87,9 +72,7 @@ public class BaseActivity extends AutoLayoutActivity {
     @Override
     protected void onPause() {
         super.onPause();
-//        if (mDeviceFlag) {
-//            device.disconnect();
-//        }
+
         Log.d("ActivityLife", mClassName + "：base_onPause");
     }
 

@@ -39,27 +39,23 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.Realm;
 import ouc.b304.com.fenceplaying.Bean.Constant;
-import ouc.b304.com.fenceplaying.Bean.DeviceInfo;
-import ouc.b304.com.fenceplaying.Bean.Light;
 import ouc.b304.com.fenceplaying.Dao.PlayerDao;
 import ouc.b304.com.fenceplaying.Dao.SingleSpotScoresDao;
 import ouc.b304.com.fenceplaying.Dao.entity.Player;
 import ouc.b304.com.fenceplaying.Dao.entity.SingleSpotScores;
 import ouc.b304.com.fenceplaying.R;
-import ouc.b304.com.fenceplaying.activity.SingleSpotActivity;
 import ouc.b304.com.fenceplaying.adapter.LightOperateAdapter;
 import ouc.b304.com.fenceplaying.adapter.SaveResultAdapter;
 import ouc.b304.com.fenceplaying.adapter.SingleSpotAdapter;
 import ouc.b304.com.fenceplaying.application.GreenDaoInitApplication;
-
-import ouc.b304.com.fenceplaying.dialog.CusProgressDialog;
+import ouc.b304.com.fenceplaying.dialog.AlterOrderNumDialog;
+import ouc.b304.com.fenceplaying.dialog.AlterSleepDialog;
 import ouc.b304.com.fenceplaying.entity.DbLight;
 import ouc.b304.com.fenceplaying.entity.TimeInfo;
 import ouc.b304.com.fenceplaying.order.CommandNew;
 import ouc.b304.com.fenceplaying.order.CommandRules;
-import ouc.b304.com.fenceplaying.order.OrderUtils;
 import ouc.b304.com.fenceplaying.order.Order;
-import ouc.b304.com.fenceplaying.thread.ReceiveThread;
+import ouc.b304.com.fenceplaying.order.OrderUtils;
 import ouc.b304.com.fenceplaying.thread.Timer;
 import ouc.b304.com.fenceplaying.utils.IntegerToStringUtils;
 import ouc.b304.com.fenceplaying.utils.PlayDaoUtils;
@@ -118,40 +114,9 @@ public class NewSingleSpotActivity extends BaseActivity {
     Button btnTurnoff;
     @BindView(R.id.tv_avalibledevices)
     TextView tvAvalibledevices;
-    @BindView(R.id.tv_devicenumbers)
-    TextView tvDevicenumbers;
+
     @BindView(R.id.img_btn_refresh)
     ImageButton imgBtnRefresh;
-    @BindView(R.id.img_setting)
-    ImageView imgSetting;
-    @BindView(R.id.paraset)
-    TextView paraset;
-    @BindView(R.id.tv_actionmode)
-    TextView tvActionmode;
-    @BindView(R.id.rb_touch)
-    RadioButton rbTouch;
-    @BindView(R.id.rd_redline)
-    RadioButton rdRedline;
-    @BindView(R.id.rb_touchandredline)
-    RadioButton rbTouchandredline;
-    @BindView(R.id.rg_actionmode)
-    RadioGroup rgActionmode;
-    @BindView(R.id.tv_lightcolor)
-    TextView tvLightcolor;
-    @BindView(R.id.rb_red)
-    RadioButton rbRed;
-    @BindView(R.id.rd_blue)
-    RadioButton rdBlue;
-    @BindView(R.id.rg_lightcolor)
-    RadioGroup rgLightcolor;
-    @BindView(R.id.tv_blinkmode)
-    TextView tvBlinkmode;
-    @BindView(R.id.rb_out)
-    RadioButton rbOut;
-    @BindView(R.id.rd_in)
-    RadioButton rdIn;
-    @BindView(R.id.rg_blinkmode)
-    RadioGroup rgBlinkmode;
     @BindView(R.id.tvTotalTime)
     TextView tvTotalTime;
     @BindView(R.id.btn_startrun)
@@ -166,8 +131,172 @@ public class NewSingleSpotActivity extends BaseActivity {
     TextView avergeScore;
     @BindView(R.id.bt_save)
     Button btSave;
+    @BindView(R.id.sleepOrder)
+    TextView sleepOrder;
+    @BindView(R.id.orderNum)
+    TextView orderNum;
+    @BindView(R.id.beforeOutBlinkNone)
+    RadioButton beforeOutBlinkNone;
+    @BindView(R.id.beforeOutBlinkAlways)
+    RadioButton beforeOutBlinkAlways;
+    @BindView(R.id.beforeOutBlinkSlow)
+    RadioButton beforeOutBlinkSlow;
+    @BindView(R.id.beforeOutBlinkFast)
+    RadioButton beforeOutBlinkFast;
+    @BindView(R.id.beforeOutBlink)
+    RadioGroup beforeOutBlink;
+    @BindView(R.id.beforeOutColorBlue)
+    RadioButton beforeOutColorBlue;
+    @BindView(R.id.beforeOutColorRed)
+    RadioButton beforeOutColorRed;
+    @BindView(R.id.beforeOutColorGreen)
+    RadioButton beforeOutColorGreen;
+    @BindView(R.id.beforeOutColorPurple)
+    RadioButton beforeOutColorPurple;
+    @BindView(R.id.beforeOutColor1)
+    RadioGroup beforeOutColor1;
+    @BindView(R.id.beforeOutColorCyan)
+    RadioButton beforeOutColorCyan;
+    @BindView(R.id.beforeOutColorYellow)
+    RadioButton beforeOutColorYellow;
+    @BindView(R.id.beforeOutColorWhite)
+    RadioButton beforeOutColorWhite;
+    @BindView(R.id.beforeOutColor2)
+    RadioGroup beforeOutColor2;
+    @BindView(R.id.beforeInBlinkNone)
+    RadioButton beforeInBlinkNone;
+    @BindView(R.id.beforeInBlinkAlways)
+    RadioButton beforeInBlinkAlways;
+    @BindView(R.id.beforeInBlinkSlow)
+    RadioButton beforeInBlinkSlow;
+    @BindView(R.id.beforeInBlinkFast)
+    RadioButton beforeInBlinkFast;
+    @BindView(R.id.beforeInBlink)
+    RadioGroup beforeInBlink;
+    @BindView(R.id.beforeInColorBlue)
+    RadioButton beforeInColorBlue;
+    @BindView(R.id.beforeInColorRed)
+    RadioButton beforeInColorRed;
+    @BindView(R.id.beforeInColorPurple)
+    RadioButton beforeInColorPurple;
+    @BindView(R.id.beforeInColor)
+    RadioGroup beforeInColor;
+    @BindView(R.id.infraredEmissionOn)
+    RadioButton infraredEmissionOn;
+    @BindView(R.id.infraredEmissionOff)
+    RadioButton infraredEmissionOff;
+    @BindView(R.id.infraredEmission)
+    RadioGroup infraredEmission;
+    @BindView(R.id.infraredInductionOn)
+    RadioButton infraredInductionOn;
+    @BindView(R.id.infraredInductionOff)
+    RadioButton infraredInductionOff;
+    @BindView(R.id.infraredInduction)
+    RadioGroup infraredInduction;
+    @BindView(R.id.infraredModelNormal)
+    RadioButton infraredModelNormal;
+    @BindView(R.id.infraredModelContend)
+    RadioButton infraredModelContend;
+    @BindView(R.id.infraredModel)
+    RadioGroup infraredModel;
+    @BindView(R.id.infraredHeightLow)
+    RadioButton infraredHeightLow;
+    @BindView(R.id.infraredHeight_5cm)
+    RadioButton infraredHeight5cm;
+    @BindView(R.id.infraredHeight_30cm)
+    RadioButton infraredHeight30cm;
+    @BindView(R.id.infraredHeightHigh)
+    RadioButton infraredHeightHigh;
+    @BindView(R.id.infraredHeight)
+    RadioGroup infraredHeight;
+    @BindView(R.id.vibrationInducedOn)
+    RadioButton vibrationInducedOn;
+    @BindView(R.id.vibrationInducedOff)
+    RadioButton vibrationInducedOff;
+    @BindView(R.id.vibrationInduced)
+    RadioGroup vibrationInduced;
+    @BindView(R.id.vibrationIntensityL)
+    RadioButton vibrationIntensityL;
+    @BindView(R.id.vibrationIntensityM)
+    RadioButton vibrationIntensityM;
+    @BindView(R.id.vibrationIntensityH)
+    RadioButton vibrationIntensityH;
+    @BindView(R.id.vibrationIntensity)
+    RadioGroup vibrationIntensity;
+    @BindView(R.id.vibrationDetailsOn)
+    RadioButton vibrationDetailsOn;
+    @BindView(R.id.vibrationDetailsOff)
+    RadioButton vibrationDetailsOff;
+    @BindView(R.id.vibrationDetails)
+    RadioGroup vibrationDetails;
+    @BindView(R.id.buzzerNone)
+    RadioButton buzzerNone;
+    @BindView(R.id.buzzerShort)
+    RadioButton buzzerShort;
+    @BindView(R.id.buzzer_1s)
+    RadioButton buzzer1s;
+    @BindView(R.id.buzzer_2s)
+    RadioButton buzzer2s;
+    @BindView(R.id.buzzer)
+    RadioGroup buzzer;
+    @BindView(R.id.afterOutBlinkNone)
+    RadioButton afterOutBlinkNone;
+    @BindView(R.id.afterOutBlinkAlways)
+    RadioButton afterOutBlinkAlways;
+    @BindView(R.id.afterOutBlinkSlow)
+    RadioButton afterOutBlinkSlow;
+    @BindView(R.id.afterOutBlinkFast)
+    RadioButton afterOutBlinkFast;
+    @BindView(R.id.afterOutBlink)
+    RadioGroup afterOutBlink;
+    @BindView(R.id.afterOutColorBlue)
+    RadioButton afterOutColorBlue;
+    @BindView(R.id.afterOutColorRed)
+    RadioButton afterOutColorRed;
+    @BindView(R.id.afterOutColorGreen)
+    RadioButton afterOutColorGreen;
+    @BindView(R.id.afterOutColorPurple)
+    RadioButton afterOutColorPurple;
+    @BindView(R.id.afterOutColor1)
+    RadioGroup afterOutColor1;
+    @BindView(R.id.afterOutColorCyan)
+    RadioButton afterOutColorCyan;
+    @BindView(R.id.afterOutColorYellow)
+    RadioButton afterOutColorYellow;
+    @BindView(R.id.afterOutColorWhite)
+    RadioButton afterOutColorWhite;
+    @BindView(R.id.afterOutColor2)
+    RadioGroup afterOutColor2;
+    @BindView(R.id.afterInBlinkNone)
+    RadioButton afterInBlinkNone;
+    @BindView(R.id.afterInBlinkAlways)
+    RadioButton afterInBlinkAlways;
+    @BindView(R.id.afterInBlinkSlow)
+    RadioButton afterInBlinkSlow;
+    @BindView(R.id.afterInBlinkFast)
+    RadioButton afterInBlinkFast;
+    @BindView(R.id.afterInBlink)
+    RadioGroup afterInBlink;
+    @BindView(R.id.afterInColorBlue)
+    RadioButton afterInColorBlue;
+    @BindView(R.id.afterInColorRed)
+    RadioButton afterInColorRed;
+    @BindView(R.id.afterInColorPurple)
+    RadioButton afterInColorPurple;
+    @BindView(R.id.afterInColor)
+    RadioGroup afterInColor;
+    @BindView(R.id.afterBuzzerNone)
+    RadioButton afterBuzzerNone;
+    @BindView(R.id.afterBuzzerShort)
+    RadioButton afterBuzzerShort;
+    @BindView(R.id.afterBuzzer_1s)
+    RadioButton afterBuzzer1s;
+    @BindView(R.id.afterBuzzer_2s)
+    RadioButton afterBuzzer2s;
+    @BindView(R.id.afterBuzzer)
+    RadioGroup afterBuzzer;
 
-/*字段*/
+    /*字段*/
     private Context mContext;
     private List<DbLight> mSelectLight = new ArrayList<>();
     private List<TimeInfo> mTimeInfoListData = new ArrayList<>();
@@ -233,6 +362,12 @@ public class NewSingleSpotActivity extends BaseActivity {
     private CommandNew commandNew = new CommandNew();
     private boolean isLength = false;
 
+    private AlterSleepDialog alterSleepDialog;
+
+    private AlterOrderNumDialog alterOrderNumDialog;
+
+
+
 
     //广播监听
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
@@ -250,6 +385,7 @@ public class NewSingleSpotActivity extends BaseActivity {
             }
         }
     };
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -265,6 +401,7 @@ public class NewSingleSpotActivity extends BaseActivity {
         //initData位于initView之前，因为initData的数据是Spinner中所需要的
         initData();
         initView();
+        initListener();
 
 
     }
@@ -275,6 +412,7 @@ public class NewSingleSpotActivity extends BaseActivity {
         intentFilter.addAction(AppConfig.ACTION_TIME_INFO);
         registerReceiver(mBroadcastReceiver, intentFilter);
     }
+
     private Handler handler = new Handler() {
         @Override
         public void handleMessage(Message msg) {
@@ -349,7 +487,7 @@ public class NewSingleSpotActivity extends BaseActivity {
         super.finish();
     }
 
-    @OnClick({R.id.bt_run_cancel, R.id.layout_cancel, R.id.btn_turnon, R.id.btn_turnoff, R.id.img_btn_refresh, R.id.btn_startrun, R.id.btn_stoprun, R.id.bt_save})
+    @OnClick({R.id.bt_run_cancel, R.id.layout_cancel, R.id.btn_turnon, R.id.btn_turnoff, R.id.img_btn_refresh, R.id.btn_startrun, R.id.btn_stoprun, R.id.bt_save,R.id.sleepOrder,R.id.orderNum})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.bt_run_cancel:
@@ -464,39 +602,59 @@ public class NewSingleSpotActivity extends BaseActivity {
                     Toast.makeText(mContext, "请勿对该成绩进行二次保存,请进行下一次训练后再执行保存！", Toast.LENGTH_SHORT).show();
                 }
                 break;
+            case R.id.sleepOrder:
+                alterSleepDialog = new AlterSleepDialog(mContext, new AlterSleepDialog.SetOnDialogListener() {
+                    @Override
+                    public void sureClick() {
+                        sleepOrder.setText("命令间隔：" + AppConfig.sSleep + " ms");
+                        alterSleepDialog.dismiss();
+                    }
+                });
+                alterSleepDialog.show();
+                break;
+            case R.id.orderNum:
+                alterOrderNumDialog = new AlterOrderNumDialog(mContext, new AlterOrderNumDialog.SetOnDialogListener() {
+                    @Override
+                    public void sureClick() {
+                        orderNum.setText("命令重发次数：" + AppConfig.sNum);
+                        alterOrderNumDialog.dismiss();
+                    }
+                });
+                alterOrderNumDialog.show();
+                break;
         }
 
     }
 
     //解析时间
     private void analyzeTimeData(TimeInfo timeInfo) {
-            Log.d("ana", "时间解析");
+        Log.d("ana", "时间解析");
 /*
             if (timeInfo.getName() == selectedLight.getName()) {
 */
-                counter += 1;
-                Log.d("******", timeInfo.getName() + timeInfo.getTime() );
+        counter += 1;
+        Log.d("******", timeInfo.getName() + timeInfo.getTime());
 
-                if (counter > trainTimes) {
-                    endFlag = true;
-                }
-                Log.d("#######", counter + "");
-                timeList.add((int) timeInfo.getTime());
-                Log.d("再次开灯前状态", selectedLight.toString() );
-                List<Order> orderList = new ArrayList<>();
-                selectedLight.setOpen(true);
-                commandNew.setBeforeOutColor(lightColor);
-                commandNew.setInfraredEmission(CommandRules.InfraredEmission.OPEN);
-                commandNew.setInfraredInduction(CommandRules.InfraredInduction.OPEN);
-                commandNew.setInfraredModel(CommandRules.InfraredModel.NORMAL);
-                Order order = new Order();
-                order.setLight(selectedLight);
-                order.setCommandNew(commandNew);
-                orderList.add(order);
-                OrderUtils.getInstance().sendCommand(orderList);
-                Log.d("ananlyze中开灯", selectedLight.toString() );
+        if (counter > trainTimes) {
+            endFlag = true;
+        }
+        Log.d("#######", counter + "");
+        timeList.add((int) timeInfo.getTime());
+        Log.d("再次开灯前状态", selectedLight.toString());
+        List<Order> orderList = new ArrayList<>();
+        selectedLight.setOpen(true);
+        commandNew.setBeforeOutColor(lightColor);
+        commandNew.setInfraredEmission(CommandRules.InfraredEmission.OPEN);
+        commandNew.setInfraredInduction(CommandRules.InfraredInduction.OPEN);
+        commandNew.setInfraredModel(CommandRules.InfraredModel.NORMAL);
+        Order order = new Order();
+        order.setLight(selectedLight);
+        order.setCommandNew(commandNew);
+        orderList.add(order);
+        OrderUtils.getInstance().sendCommand(orderList);
+        Log.d("ananlyze中开灯", selectedLight.toString());
 
-          //  }
+        //  }
 
         Message msg = Message.obtain();
         msg.what = UPDATE_TIMES;
@@ -521,11 +679,12 @@ public class NewSingleSpotActivity extends BaseActivity {
             ToastUtils.makeText(mContext, "可用设备不足一个,无法进行训练！", Toast.LENGTH_SHORT);
         }
     }
+
     //初始化数据
     public void initData() {
 
         //获取当前可用的设备编号，存储到list当中
-        for (int i=0;i<AppConfig.sDbLights.size();i++) {
+        for (int i = 0; i < AppConfig.sDbLights.size(); i++) {
             String name = AppConfig.sDbLights.get(i).getName();
             list.add(name);
         }
@@ -556,15 +715,15 @@ public class NewSingleSpotActivity extends BaseActivity {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 //通过Spinner选择编号，
-                deviceNum =  (String) spDevices.getItemAtPosition(i);
+                deviceNum = (String) spDevices.getItemAtPosition(i);
                 if (AppConfig.sDbLights != null && AppConfig.sDbLights.size() > 0) {
                     for (DbLight dbLight : AppConfig.sDbLights) {
                         //此处原本有Bug，用中间变量存储以后，bug修复
                         String name = dbLight.getName();
                         if (name.equals(deviceNum)) {
-                                selectedLight = dbLight;
-                                break;
-                            }
+                            selectedLight = dbLight;
+                            break;
+                        }
                     }
                     if (selectedLight == null) {
                         ToastUtils.makeText(mContext, "可用设备不足一个", Toast.LENGTH_SHORT).show();
@@ -597,58 +756,6 @@ public class NewSingleSpotActivity extends BaseActivity {
         //初始化时间listview,即成绩显示列表
         singleSpotAdapter = new SingleSpotAdapter(this);
         lvTimes.setAdapter(singleSpotAdapter);
-
-        //设置感应模式
-        rgActionmode.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                switch (i) {
-                    case R.id.rb_touch:
-                        /*actionModel = Order.ActionModel.TOUCH;*/
-                        break;
-                    case R.id.rd_redline:
-                        /*actionModel = Order.ActionModel.LIGHT;*/
-                        break;
-                    case R.id.rb_touchandredline:
-                        /*actionModel = Order.ActionModel.ALL;*/
-                        break;
-
-
-                }
-            }
-        });
-        //设置单选按钮
-        rgLightcolor.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-
-                switch (i) {
-                    case R.id.rb_red:
-                        /*lightColor = Order.LightColor.RED;*/
-                        break;
-                    case R.id.rd_blue:
-                        /*lightColor = Order.LightColor.BLUE;*/
-                        break;
-
-                }
-            }
-        });
-
-        //设置灯光内外圈
-        rgBlinkmode.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
-            @Override
-            public void onCheckedChanged(RadioGroup radioGroup, int i) {
-                switch (i) {
-                    case R.id.rb_out:
-                        /*lightModel = Order.LightModel.OUTER;*/
-                        break;
-                    case R.id.rd_in:
-                        /*lightModel = Order.LightModel.CENTER;*/
-                }
-            }
-        });
-
-
     }
 
 
@@ -664,7 +771,7 @@ public class NewSingleSpotActivity extends BaseActivity {
         singleSpotAdapter.notifyDataSetChanged();
         /////
         Log.d("开始训练前被选灯的状态", selectedLight.toString());
-        endFlag=false;
+        endFlag = false;
         List<Order> orderList = new ArrayList<>();
         selectedLight.setOpen(true);
         commandNew.setBeforeOutColor(lightColor);
@@ -697,7 +804,7 @@ public class NewSingleSpotActivity extends BaseActivity {
     //停止训练
     public void stopTraining() {
         trainingBeginFlag = false;
-        endFlag=true;
+        endFlag = true;
         OrderUtils.getInstance().turnOffLightList(AppConfig.sDbLights);
         Log.d("停止训练灯状态", selectedLight.toString());
         if (timer != null) {
@@ -705,10 +812,9 @@ public class NewSingleSpotActivity extends BaseActivity {
         }
         //很重要的重置计数器
         counter = 0;
-        Log.d("counter:" , counter+"");
+        Log.d("counter:", counter + "");
 
     }
-
 
 
     //更新灯及其编号
@@ -729,6 +835,7 @@ public class NewSingleSpotActivity extends BaseActivity {
         });
 
     }
+
     //在oncreate中更新设备编号
     private void updateLightName() {
         //判空操作，否则进入Test报空指针
@@ -737,6 +844,449 @@ public class NewSingleSpotActivity extends BaseActivity {
             getSaveLight();
         }
     }
+
+    private void initListener() {
+        /*设置外圈灯感应前*/
+        setOutBefore();
+        /*设置内圈灯感应前*/
+        setInBefore();
+        /*设置红外*/
+        setInfrared();
+        /*设置感应*/
+        setVibration();
+        /*设置外圈灯感应后*/
+        setOutAfter();
+        /*设置内圈灯感应后*/
+        setInAfter();
+        /*设置感应前蜂鸣器*/
+        setBuzzerBefore();
+        /*设置感应后蜂鸣器*/
+        setBuzzerAfter();
+
+    }
+
+    private void setBuzzerAfter() {
+        afterBuzzer.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.afterBuzzerNone:
+                        commandNew.setAfterBuzzerModel(CommandRules.BuzzerModel.NONE);
+                        break;
+                    case R.id.afterBuzzerShort:
+                        commandNew.setAfterBuzzerModel(CommandRules.BuzzerModel.SHORT);
+                        break;
+                    case R.id.afterBuzzer_1s:
+                        commandNew.setAfterBuzzerModel(CommandRules.BuzzerModel.LONG_1);
+                        break;
+                    case R.id.afterBuzzer_2s:
+                        commandNew.setAfterBuzzerModel(CommandRules.BuzzerModel.LONG_2);
+                        break;
+                    default:
+                }
+            }
+        });
+    }
+
+    private void setBuzzerBefore() {
+        buzzer.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.buzzerNone:
+                        commandNew.setBeforeBuzzerModel(CommandRules.BuzzerModel.NONE);
+                        break;
+                    case R.id.buzzerShort:
+                        commandNew.setBeforeBuzzerModel(CommandRules.BuzzerModel.SHORT);
+                        break;
+                    case R.id.buzzer_1s:
+                        commandNew.setBeforeBuzzerModel(CommandRules.BuzzerModel.LONG_1);
+                        break;
+                    case R.id.buzzer_2s:
+                        commandNew.setBeforeBuzzerModel(CommandRules.BuzzerModel.LONG_2);
+                        break;
+                    default:
+                }
+            }
+        });
+    }
+
+    private void setInAfter() {
+        /*内圈灯亮灯模式*/
+        afterInBlink.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.afterInBlinkNone:
+                        commandNew.setAfterInBlink(CommandRules.OpenModel.NONE);
+                        break;
+                    case R.id.afterInBlinkAlways:
+                        commandNew.setAfterInBlink(CommandRules.OpenModel.ALWAYS);
+                        break;
+                    case R.id.afterInBlinkSlow:
+                        commandNew.setAfterInBlink(CommandRules.OpenModel.SLOW);
+                        break;
+                    case R.id.afterInBlinkFast:
+                        commandNew.setAfterInBlink(CommandRules.OpenModel.FAST);
+                        break;
+                    default:
+                }
+            }
+        });
+
+        /*内圈灯亮灯颜色*/
+        afterInColor.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.afterInColorBlue:
+                        commandNew.setAfterInColor(CommandRules.InColor.BLUE);
+                        break;
+                    case R.id.afterInColorRed:
+                        commandNew.setAfterInColor(CommandRules.InColor.RED);
+                        break;
+                    case R.id.afterInColorPurple:
+                        commandNew.setAfterInColor(CommandRules.InColor.PURPLE);
+                        break;
+                    default:
+
+                }
+            }
+        });
+    }
+
+    private void setOutAfter() {
+        /*外圈灯亮灯模式*/
+        afterOutBlink.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.afterOutBlinkNone:
+                        commandNew.setAfterOutBlink(CommandRules.OpenModel.NONE);
+                        break;
+                    case R.id.afterOutBlinkAlways:
+                        commandNew.setAfterOutBlink(CommandRules.OpenModel.ALWAYS);
+                        break;
+                    case R.id.afterOutBlinkSlow:
+                        commandNew.setAfterOutBlink(CommandRules.OpenModel.SLOW);
+                        break;
+                    case R.id.afterOutBlinkFast:
+                        commandNew.setAfterOutBlink(CommandRules.OpenModel.FAST);
+                        break;
+                    default:
+                }
+            }
+        });
+        /*外圈灯亮灯颜色*/
+        afterOutColor1.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.afterOutColorBlue:
+                        if (afterOutColorBlue.isChecked()) {
+                            afterOutColor2.clearCheck();
+                            commandNew.setAfterOutColor(CommandRules.OutColor.BLUE);
+                        }
+                        break;
+                    case R.id.afterOutColorRed:
+                        if (afterOutColorRed.isChecked()) {
+                            afterOutColor2.clearCheck();
+                            commandNew.setAfterOutColor(CommandRules.OutColor.RED);
+                        }
+                        break;
+                    case R.id.afterOutColorGreen:
+                        if (afterOutColorGreen.isChecked()) {
+                            afterOutColor2.clearCheck();
+                            commandNew.setAfterOutColor(CommandRules.OutColor.GREEN);
+                        }
+                        break;
+                    case R.id.afterOutColorPurple:
+                        if (afterOutColorPurple.isChecked()) {
+                            afterOutColor2.clearCheck();
+                            commandNew.setAfterOutColor(CommandRules.OutColor.PURPLE);
+                        }
+                        break;
+                    default:
+                }
+            }
+        });
+        afterOutColor2.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.afterOutColorCyan:
+                        if (afterOutColorCyan.isChecked()) {
+                            afterOutColor1.clearCheck();
+                            commandNew.setAfterOutColor(CommandRules.OutColor.CYAN);
+                        }
+                        break;
+                    case R.id.afterOutColorYellow:
+                        if (afterOutColorYellow.isChecked()) {
+                            afterOutColor1.clearCheck();
+                            commandNew.setAfterOutColor(CommandRules.OutColor.YELLOW);
+                        }
+                        break;
+                    case R.id.afterOutColorWhite:
+                        if (afterOutColorWhite.isChecked()) {
+                            afterOutColor1.clearCheck();
+                            commandNew.setAfterOutColor(CommandRules.OutColor.WHITE);
+                        }
+                        break;
+                    default:
+                }
+            }
+        });
+    }
+
+    private void setVibration() {
+        /* 震动感应开关*/
+        vibrationInduced.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.vibrationInducedOn:
+                        commandNew.setVibrationInduced(CommandRules.VibrationInduced.OPEN);
+                        break;
+                    case R.id.vibrationInducedOff:
+                        commandNew.setVibrationInduced(CommandRules.VibrationInduced.CLOSE);
+                        break;
+                    default:
+                }
+            }
+        });
+        /*震动强度*/
+        vibrationIntensity.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.vibrationIntensityL:
+                        commandNew.setVibrationStrength(CommandRules.VibrationStrength.TOUCH_L);
+                        break;
+                    case R.id.vibrationIntensityM:
+                        commandNew.setVibrationStrength(CommandRules.VibrationStrength.TOUCH_M);
+                        break;
+                    case R.id.vibrationIntensityH:
+                        commandNew.setVibrationStrength(CommandRules.VibrationStrength.TOUCH_H);
+                        break;
+                    default:
+                }
+            }
+        });
+        /*震动详情*/
+        vibrationDetails.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.vibrationDetailsOn:
+                        commandNew.setVibrationDetails(CommandRules.VibrationDetails.OPEN);
+                        break;
+                    case R.id.vibrationDetailsOff:
+                        commandNew.setVibrationDetails(CommandRules.VibrationDetails.CLOSE);
+                        break;
+                    default:
+                }
+            }
+        });
+    }
+
+    private void setInfrared() {
+        /*红外发射*/
+        infraredEmission.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.infraredEmissionOn:
+                        commandNew.setInfraredEmission(CommandRules.InfraredEmission.OPEN);
+                        break;
+                    case R.id.infraredEmissionOff:
+                        commandNew.setInfraredEmission(CommandRules.InfraredEmission.CLOSE);
+                        break;
+                    default:
+                }
+            }
+        });
+        /*红外感应*/
+        infraredInduction.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.infraredInductionOn:
+                        commandNew.setInfraredInduction(CommandRules.InfraredInduction.OPEN);
+                        break;
+                    case R.id.infraredInductionOff:
+                        commandNew.setInfraredInduction(CommandRules.InfraredInduction.CLOSE);
+                        break;
+                    default:
+                }
+            }
+        });
+        /*红外模式*/
+        infraredModel.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.infraredModelNormal:
+                        commandNew.setInfraredModel(CommandRules.InfraredModel.NORMAL);
+                        break;
+                    case R.id.infraredModelContend:
+                        commandNew.setInfraredModel(CommandRules.InfraredModel.CONTEND);
+                        break;
+                    default:
+                }
+            }
+        });
+        /*红外高度*/
+        infraredHeight.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.infraredHeightLow:
+                        commandNew.setInfraredHeight(CommandRules.InfraredHeight.MIN_LOW);
+                        break;
+                    case R.id.infraredHeight_5cm:
+                        commandNew.setInfraredHeight(CommandRules.InfraredHeight.LOW);
+                        break;
+                    case R.id.infraredHeight_30cm:
+                        commandNew.setInfraredHeight(CommandRules.InfraredHeight.HIGH);
+                        break;
+                    case R.id.infraredHeightHigh:
+                        commandNew.setInfraredHeight(CommandRules.InfraredHeight.MAX_HIGH);
+                        break;
+                    default:
+                }
+            }
+        });
+    }
+
+    private void setInBefore() {
+        /*内圈灯亮灯模式*/
+        beforeInBlink.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.beforeInBlinkNone:
+                        commandNew.setBeforeInBlink(CommandRules.OpenModel.NONE);
+                        break;
+                    case R.id.beforeInBlinkAlways:
+                        commandNew.setBeforeInBlink(CommandRules.OpenModel.ALWAYS);
+                        break;
+                    case R.id.beforeInBlinkSlow:
+                        commandNew.setBeforeInBlink(CommandRules.OpenModel.SLOW);
+                        break;
+                    case R.id.beforeInBlinkFast:
+                        commandNew.setBeforeInBlink(CommandRules.OpenModel.FAST);
+                        break;
+                    default:
+                }
+            }
+        });
+        /*内圈灯亮灯颜色*/
+        beforeInColor.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.beforeInColorBlue:
+                        commandNew.setBeforeInColor(CommandRules.InColor.BLUE);
+                        break;
+                    case R.id.beforeInColorRed:
+                        commandNew.setBeforeInColor(CommandRules.InColor.RED);
+                        break;
+                    case R.id.beforeInColorPurple:
+                        commandNew.setBeforeInColor(CommandRules.InColor.PURPLE);
+                        break;
+                    default:
+
+                }
+            }
+        });
+    }
+
+    private void setOutBefore() {
+        /*外圈灯亮灯模式*/
+        beforeOutBlink.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.beforeOutBlinkNone:
+                        commandNew.setBeforeOutBlink(CommandRules.OpenModel.NONE);
+                        break;
+                    case R.id.beforeOutBlinkAlways:
+                        commandNew.setBeforeOutBlink(CommandRules.OpenModel.ALWAYS);
+                        break;
+                    case R.id.beforeOutBlinkSlow:
+                        commandNew.setBeforeOutBlink(CommandRules.OpenModel.SLOW);
+                        break;
+                    case R.id.beforeOutBlinkFast:
+                        commandNew.setBeforeOutBlink(CommandRules.OpenModel.FAST);
+                        break;
+                    default:
+                }
+            }
+        });
+        /*外圈灯亮灯颜色*/
+        beforeOutColor1.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.beforeOutColorBlue:
+                        if (beforeOutColorBlue.isChecked()) {
+                            beforeOutColor2.clearCheck();
+                            commandNew.setBeforeOutColor(CommandRules.OutColor.BLUE);
+                        }
+                        break;
+                    case R.id.beforeOutColorRed:
+                        if (beforeOutColorRed.isChecked()) {
+                            beforeOutColor2.clearCheck();
+                            commandNew.setBeforeOutColor(CommandRules.OutColor.RED);
+                        }
+                        break;
+                    case R.id.beforeOutColorGreen:
+                        if (beforeOutColorGreen.isChecked()) {
+                            beforeOutColor2.clearCheck();
+                            commandNew.setBeforeOutColor(CommandRules.OutColor.GREEN);
+                        }
+                        break;
+                    case R.id.beforeOutColorPurple:
+                        if (beforeOutColorPurple.isChecked()) {
+                            beforeOutColor2.clearCheck();
+                            commandNew.setBeforeOutColor(CommandRules.OutColor.PURPLE);
+                        }
+                        break;
+                    default:
+                }
+            }
+        });
+        beforeOutColor2.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.beforeOutColorCyan:
+                        if (beforeOutColorCyan.isChecked()) {
+                            beforeOutColor1.clearCheck();
+                            commandNew.setBeforeOutColor(CommandRules.OutColor.CYAN);
+                        }
+                        break;
+                    case R.id.beforeOutColorYellow:
+                        if (beforeOutColorYellow.isChecked()) {
+                            beforeOutColor1.clearCheck();
+                            commandNew.setBeforeOutColor(CommandRules.OutColor.YELLOW);
+                        }
+                        break;
+                    case R.id.beforeOutColorWhite:
+                        if (beforeOutColorWhite.isChecked()) {
+                            beforeOutColor1.clearCheck();
+                            commandNew.setBeforeOutColor(CommandRules.OutColor.WHITE);
+                        }
+                        break;
+                    default:
+                }
+            }
+        });
+    }
+
+
+
+
 
 
 
