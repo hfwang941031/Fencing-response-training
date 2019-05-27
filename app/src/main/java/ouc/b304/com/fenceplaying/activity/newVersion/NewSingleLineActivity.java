@@ -875,6 +875,7 @@ public class NewSingleLineActivity extends BaseActivity {
         });
     }
 
+
     //外圈灯设置
     private void setOutBefore() {
         /*外圈灯亮灯模式*/
