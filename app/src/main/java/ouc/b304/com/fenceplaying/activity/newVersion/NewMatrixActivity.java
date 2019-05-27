@@ -1,17 +1,12 @@
 package ouc.b304.com.fenceplaying.activity.newVersion;
 
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -25,10 +20,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.greenrobot.greendao.query.QueryBuilder;
-
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -36,32 +28,18 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.Realm;
 import ouc.b304.com.fenceplaying.Bean.Constant;
-import ouc.b304.com.fenceplaying.Dao.DaoSession;
 import ouc.b304.com.fenceplaying.Dao.PlayerDao;
 import ouc.b304.com.fenceplaying.Dao.SingleLineScoresDao;
-import ouc.b304.com.fenceplaying.Dao.entity.Player;
-import ouc.b304.com.fenceplaying.Dao.entity.SingleLineScores;
-import ouc.b304.com.fenceplaying.Dao.entity.SingleSpotScores;
 import ouc.b304.com.fenceplaying.R;
-import ouc.b304.com.fenceplaying.adapter.SaveResultAdapter;
-import ouc.b304.com.fenceplaying.adapter.SingleLineAdapter;
-import ouc.b304.com.fenceplaying.adapter.SingleSpotAdapter;
 import ouc.b304.com.fenceplaying.application.GreenDaoInitApplication;
 import ouc.b304.com.fenceplaying.entity.DbLight;
 import ouc.b304.com.fenceplaying.entity.TimeInfo;
 import ouc.b304.com.fenceplaying.order.CommandNew;
 import ouc.b304.com.fenceplaying.order.CommandRules;
-import ouc.b304.com.fenceplaying.order.Order;
 import ouc.b304.com.fenceplaying.order.OrderUtils;
-import ouc.b304.com.fenceplaying.thread.Timer;
-import ouc.b304.com.fenceplaying.utils.IntegerToStringUtils;
-import ouc.b304.com.fenceplaying.utils.NumberUtils;
-import ouc.b304.com.fenceplaying.utils.PlayDaoUtils;
-import ouc.b304.com.fenceplaying.utils.ScoreUtils;
 import ouc.b304.com.fenceplaying.utils.newUtils.AppConfig;
 import ouc.b304.com.fenceplaying.utils.newUtils.RealmUtils;
 import ouc.b304.com.fenceplaying.utils.newUtils.ToastUtils;
-import ouc.b304.com.fenceplaying.utils.newUtils.Utils;
 
 /**
  * //                       _oo0oo_
@@ -91,11 +69,9 @@ import ouc.b304.com.fenceplaying.utils.newUtils.Utils;
  * //
  * //
  *
- * @author 王海峰 on 2019/5/25 14:34
+ * @author 王海峰 on 2019/5/27 13:36
  */
-public class NewSingleLineActivity extends BaseActivity {
-
-
+public class NewMatrixActivity extends BaseActivity {
 
     @BindView(R.id.bt_run_cancel)
     ImageView btRunCancel;
@@ -223,6 +199,110 @@ public class NewSingleLineActivity extends BaseActivity {
     RadioButton buzzer2s;
     @BindView(R.id.buzzer)
     RadioGroup buzzer;
+    @BindView(R.id.beforeOutBlinkNonefalse)
+    RadioButton beforeOutBlinkNonefalse;
+    @BindView(R.id.beforeOutBlinkAlwaysfalse)
+    RadioButton beforeOutBlinkAlwaysfalse;
+    @BindView(R.id.beforeOutBlinkSlowfalse)
+    RadioButton beforeOutBlinkSlowfalse;
+    @BindView(R.id.beforeOutBlinkFastfalse)
+    RadioButton beforeOutBlinkFastfalse;
+    @BindView(R.id.beforeOutBlinkfalse)
+    RadioGroup beforeOutBlinkfalse;
+    @BindView(R.id.beforeOutColorBluefalse)
+    RadioButton beforeOutColorBluefalse;
+    @BindView(R.id.beforeOutColorRedfalse)
+    RadioButton beforeOutColorRedfalse;
+    @BindView(R.id.beforeOutColorGreenfalse)
+    RadioButton beforeOutColorGreenfalse;
+    @BindView(R.id.beforeOutColorPurplefalse)
+    RadioButton beforeOutColorPurplefalse;
+    @BindView(R.id.beforeOutColor1false)
+    RadioGroup beforeOutColor1false;
+    @BindView(R.id.beforeOutColorCyanfalse)
+    RadioButton beforeOutColorCyanfalse;
+    @BindView(R.id.beforeOutColorYellowfalse)
+    RadioButton beforeOutColorYellowfalse;
+    @BindView(R.id.beforeOutColorWhitefalse)
+    RadioButton beforeOutColorWhitefalse;
+    @BindView(R.id.beforeOutColor2false)
+    RadioGroup beforeOutColor2false;
+    @BindView(R.id.beforeInBlinkNonefalse)
+    RadioButton beforeInBlinkNonefalse;
+    @BindView(R.id.beforeInBlinkAlwaysfalse)
+    RadioButton beforeInBlinkAlwaysfalse;
+    @BindView(R.id.beforeInBlinkSlowfalse)
+    RadioButton beforeInBlinkSlowfalse;
+    @BindView(R.id.beforeInBlinkFastfalse)
+    RadioButton beforeInBlinkFastfalse;
+    @BindView(R.id.beforeInBlinkfalse)
+    RadioGroup beforeInBlinkfalse;
+    @BindView(R.id.beforeInColorBluefalse)
+    RadioButton beforeInColorBluefalse;
+    @BindView(R.id.beforeInColorRedfalse)
+    RadioButton beforeInColorRedfalse;
+    @BindView(R.id.beforeInColorPurplefalse)
+    RadioButton beforeInColorPurplefalse;
+    @BindView(R.id.beforeInColorfalse)
+    RadioGroup beforeInColorfalse;
+    @BindView(R.id.infraredEmissionOnfalse)
+    RadioButton infraredEmissionOnfalse;
+    @BindView(R.id.infraredEmissionOfffalse)
+    RadioButton infraredEmissionOfffalse;
+    @BindView(R.id.infraredEmissionfalse)
+    RadioGroup infraredEmissionfalse;
+    @BindView(R.id.infraredInductionOnfalse)
+    RadioButton infraredInductionOnfalse;
+    @BindView(R.id.infraredInductionOfffalse)
+    RadioButton infraredInductionOfffalse;
+    @BindView(R.id.infraredInductionfalse)
+    RadioGroup infraredInductionfalse;
+    @BindView(R.id.infraredModelNormalfalse)
+    RadioButton infraredModelNormalfalse;
+    @BindView(R.id.infraredModelContendfalse)
+    RadioButton infraredModelContendfalse;
+    @BindView(R.id.infraredModelfalse)
+    RadioGroup infraredModelfalse;
+    @BindView(R.id.infraredHeightLowfalse)
+    RadioButton infraredHeightLowfalse;
+    @BindView(R.id.infraredHeight_5cmfalse)
+    RadioButton infraredHeight5cmfalse;
+    @BindView(R.id.infraredHeight_30cmfalse)
+    RadioButton infraredHeight30cmfalse;
+    @BindView(R.id.infraredHeightHighfalse)
+    RadioButton infraredHeightHighfalse;
+    @BindView(R.id.infraredHeightfalse)
+    RadioGroup infraredHeightfalse;
+    @BindView(R.id.vibrationInducedOnfalse)
+    RadioButton vibrationInducedOnfalse;
+    @BindView(R.id.vibrationInducedOfffalse)
+    RadioButton vibrationInducedOfffalse;
+    @BindView(R.id.vibrationInducedfalse)
+    RadioGroup vibrationInducedfalse;
+    @BindView(R.id.vibrationIntensityLfalse)
+    RadioButton vibrationIntensityLfalse;
+    @BindView(R.id.vibrationIntensityMfalse)
+    RadioButton vibrationIntensityMfalse;
+    @BindView(R.id.vibrationIntensityHfalse)
+    RadioButton vibrationIntensityHfalse;
+    @BindView(R.id.vibrationIntensityfalse)
+    RadioGroup vibrationIntensityfalse;
+    @BindView(R.id.vibrationDetailsOnfalse)
+    RadioButton vibrationDetailsOnfalse;
+    @BindView(R.id.vibrationDetailsOfffalse)
+    RadioButton vibrationDetailsOfffalse;
+    @BindView(R.id.vibrationDetailsfalse)
+    RadioGroup vibrationDetailsfalse;
+    @BindView(R.id.buzzerNonefalse)
+    RadioButton buzzerNonefalse;
+    @BindView(R.id.buzzerShortfalse)
+    RadioButton buzzerShortfalse;
+    @BindView(R.id.buzzer_1sfalse)
+    RadioButton buzzer1sfalse;
+    @BindView(R.id.buzzer_2sfalse)
+    RadioButton buzzer2sfalse;
+    @BindView(R.id.buzzerfalse)
+    RadioGroup buzzerfalse;
     @BindView(R.id.tvTotalTime)
     TextView tvTotalTime;
     @BindView(R.id.btn_startrun)
@@ -237,13 +317,11 @@ public class NewSingleLineActivity extends BaseActivity {
     TextView avergeScore;
     @BindView(R.id.bt_save)
     Button btSave;
-    private static final String TAG = "NewSingleLineActivity";
     private Context mContext;
     private Realm mRealm;
     private PlayerDao playerDao;
     private SingleLineScoresDao singleLineScoresDao;
     private boolean endFlag = false;
-    //根据数量选中的参加训练的灯
     private List<DbLight> selectedLights = new ArrayList<>();
     //训练页面初始化以后可用的灯数量（建立好连接的灯数量）
     private int numOfUsableLight = 0;
@@ -257,62 +335,15 @@ public class NewSingleLineActivity extends BaseActivity {
     private int numberOfLight = 0;
     //选择的训练次数
     private int trainTimes = 0;
+    //目标灯
+    private DbLight trueLight;
+    //干扰灯
+    private DbLight falseLight;
     //目标灯的参数设置类
     private CommandNew commandNewTrue = new CommandNew();
-    //训练开始标志
-    private boolean trainingBeginFlag = false;
-    //更新成绩列表的标志
-    private final int UPDATE_TIMES = 3;
-    //训练停止标志位
-    private final int STOP_TRAINING = 4;
-    //训练平均成绩
-    private float averageScore = 0;
-    //设置一个布尔变量控制保存按钮的可按与否，当一次训练结束后，可以点击该保存按钮进行保存，点击过之后，不能再次进行点击，除非先进行下一次训练并得到一组时间值；
-    private boolean saveBtnIsClickable = false;
-    //最终成绩列表
-    private List<String> scoreList;
-    //对话框中listview的适配器
-    private SaveResultAdapter saveResultAdapter;
-    //每次训练的时间集合
-    private ArrayList<Integer> timeList;
-    //定义成绩列表适配器
-    private SingleLineAdapter singleLineAdapter;
-    //训练开始时间
-    private long startTime;
-    //计时类
-    private Timer timer;
-    //计数器
-    private int counter = 0;
-    //时间
-    private Date date;
-    //运动员名字集合（从数据库中取出来的）
-    private List<String> nameList;
-    //运动员实体
-    private Player player;
-    //单列成绩Dao类
-    private SingleLineScores singleLineScores;
-    private Handler handler = new Handler() {
-        @Override
-        public void handleMessage(Message msg) {
-            switch (msg.what) {
-                case Timer.TIMER_FLAG:
-                    String time = msg.obj.toString();
-                    tvTotalTime.setText("总时间" + time);
-                    break;
-                case STOP_TRAINING:
-                    //在结束之前先计算平均值
-                    averageScore = ScoreUtils.calcAverageScore(timeList);
-                    //设置值
-                    avergeScore.setText(" " + averageScore + "毫秒");
-                    stopTraining();
-                    break;
-                case UPDATE_TIMES:
-                    singleLineAdapter.setTimeList(timeList);
-                    singleLineAdapter.notifyDataSetChanged();
-                    break;
-            }
-        }
-    };
+    //干扰灯的参数设置类
+    private CommandNew commandNewFalse = new CommandNew();
+
 
     //广播监听
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
@@ -330,10 +361,12 @@ public class NewSingleLineActivity extends BaseActivity {
             }
         }
     };
+
+
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_newsingleline);
+        setContentView(R.layout.activity_newmatrix);
         ButterKnife.bind(this);
         initField();
         registerReceiver();
@@ -417,86 +450,10 @@ public class NewSingleLineActivity extends BaseActivity {
                 btnTurnoff.setClickable(false);
                 break;
             case R.id.btn_startrun:
-                //训练开始的时候把上次的成绩置空
-                averageScore = 0;
-                avergeScore.setText("");
-                startTraining();
-                btnTurnon.setClickable(false);
-                btnTurnoff.setClickable(false);
                 break;
             case R.id.btn_stoprun:
-                stopTraining();
                 break;
             case R.id.bt_save:
-                if (saveBtnIsClickable) {
-                    //首先把timeList<Integer>变成List<String>
-                    //判空验证
-                    if (timeList.size() == 0) {
-                        Toast.makeText(mContext, "成绩列表为空，无法进行保存！请先进行训练", Toast.LENGTH_SHORT).show();
-                    } else {
-                        //确定保存时间
-                        date = new Date();
-
-                        //将Integer类型的List转换成String类型
-                        IntegerToStringUtils.integerToString(timeList, scoreList);
-                        final AlertDialog saveDialog = new AlertDialog.Builder(this).create();
-                        //初始化对话中listview的布局
-                        View view2 = LayoutInflater.from(this).inflate(R.layout.listview_savedialog, null);
-
-                        final ListView lvSaveresult = view2.findViewById(R.id.lv_saveresult);
-                        //设置对话框中listview的适配器
-                        saveResultAdapter = new SaveResultAdapter(this);
-                        lvSaveresult.setAdapter(saveResultAdapter);
-                        //清空姓名list，防止重复出现
-                        nameList.clear();
-                        saveResultAdapter.setNameList(PlayDaoUtils.nameList(playerDao, nameList));
-                        /*saveResultAdapter.notifyDataSetChanged();*/
-                        //设置标题
-                        saveDialog.setTitle("数据保存");
-                        //添加布局
-                        saveDialog.setView(view2);
-                        //设置按键
-                        saveDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                dialogInterface.dismiss();
-                            }
-                        });
-                        saveDialog.show();
-
-
-                        //为对话框中的listview设置子项单击事件
-                        lvSaveresult.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                            @Override
-                            public void onItemClick(AdapterView<?> adapterView, View view2, int position, long l) {
-                                //获取到点击项的值，此处为名字
-                                String name = String.valueOf(adapterView.getItemAtPosition(position));
-                                //根据名字获取到Player实体
-                                QueryBuilder query = playerDao.queryBuilder();
-                                query.where(PlayerDao.Properties.Name.eq(name));
-                                List<Player> nameList = query.list();
-                                player = nameList.get(0);
-                                //根据player实体设置一对多的ID
-                                singleLineScores = new SingleLineScores();
-                                singleLineScores.setPlayerId(player.getId());
-
-                                singleLineScores.setAverageScores(averageScore);
-                                singleLineScores.setDate(date);
-                                singleLineScores.setScoresList(scoreList);
-                                singleLineScores.setTrainingTimes(trainTimes);
-                                //插入成绩实体
-                                singleLineScoresDao.insert(singleLineScores);
-                                //给出数据插入成功提示
-                                Toast.makeText(mContext, "数据插入成功", Toast.LENGTH_SHORT).show();
-                                //将保存按钮设置为不可点击
-                                saveBtnIsClickable = false;
-                                saveDialog.dismiss();
-                            }
-                        });
-                    }
-                } else {
-                    Toast.makeText(mContext, "请勿对该成绩进行二次保存,请进行下一次训练后再执行保存！", Toast.LENGTH_SHORT).show();
-                }
                 break;
         }
     }
@@ -546,47 +503,6 @@ public class NewSingleLineActivity extends BaseActivity {
 
     //解析单列训练返回的时间数据
     private void analyzeTimeData(TimeInfo timeInfo) {
-        Log.d("ana", "时间解析");
-        counter += 1;
-        Log.d("时间信息", timeInfo.getName() + timeInfo.getTime());
-
-        if (counter > trainTimes) {
-            endFlag = true;
-        }
-        Log.d("计数器值", counter + "");
-        timeList.add((int) timeInfo.getTime());
-        int randomNum = NumberUtils.randomNumber(numberOfLight);
-        DbLight dbLight = selectedLights.get(randomNum);
-        Log.d("再次开灯前状态", dbLight.toString());
-        List<Order> orderList = new ArrayList<>();
-        dbLight.setOpen(true);
-        /*commandNew.setBeforeOutColor(lightColor);
-        commandNew.setInfraredEmission(CommandRules.InfraredEmission.OPEN);
-        commandNew.setInfraredInduction(CommandRules.InfraredInduction.OPEN);
-        commandNew.setInfraredModel(CommandRules.InfraredModel.NORMAL);*/
-        Order order = new Order();
-        order.setLight(dbLight);
-        order.setCommandNew(commandNewTrue);
-        orderList.add(order);
-        OrderUtils.getInstance().sendCommand(orderList);
-        Log.d("ananlyze中开灯", dbLight.toString());
-
-        //  }
-
-        Message msg = Message.obtain();
-        msg.what = UPDATE_TIMES;
-        msg.obj = "";
-        handler.sendMessage(msg);
-        if (isTrainingOver()) {
-            //训练结束后设置保存按钮可点击
-            saveBtnIsClickable = true;
-            Log.d("ifistrainingover", "has run" + counter);
-            Message msg1 = Message.obtain();
-            msg1.what = STOP_TRAINING;
-            msg1.obj = "";
-            handler.sendMessage(msg1);
-        }
-
     }
 
     //初始化控件及其数据
@@ -631,9 +547,7 @@ public class NewSingleLineActivity extends BaseActivity {
 
             }
         });
-        //初始化成绩显示listview的适配器
-        singleLineAdapter = new SingleLineAdapter(mContext);
-        lvTimes.setAdapter(singleLineAdapter);
+
     }
 
     //初始化数据
@@ -656,18 +570,8 @@ public class NewSingleLineActivity extends BaseActivity {
             ToastUtils.makeText(mContext, "可用设备数小于2，请开启更多设备再进行训练！", Toast.LENGTH_SHORT).show();
         }
 
-        //初始化训练时间集合
-        timeList = new ArrayList<>();
-        //初始化最终成绩集合
-        scoreList = new ArrayList<>();
-        //初始化运动员姓名集合
-        nameList = new ArrayList<>();
-        //停止训练按钮设置为不可点击
-        btnStoprun.setClickable(false);
-
     }
 
-    //初始化监听器
     private void initListener() {
         //目标灯参数设置
         /*设置外圈灯感应前*/
@@ -681,9 +585,20 @@ public class NewSingleLineActivity extends BaseActivity {
         /*设置感应前蜂鸣器*/
         setBuzzerBefore();
 
+        //干扰灯参数设置
+        /*设置外圈灯感应前*/
+        setOutBeforeFalse();
+        /*设置内圈灯感应前*/
+        setInBeforeFalse();
+        /*设置红外*/
+        setInfraredFalse();
+        /*设置震动*/
+        setVibrationFalse();
+        /*设置感应前蜂鸣器*/
+        setBuzzerBeforeFalse();
+
     }
 
-    ///////////////////////////////////
     //目标灯参数设置
     //蜂鸣器设置
     private void setBuzzerBefore() {
@@ -960,70 +875,281 @@ public class NewSingleLineActivity extends BaseActivity {
     }
     ///////////////////////////////////////////
 
-    //开始训练
-    public void startTraining() {
-        btnStartrun.setClickable(false);
-        btnStoprun.setClickable(true);
-        Log.d(TAG, "startTraining has run");
-        //首先清除时间信息列表
-        AppConfig.sTimeInfoList.clear();
-        trainingBeginFlag = true;
-        //清空时间成绩列表，防止将上次训练的成绩保存到下一次训练当中
-        timeList.clear();
-        singleLineAdapter.setTimeList(timeList);
-        singleLineAdapter.notifyDataSetChanged();
-        /////
-        int randomNum = NumberUtils.randomNumber(numberOfLight);
-        DbLight firstLight = selectedLights.get(randomNum);
-        Log.d("开始训练前被选灯的状态", firstLight.toString());
-        endFlag = false;
-        List<Order> orderList = new ArrayList<>();
-        firstLight.setOpen(true);
-        /*commandNew.setBeforeOutColor(lightColor);
-        commandNew.setInfraredEmission(CommandRules.InfraredEmission.OPEN);
-        commandNew.setInfraredInduction(CommandRules.InfraredInduction.OPEN);
-        commandNew.setInfraredModel(CommandRules.InfraredModel.NORMAL);*/
-        Order order = new Order();
-        order.setLight(firstLight);
-        order.setCommandNew(commandNewTrue);
-        orderList.add(order);
-        OrderUtils.getInstance().sendCommand(orderList);
-        Log.d("开始训练设置命令后", firstLight.toString());
-        //获得当前的系统时间
-        startTime = System.currentTimeMillis();
-        timer = new Timer(handler);
-        timer.setBeginTime(startTime);
-        timer.start();
-
+    //干扰灯参数设置
+    //蜂鸣器设置
+    private void setBuzzerBeforeFalse() {
+        buzzerfalse.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.buzzerNonefalse:
+                        commandNewFalse.setBeforeBuzzerModel(CommandRules.BuzzerModel.NONE);
+                        break;
+                    case R.id.buzzerShortfalse:
+                        commandNewFalse.setBeforeBuzzerModel(CommandRules.BuzzerModel.SHORT);
+                        break;
+                    case R.id.buzzer_1sfalse:
+                        commandNewFalse.setBeforeBuzzerModel(CommandRules.BuzzerModel.LONG_1);
+                        break;
+                    case R.id.buzzer_2sfalse:
+                        commandNewFalse.setBeforeBuzzerModel(CommandRules.BuzzerModel.LONG_2);
+                        break;
+                    default:
+                }
+            }
+        });
     }
 
-    //停止训练
-    private void stopTraining() {
-        btnTurnon.setClickable(true);
-        btnTurnoff.setClickable(true);
-        btnStartrun.setClickable(true);
-        btnStoprun.setClickable(false);
-        trainingBeginFlag = false;
-        endFlag = true;
-        OrderUtils.getInstance().turnOffLightList(AppConfig.sDbLights);
-        if (timer != null) {
-            timer.stopTimer();
-        }
-        //很重要的重置计数器
-        counter = 0;
-        Log.d("counter:", counter + "");
+    //震动设置
+    private void setVibrationFalse() {
+        /* 震动感应开关*/
+        vibrationInducedfalse.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.vibrationInducedOnfalse:
+                        commandNewFalse.setVibrationInduced(CommandRules.VibrationInduced.OPEN);
+                        break;
+                    case R.id.vibrationInducedOfffalse:
+                        commandNewFalse.setVibrationInduced(CommandRules.VibrationInduced.CLOSE);
+                        break;
+                    default:
+                }
+            }
+        });
+        /*震动强度*/
+        vibrationIntensityfalse.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.vibrationIntensityLfalse:
+                        commandNewFalse.setVibrationStrength(CommandRules.VibrationStrength.TOUCH_L);
+                        break;
+                    case R.id.vibrationIntensityMfalse:
+                        commandNewFalse.setVibrationStrength(CommandRules.VibrationStrength.TOUCH_M);
+                        break;
+                    case R.id.vibrationIntensityHfalse:
+                        commandNewFalse.setVibrationStrength(CommandRules.VibrationStrength.TOUCH_H);
+                        break;
+                    default:
+                }
+            }
+        });
+        /*震动详情*/
+        vibrationDetailsfalse.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.vibrationDetailsOnfalse:
+                        commandNewFalse.setVibrationDetails(CommandRules.VibrationDetails.OPEN);
+                        break;
+                    case R.id.vibrationDetailsOfffalse:
+                        commandNewFalse.setVibrationDetails(CommandRules.VibrationDetails.CLOSE);
+                        break;
+                    default:
+                }
+            }
+        });
     }
 
-    //判断是否到了训练结束的位置
-    private boolean isTrainingOver() {
-        if (counter >= trainTimes) {
-            return true;
-        } else {
-            return false;
-        }
+    //红外设置
+    private void setInfraredFalse() {
+        /*红外发射*/
+        infraredEmissionfalse.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.infraredEmissionOnfalse:
+                        commandNewFalse.setInfraredEmission(CommandRules.InfraredEmission.OPEN);
+                        break;
+                    case R.id.infraredEmissionOfffalse:
+                        commandNewFalse.setInfraredEmission(CommandRules.InfraredEmission.CLOSE);
+                        break;
+                    default:
+                }
+            }
+        });
+        /*红外感应*/
+        infraredInductionfalse.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.infraredInductionOnfalse:
+                        commandNewFalse.setInfraredInduction(CommandRules.InfraredInduction.OPEN);
+                        break;
+                    case R.id.infraredInductionOfffalse:
+                        commandNewFalse.setInfraredInduction(CommandRules.InfraredInduction.CLOSE);
+                        break;
+                    default:
+                }
+            }
+        });
+        /*红外模式*/
+        infraredModelfalse.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.infraredModelNormalfalse:
+                        commandNewFalse.setInfraredModel(CommandRules.InfraredModel.NORMAL);
+                        break;
+                    case R.id.infraredModelContendfalse:
+                        commandNewFalse.setInfraredModel(CommandRules.InfraredModel.CONTEND);
+                        break;
+                    default:
+                }
+            }
+        });
+        /*红外高度*/
+        infraredHeightfalse.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.infraredHeightLowfalse:
+                        commandNewFalse.setInfraredHeight(CommandRules.InfraredHeight.MIN_LOW);
+                        break;
+                    case R.id.infraredHeight_5cmfalse:
+                        commandNewFalse.setInfraredHeight(CommandRules.InfraredHeight.LOW);
+                        break;
+                    case R.id.infraredHeight_30cmfalse:
+                        commandNewFalse.setInfraredHeight(CommandRules.InfraredHeight.HIGH);
+                        break;
+                    case R.id.infraredHeightHighfalse:
+                        commandNewFalse.setInfraredHeight(CommandRules.InfraredHeight.MAX_HIGH);
+                        break;
+                    default:
+                }
+            }
+        });
     }
 
+    //内圈灯设置
+    private void setInBeforeFalse() {
+        /*内圈灯亮灯模式*/
+        beforeInBlinkfalse.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.beforeInBlinkNonefalse:
+                        commandNewFalse.setBeforeInBlink(CommandRules.OpenModel.NONE);
+                        break;
+                    case R.id.beforeInBlinkAlwaysfalse:
+                        commandNewFalse.setBeforeInBlink(CommandRules.OpenModel.ALWAYS);
+                        break;
+                    case R.id.beforeInBlinkSlowfalse:
+                        commandNewFalse.setBeforeInBlink(CommandRules.OpenModel.SLOW);
+                        break;
+                    case R.id.beforeInBlinkFastfalse:
+                        commandNewFalse.setBeforeInBlink(CommandRules.OpenModel.FAST);
+                        break;
+                    default:
+                }
+            }
+        });
+        /*内圈灯亮灯颜色*/
+        beforeInColorfalse.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.beforeInColorBluefalse:
+                        commandNewFalse.setBeforeInColor(CommandRules.InColor.BLUE);
+                        break;
+                    case R.id.beforeInColorRedfalse:
+                        commandNewFalse.setBeforeInColor(CommandRules.InColor.RED);
+                        break;
+                    case R.id.beforeInColorPurplefalse:
+                        commandNewFalse.setBeforeInColor(CommandRules.InColor.PURPLE);
+                        break;
+                    default:
 
+                }
+            }
+        });
+    }
+
+    //外圈灯设置
+    private void setOutBeforeFalse() {
+        /*外圈灯亮灯模式*/
+        beforeOutBlinkfalse.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.beforeOutBlinkNonefalse:
+                        commandNewFalse.setBeforeOutBlink(CommandRules.OpenModel.NONE);
+                        break;
+                    case R.id.beforeOutBlinkAlwaysfalse:
+                        commandNewFalse.setBeforeOutBlink(CommandRules.OpenModel.ALWAYS);
+                        break;
+                    case R.id.beforeOutBlinkSlowfalse:
+                        commandNewFalse.setBeforeOutBlink(CommandRules.OpenModel.SLOW);
+                        break;
+                    case R.id.beforeOutBlinkFastfalse:
+                        commandNewFalse.setBeforeOutBlink(CommandRules.OpenModel.FAST);
+                        break;
+                    default:
+                }
+            }
+        });
+        /*外圈灯亮灯颜色*/
+        beforeOutColor1false.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.beforeOutColorBluefalse:
+                        if (beforeOutColorBluefalse.isChecked()) {
+                            beforeOutColor2false.clearCheck();
+                            commandNewFalse.setBeforeOutColor(CommandRules.OutColor.BLUE);
+                        }
+                        break;
+                    case R.id.beforeOutColorRedfalse:
+                        if (beforeOutColorRedfalse.isChecked()) {
+                            beforeOutColor2false.clearCheck();
+                            commandNewFalse.setBeforeOutColor(CommandRules.OutColor.RED);
+                        }
+                        break;
+                    case R.id.beforeOutColorGreenfalse:
+                        if (beforeOutColorGreenfalse.isChecked()) {
+                            beforeOutColor2false.clearCheck();
+                            commandNewFalse.setBeforeOutColor(CommandRules.OutColor.GREEN);
+                        }
+                        break;
+                    case R.id.beforeOutColorPurplefalse:
+                        if (beforeOutColorPurplefalse.isChecked()) {
+                            beforeOutColor2false.clearCheck();
+                            commandNewFalse.setBeforeOutColor(CommandRules.OutColor.PURPLE);
+                        }
+                        break;
+                    default:
+                }
+            }
+        });
+        beforeOutColor2false.setOnCheckedChangeListener(new RadioGroup.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(RadioGroup group, int checkedId) {
+                switch (checkedId) {
+                    case R.id.beforeOutColorCyanfalse:
+                        if (beforeOutColorCyanfalse.isChecked()) {
+                            beforeOutColor1false.clearCheck();
+                            commandNewFalse.setBeforeOutColor(CommandRules.OutColor.CYAN);
+                        }
+                        break;
+                    case R.id.beforeOutColorYellowfalse:
+                        if (beforeOutColorYellowfalse.isChecked()) {
+                            beforeOutColor1false.clearCheck();
+                            commandNewFalse.setBeforeOutColor(CommandRules.OutColor.YELLOW);
+                        }
+                        break;
+                    case R.id.beforeOutColorWhitefalse:
+                        if (beforeOutColorWhitefalse.isChecked()) {
+                            beforeOutColor1false.clearCheck();
+                            commandNewFalse.setBeforeOutColor(CommandRules.OutColor.WHITE);
+                        }
+                        break;
+                    default:
+                }
+            }
+        });
+    }
+    //////////////////////////////////////////
 
 
 }
