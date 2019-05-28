@@ -1,12 +1,17 @@
 package ouc.b304.com.fenceplaying.activity.newVersion;
 
+import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -20,7 +25,10 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import org.greenrobot.greendao.query.QueryBuilder;
+
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import butterknife.BindView;
@@ -28,15 +36,28 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.Realm;
 import ouc.b304.com.fenceplaying.Bean.Constant;
+import ouc.b304.com.fenceplaying.Dao.MatrixScoresDao;
 import ouc.b304.com.fenceplaying.Dao.PlayerDao;
 import ouc.b304.com.fenceplaying.Dao.SingleLineScoresDao;
+import ouc.b304.com.fenceplaying.Dao.entity.MatrixScores;
+import ouc.b304.com.fenceplaying.Dao.entity.Player;
+import ouc.b304.com.fenceplaying.Dao.entity.SingleLineScores;
 import ouc.b304.com.fenceplaying.R;
+import ouc.b304.com.fenceplaying.adapter.MatrixAdapter;
+import ouc.b304.com.fenceplaying.adapter.SaveResultAdapter;
+import ouc.b304.com.fenceplaying.adapter.SingleLineAdapter;
 import ouc.b304.com.fenceplaying.application.GreenDaoInitApplication;
 import ouc.b304.com.fenceplaying.entity.DbLight;
 import ouc.b304.com.fenceplaying.entity.TimeInfo;
 import ouc.b304.com.fenceplaying.order.CommandNew;
 import ouc.b304.com.fenceplaying.order.CommandRules;
+import ouc.b304.com.fenceplaying.order.Order;
 import ouc.b304.com.fenceplaying.order.OrderUtils;
+import ouc.b304.com.fenceplaying.thread.Timer;
+import ouc.b304.com.fenceplaying.utils.IntegerToStringUtils;
+import ouc.b304.com.fenceplaying.utils.NumberUtils;
+import ouc.b304.com.fenceplaying.utils.PlayDaoUtils;
+import ouc.b304.com.fenceplaying.utils.ScoreUtils;
 import ouc.b304.com.fenceplaying.utils.newUtils.AppConfig;
 import ouc.b304.com.fenceplaying.utils.newUtils.RealmUtils;
 import ouc.b304.com.fenceplaying.utils.newUtils.ToastUtils;
@@ -73,6 +94,7 @@ import ouc.b304.com.fenceplaying.utils.newUtils.ToastUtils;
  */
 public class NewMatrixActivity extends BaseActivity {
 
+    private static final String TAG = "NewMatrixActivity";
     @BindView(R.id.bt_run_cancel)
     ImageView btRunCancel;
     @BindView(R.id.layout_cancel)
@@ -320,7 +342,6 @@ public class NewMatrixActivity extends BaseActivity {
     private Context mContext;
     private Realm mRealm;
     private PlayerDao playerDao;
-    private SingleLineScoresDao singleLineScoresDao;
     private boolean endFlag = false;
     private List<DbLight> selectedLights = new ArrayList<>();
     //训练页面初始化以后可用的灯数量（建立好连接的灯数量）
@@ -343,6 +364,40 @@ public class NewMatrixActivity extends BaseActivity {
     private CommandNew commandNewTrue = new CommandNew();
     //干扰灯的参数设置类
     private CommandNew commandNewFalse = new CommandNew();
+    //训练开始标志
+    private boolean trainingBeginFlag = false;
+    //更新成绩列表的标志
+    private final int UPDATE_TIMES = 3;
+    //训练停止标志位
+    private final int STOP_TRAINING = 4;
+    //训练平均成绩
+    private float averageScore = 0;
+    //设置一个布尔变量控制保存按钮的可按与否，当一次训练结束后，可以点击该保存按钮进行保存，点击过之后，不能再次进行点击，除非先进行下一次训练并得到一组时间值；
+    private boolean saveBtnIsClickable = false;
+    //最终成绩列表
+    private List<String> scoreList;
+    //对话框中listview的适配器
+    private SaveResultAdapter saveResultAdapter;
+    //每次训练的时间集合
+    private ArrayList<Integer> timeList;
+    //定义成绩列表适配器
+    private MatrixAdapter matrixAdapter;
+    //训练开始时间
+    private long startTime;
+    //计时类
+    private Timer timer;
+    //计数器
+    private int counter = 0;
+    //时间
+    private Date date;
+    //运动员名字集合（从数据库中取出来的）
+    private List<String> nameList;
+    //运动员实体
+    private Player player;
+    //抗干扰成绩实体类
+    private MatrixScores matrixScores;
+    //抗干扰成绩dao类
+    private MatrixScoresDao matrixScoresDao;
 
 
     //广播监听
@@ -361,6 +416,31 @@ public class NewMatrixActivity extends BaseActivity {
             }
         }
     };
+
+    private Handler handler = new Handler() {
+        @Override
+        public void handleMessage(Message msg) {
+            switch (msg.what) {
+                case Timer.TIMER_FLAG:
+                    String time = msg.obj.toString();
+                    tvTotalTime.setText("总时间" + time);
+                    break;
+                case STOP_TRAINING:
+                    //在结束之前先计算平均值
+                    averageScore = ScoreUtils.calcAverageScore(timeList);
+                    //设置值
+                    avergeScore.setText(" " + averageScore + "毫秒");
+                    stopTraining();
+                    break;
+                case UPDATE_TIMES:
+                    matrixAdapter.setTimeList(timeList);
+                    matrixAdapter.notifyDataSetChanged();
+                    break;
+            }
+        }
+    };
+
+
 
 
     @Override
@@ -450,10 +530,86 @@ public class NewMatrixActivity extends BaseActivity {
                 btnTurnoff.setClickable(false);
                 break;
             case R.id.btn_startrun:
+                //训练开始的时候把上次的成绩置空
+                averageScore = 0;
+                avergeScore.setText("");
+                startTraining();
+                btnTurnon.setClickable(false);
+                btnTurnoff.setClickable(false);
                 break;
             case R.id.btn_stoprun:
+                stopTraining();
                 break;
             case R.id.bt_save:
+                if (saveBtnIsClickable) {
+                    //首先把timeList<Integer>变成List<String>
+                    //判空验证
+                    if (timeList.size() == 0) {
+                        Toast.makeText(mContext, "成绩列表为空，无法进行保存！请先进行训练", Toast.LENGTH_SHORT).show();
+                    } else {
+                        //确定保存时间
+                        date = new Date();
+
+                        //将Integer类型的List转换成String类型
+                        IntegerToStringUtils.integerToString(timeList, scoreList);
+                        final AlertDialog saveDialog = new AlertDialog.Builder(this).create();
+                        //初始化对话中listview的布局
+                        View view2 = LayoutInflater.from(this).inflate(R.layout.listview_savedialog, null);
+
+                        final ListView lvSaveresult = view2.findViewById(R.id.lv_saveresult);
+                        //设置对话框中listview的适配器
+                        saveResultAdapter = new SaveResultAdapter(this);
+                        lvSaveresult.setAdapter(saveResultAdapter);
+                        //清空姓名list，防止重复出现
+                        nameList.clear();
+                        saveResultAdapter.setNameList(PlayDaoUtils.nameList(playerDao, nameList));
+                        /*saveResultAdapter.notifyDataSetChanged();*/
+                        //设置标题
+                        saveDialog.setTitle("数据保存");
+                        //添加布局
+                        saveDialog.setView(view2);
+                        //设置按键
+                        saveDialog.setButton(AlertDialog.BUTTON_NEGATIVE, "取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                dialogInterface.dismiss();
+                            }
+                        });
+                        saveDialog.show();
+
+
+                        //为对话框中的listview设置子项单击事件
+                        lvSaveresult.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                            @Override
+                            public void onItemClick(AdapterView<?> adapterView, View view2, int position, long l) {
+                                //获取到点击项的值，此处为名字
+                                String name = String.valueOf(adapterView.getItemAtPosition(position));
+                                //根据名字获取到Player实体
+                                QueryBuilder query = playerDao.queryBuilder();
+                                query.where(PlayerDao.Properties.Name.eq(name));
+                                List<Player> nameList = query.list();
+                                player = nameList.get(0);
+                                //根据player实体设置一对多的ID
+                                matrixScores = new MatrixScores();
+                                matrixScores.setPlayerId(player.getId());
+
+                                matrixScores.setAverageScores(averageScore);
+                                matrixScores.setDate(date);
+                                matrixScores.setScoresList(scoreList);
+                                matrixScores.setTrainingTimes(trainTimes);
+                                //插入成绩实体
+                                matrixScoresDao.insert(matrixScores);
+                                //给出数据插入成功提示
+                                Toast.makeText(mContext, "数据插入成功", Toast.LENGTH_SHORT).show();
+                                //将保存按钮设置为不可点击
+                                saveBtnIsClickable = false;
+                                saveDialog.dismiss();
+                            }
+                        });
+                    }
+                } else {
+                    Toast.makeText(mContext, "请勿对该成绩进行二次保存,请进行下一次训练后再执行保存！", Toast.LENGTH_SHORT).show();
+                }
                 break;
         }
     }
@@ -463,7 +619,7 @@ public class NewMatrixActivity extends BaseActivity {
         mContext = getApplicationContext();
         mRealm = Realm.getDefaultInstance();
         playerDao = GreenDaoInitApplication.getInstances().getDaoSession().getPlayerDao();
-        singleLineScoresDao = GreenDaoInitApplication.getInstances().getDaoSession().getSingleLineScoresDao();
+        matrixScoresDao = GreenDaoInitApplication.getInstances().getDaoSession().getMatrixScoresDao();
     }
 
     //注册广播
@@ -501,8 +657,70 @@ public class NewMatrixActivity extends BaseActivity {
 
     }
 
-    //解析单列训练返回的时间数据
+    //解析抗干扰训练返回的时间数据
     private void analyzeTimeData(TimeInfo timeInfo) {
+        Log.d("ana", "时间解析");
+        //关所有灯（关闭目标灯时，连带着关闭干扰项）
+        OrderUtils.getInstance().turnOffLightList(selectedLights);
+        counter += 1;
+        Log.d("时间信息", timeInfo.getName() + timeInfo.getTime());
+
+        if (counter > trainTimes) {
+            endFlag = true;
+        }
+        Log.d("计数器值", counter + "");
+        timeList.add((int) timeInfo.getTime());
+        //设置目标灯
+        int randomNum1 = NumberUtils.randomNumber(numberOfLight);
+        trueLight = selectedLights.get(randomNum1);
+        Log.d("再次开灯前状态", trueLight.toString());
+        List<Order> orderList = new ArrayList<>();
+        trueLight.setOpen(true);
+        Order order = new Order();
+        order.setLight(trueLight);
+        order.setCommandNew(commandNewTrue);
+        orderList.add(order);
+        //设置干扰灯
+        int randomNum2 = NumberUtils.randomNumber(numberOfLight);
+        falseLight = selectedLights.get(randomNum2);
+        Log.d("再次开灯前干扰灯状态", falseLight.toString());
+        /*List<Order> orderList1 = new ArrayList<>();*/
+        falseLight.setOpen(true);
+        Order order1 = new Order();
+        order1.setLight(falseLight);
+        order1.setCommandNew(commandNewFalse);
+        orderList.add(order1);
+        /*orderList1.add(order1);*/
+        //开目标灯和干扰灯
+        OrderUtils.getInstance().sendCommand(orderList);
+        /*OrderUtils.getInstance().sendCommand(orderList1);
+         */
+        //  }
+
+        Message msg = Message.obtain();
+        msg.what = UPDATE_TIMES;
+        msg.obj = "";
+        handler.sendMessage(msg);
+        if (isTrainingOver()) {
+            //训练结束后设置保存按钮可点击
+            saveBtnIsClickable = true;
+            Log.d("ifistrainingover", "has run" + counter);
+            Message msg1 = Message.obtain();
+            msg1.what = STOP_TRAINING;
+            msg1.obj = "";
+            handler.sendMessage(msg1);
+        }
+
+
+    }
+
+    //判断训练是否到了结束位置
+    private boolean isTrainingOver() {
+        if (counter >= trainTimes) {
+            return true;
+        } else {
+            return false;
+        }
     }
 
     //初始化控件及其数据
@@ -547,6 +765,9 @@ public class NewMatrixActivity extends BaseActivity {
 
             }
         });
+        //初始化成绩显示listview的适配器
+        matrixAdapter = new MatrixAdapter(mContext);
+        lvTimes.setAdapter(matrixAdapter);
 
     }
 
@@ -554,7 +775,7 @@ public class NewMatrixActivity extends BaseActivity {
     private void initData() {
         //初始化可用灯数量
         int num = 0;
-        if (AppConfig.sDbLights != null && AppConfig.sDbLights.size() > 2) {
+        if (AppConfig.sDbLights != null && AppConfig.sDbLights.size() > 3) {
             for (DbLight dbLight : AppConfig.sDbLights) {
                 num++;
             }
@@ -567,11 +788,20 @@ public class NewMatrixActivity extends BaseActivity {
             //
 
         } else {
-            ToastUtils.makeText(mContext, "可用设备数小于2，请开启更多设备再进行训练！", Toast.LENGTH_SHORT).show();
+            ToastUtils.makeText(mContext, "可用设备数小于3，请开启更多设备再进行训练！", Toast.LENGTH_SHORT).show();
         }
+        //初始化训练时间集合
+        timeList = new ArrayList<>();
+        //初始化最终成绩集合
+        scoreList = new ArrayList<>();
+        //初始化运动员姓名集合
+        nameList = new ArrayList<>();
+        //停止训练按钮设置为不可点击
+        btnStoprun.setClickable(false);
 
     }
 
+    //初始化监听器
     private void initListener() {
         //目标灯参数设置
         /*设置外圈灯感应前*/
@@ -1150,6 +1380,75 @@ public class NewMatrixActivity extends BaseActivity {
         });
     }
     //////////////////////////////////////////
+
+    //开始训练
+    public void startTraining() {
+        btnStartrun.setClickable(false);
+        btnStoprun.setClickable(true);
+        Log.d(TAG, "startTraining has run");
+        //首先清除时间信息列表
+        AppConfig.sTimeInfoList.clear();
+        trainingBeginFlag = true;
+        //清空时间成绩列表，防止将上次训练的成绩保存到下一次训练当中
+        timeList.clear();
+        matrixAdapter.setTimeList(timeList);
+        matrixAdapter.notifyDataSetChanged();
+        /////
+        endFlag = false;
+        //设置目标灯
+        int randomNum1 = NumberUtils.randomNumber(numberOfLight);
+        int randomNum2 = NumberUtils.randomNumber(numberOfLight);
+        while (randomNum1 == randomNum2) {
+            randomNum1 = NumberUtils.randomNumber(numberOfLight);
+            randomNum2 = NumberUtils.randomNumber(numberOfLight);
+        }
+        trueLight = selectedLights.get(randomNum1);
+        Log.d("开始训练前目标灯的状态", trueLight.toString());
+        List<Order> orderList = new ArrayList<>();
+        trueLight.setOpen(true);
+        Order order = new Order();
+        order.setLight(trueLight);
+        order.setCommandNew(commandNewTrue);
+        orderList.add(order);
+        Log.d("开始训练设置命令后", trueLight.toString());
+        //设置干扰灯
+        falseLight = selectedLights.get(randomNum2);
+        Log.d("开始训练前干扰灯的状态", falseLight.toString());
+        /*List<Order> orderList1 = new ArrayList<>();*/
+        falseLight.setOpen(true);
+        Order order1 = new Order();
+        order1.setLight(falseLight);
+        order1.setCommandNew(commandNewFalse);
+        orderList.add(order1);
+        /*orderList1.add(order1);*/
+        Log.d("开始训练设置命令后", trueLight.toString());
+        //两个命令一起发
+        OrderUtils.getInstance().sendCommand(orderList);
+        /*OrderUtils.getInstance().sendCommand(orderList1);*/
+        //获得当前的系统时间
+        startTime = System.currentTimeMillis();
+        timer = new Timer(handler);
+        timer.setBeginTime(startTime);
+        timer.start();
+
+    }
+
+    //停止训练
+    private void stopTraining() {
+        btnTurnon.setClickable(true);
+        btnTurnoff.setClickable(true);
+        btnStartrun.setClickable(true);
+        btnStoprun.setClickable(false);
+        trainingBeginFlag = false;
+        endFlag = true;
+        OrderUtils.getInstance().turnOffLightList(AppConfig.sDbLights);
+        if (timer != null) {
+            timer.stopTimer();
+        }
+        //很重要的重置计数器
+        counter = 0;
+        Log.d("counter:", counter + "");
+    }
 
 
 }

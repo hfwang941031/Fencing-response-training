@@ -113,6 +113,9 @@
         <activity
             android:name=".activity.newVersion.NewMatrixActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"></activity>
+        <activity
+            android:name=".activity.newVersion.NewAccuracyActivity"
+            android:theme="@style/Theme.AppCompat.Light.NoActionBar.FullScreen"></activity>
         <!-- 读取串口数据 -->
         <service android:name=".service.ReadDataService" />
     </application>

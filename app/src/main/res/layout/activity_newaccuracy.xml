@@ -1,0 +1,1721 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#B0E0E6"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="2"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="0dp"
+            android:layout_weight="1"
+            android:background="#F1F1F1"
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:id="@+id/layout_cancel"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="2"
+                android:background="@drawable/button_color_grey"
+                android:clickable="true"
+                android:orientation="horizontal">
+
+                <ImageView
+                    android:id="@+id/bt_run_cancel"
+                    android:layout_width="45dp"
+                    android:layout_height="65dp"
+                    android:background="@drawable/btn_back_detail_normal"></ImageView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:text="返回"
+                    android:textSize="19sp"
+                    android:textColor="@color/black" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_height="match_parent"
+                android:layout_weight="20"
+                android:gravity="center">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="专项精准击剑训练"
+                    android:textColor="@color/blue"
+                    android:textSize="30sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="0dp"
+                android:layout_weight="2"
+                android:layout_height="fill_parent">
+
+                <TextView
+                    android:id="@+id/tv_change_light"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:gravity="center"
+                    android:text="更换光标"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+            </LinearLayout>
+            <!--<View-->
+            <!--android:layout_width="0dp"-->
+            <!--android:layout_height="fill_parent"-->
+            <!--android:layout_weight="2" />-->
+        </LinearLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="@color/black" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="0dp"
+        android:layout_weight="18"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+
+                <Button
+                    android:id="@+id/btn_turnon"
+                    android:layout_width="170dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="50dp"
+                    android:background="@drawable/shape_buttongreen"
+                    android:text="开灯"
+                    android:textSize="22sp" />
+
+                <Button
+                    android:id="@+id/btn_turnoff"
+                    android:layout_width="170dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+
+                    android:layout_marginLeft="200dp"
+                    android:background="@drawable/shape_buttonred"
+                    android:text="关灯"
+                    android:textSize="22sp" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <TextView
+                    android:layout_width="170dp"
+                    android:layout_height="40dp"
+                    android:layout_gravity="center"
+                    android:gravity="center_horizontal"
+                    android:layout_marginLeft="50dp"
+                    android:text="训练时间"
+                    android:textColor="@color/white"
+                    android:textSize="22sp"
+                    android:background="@drawable/proportion_text_background" />
+
+                <Spinner
+                    android:id="@+id/sp_times"
+                    android:layout_width="170dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="200dp"
+                    android:background="@drawable/set_group_spinner"></Spinner>
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="@color/black" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/tv_avalibledevices"
+                    android:text="参数设置 "
+                    android:textColor="@color/white"
+                    android:textSize="30sp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginLeft="250dp"
+                    android:background="@drawable/proportion_text_background" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="6"
+                android:orientation="vertical">
+
+                <ScrollView
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent">
+
+                    <LinearLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:orientation="vertical">
+
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1px"
+                            android:background="#fff" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:padding="15dp"
+                            android:text="目标设备参数设置" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1px"
+                            android:background="#fff" />
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content">
+
+                            <TextView
+                                android:id="@+id/sleepOrder"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="15dp"
+                                android:gravity="center"
+                                android:text="命令间隔：50ms"
+                                android:textColor="@color/app_block"
+                                android:textSize="20dp"
+                                android:textStyle="bold" />
+
+                            <TextView
+                                android:id="@+id/orderNum"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="15dp"
+                                android:gravity="center"
+                                android:text="重发次数：3"
+                                android:textColor="@color/app_block"
+                                android:textSize="20dp"
+                                android:textStyle="bold" />
+                        </LinearLayout>
+
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:gravity="center"
+                            android:text="外圈灯亮灯模式" />
+
+                        <RadioGroup
+                            android:id="@+id/beforeOutBlink"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/beforeOutBlinkNone"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="不亮" />
+
+                            <RadioButton
+                                android:id="@+id/beforeOutBlinkAlways"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:checked="true"
+                                android:gravity="center"
+                                android:text="常亮" />
+
+                            <RadioButton
+                                android:id="@+id/beforeOutBlinkSlow"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="慢闪" />
+
+                            <RadioButton
+                                android:id="@+id/beforeOutBlinkFast"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="快闪" />
+                        </RadioGroup>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:text="外圈灯亮灯颜色" />
+
+                        <RadioGroup
+                            android:id="@+id/beforeOutColor1"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/beforeOutColorBlue"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:checked="true"
+                                android:gravity="center"
+                                android:text="蓝" />
+
+                            <RadioButton
+                                android:id="@+id/beforeOutColorRed"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="红" />
+
+                            <RadioButton
+                                android:id="@+id/beforeOutColorGreen"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="绿" />
+
+                            <RadioButton
+                                android:id="@+id/beforeOutColorPurple"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="紫" />
+                        </RadioGroup>
+
+                        <RadioGroup
+                            android:id="@+id/beforeOutColor2"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:orientation="horizontal">
+
+
+                            <RadioButton
+                                android:id="@+id/beforeOutColorCyan"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="青" />
+
+                            <RadioButton
+                                android:id="@+id/beforeOutColorYellow"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="黄" />
+
+                            <RadioButton
+                                android:id="@+id/beforeOutColorWhite"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="白" />
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1" />
+                        </RadioGroup>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:gravity="center"
+                            android:text="内圈灯亮灯模式" />
+
+                        <RadioGroup
+                            android:id="@+id/beforeInBlink"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/beforeInBlinkNone"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:checked="true"
+                                android:gravity="center"
+                                android:text="不亮" />
+
+                            <RadioButton
+                                android:id="@+id/beforeInBlinkAlways"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="常亮" />
+
+                            <RadioButton
+                                android:id="@+id/beforeInBlinkSlow"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="慢闪" />
+
+                            <RadioButton
+                                android:id="@+id/beforeInBlinkFast"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="快闪" />
+                        </RadioGroup>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:text="内圈灯亮灯颜色" />
+
+                        <RadioGroup
+                            android:id="@+id/beforeInColor"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/beforeInColorBlue"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="蓝" />
+
+                            <RadioButton
+                                android:id="@+id/beforeInColorRed"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:checked="true"
+                                android:gravity="center"
+                                android:text="红" />
+
+                            <RadioButton
+                                android:id="@+id/beforeInColorPurple"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="紫" />
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1" />
+                        </RadioGroup>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:text="红外发射开关" />
+
+                        <RadioGroup
+                            android:id="@+id/infraredEmission"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/infraredEmissionOn"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="开启" />
+
+                            <RadioButton
+                                android:id="@+id/infraredEmissionOff"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:checked="true"
+                                android:gravity="center"
+                                android:text="关闭" />
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1" />
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1" />
+                        </RadioGroup>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:gravity="center"
+                            android:text="红外感应开关" />
+
+                        <RadioGroup
+                            android:id="@+id/infraredInduction"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/infraredInductionOn"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="开启" />
+
+                            <RadioButton
+                                android:id="@+id/infraredInductionOff"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:checked="true"
+                                android:gravity="center"
+                                android:text="关闭" />
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1" />
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1" />
+                        </RadioGroup>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:gravity="center"
+                            android:text="红外感应模式" />
+
+                        <RadioGroup
+                            android:id="@+id/infraredModel"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/infraredModelNormal"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:checked="true"
+                                android:gravity="center"
+                                android:text="正常模式" />
+
+                            <RadioButton
+                                android:id="@+id/infraredModelContend"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="竞争模式" />
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1" />
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1" />
+                        </RadioGroup>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="visible">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="15dp"
+                                android:text="红外高度" />
+
+                            <RadioGroup
+                                android:id="@+id/infraredHeight"
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:orientation="horizontal">
+
+                                <RadioButton
+                                    android:id="@+id/infraredHeightLow"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="25dp"
+                                    android:layout_weight="1"
+                                    android:gravity="center"
+                                    android:text="低" />
+
+                                <RadioButton
+                                    android:id="@+id/infraredHeight_5cm"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="25dp"
+                                    android:layout_weight="1"
+                                    android:checked="true"
+                                    android:gravity="center"
+                                    android:text="5cm" />
+
+                                <RadioButton
+                                    android:id="@+id/infraredHeight_30cm"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="25dp"
+                                    android:layout_weight="1"
+                                    android:gravity="center"
+                                    android:text="30cm" />
+
+                                <RadioButton
+                                    android:id="@+id/infraredHeightHigh"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="25dp"
+                                    android:layout_weight="1"
+                                    android:gravity="center"
+                                    android:text="高" />
+                            </RadioGroup>
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:gravity="center"
+                            android:text="震动感应开关" />
+
+                        <RadioGroup
+                            android:id="@+id/vibrationInduced"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/vibrationInducedOn"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="开启" />
+
+                            <RadioButton
+                                android:id="@+id/vibrationInducedOff"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:checked="true"
+                                android:gravity="center"
+                                android:text="关闭" />
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1" />
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1" />
+                        </RadioGroup>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="15dp"
+                                android:gravity="center"
+                                android:text="振动强度" />
+
+                            <RadioGroup
+                                android:id="@+id/vibrationIntensity"
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:orientation="horizontal">
+
+                                <RadioButton
+                                    android:id="@+id/vibrationIntensityL"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="25dp"
+                                    android:layout_weight="1"
+                                    android:gravity="center"
+                                    android:text="轻触" />
+
+                                <RadioButton
+                                    android:id="@+id/vibrationIntensityM"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="25dp"
+                                    android:layout_weight="1"
+                                    android:checked="true"
+                                    android:gravity="center"
+                                    android:text="中等" />
+
+
+                                <RadioButton
+                                    android:id="@+id/vibrationIntensityH"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="25dp"
+                                    android:layout_weight="1"
+                                    android:gravity="center"
+                                    android:text="重击" />
+
+                                <View
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="25dp"
+                                    android:layout_weight="1" />
+                            </RadioGroup>
+                        </LinearLayout>
+
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:gravity="center"
+                            android:text="震动详情设置" />
+
+                        <RadioGroup
+                            android:id="@+id/vibrationDetails"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/vibrationDetailsOn"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="开启" />
+
+                            <RadioButton
+                                android:id="@+id/vibrationDetailsOff"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:checked="true"
+                                android:gravity="center"
+                                android:text="关闭" />
+
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1" />
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1" />
+                        </RadioGroup>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:gravity="center"
+                            android:text="蜂鸣器设置" />
+
+                        <RadioGroup
+                            android:id="@+id/buzzer"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/buzzerNone"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:checked="true"
+                                android:gravity="center"
+                                android:text="不响" />
+
+                            <RadioButton
+                                android:id="@+id/buzzerShort"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="短响" />
+
+                            <RadioButton
+                                android:id="@+id/buzzer_1s"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="响1秒" />
+
+                            <RadioButton
+                                android:id="@+id/buzzer_2s"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="响2秒" />
+                        </RadioGroup>
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1px"
+                            android:background="#fff" />
+
+                        <TextView
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:gravity="center"
+                            android:padding="15dp"
+                            android:text="干扰设备参数设置" />
+
+                        <View
+                            android:layout_width="match_parent"
+                            android:layout_height="1px"
+                            android:background="#fff" />
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:gravity="center"
+                            android:text="外圈灯亮灯模式" />
+
+                        <RadioGroup
+                            android:id="@+id/beforeOutBlinkfalse"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/beforeOutBlinkNonefalse"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="不亮" />
+
+                            <RadioButton
+                                android:id="@+id/beforeOutBlinkAlwaysfalse"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:checked="true"
+                                android:gravity="center"
+                                android:text="常亮" />
+
+                            <RadioButton
+                                android:id="@+id/beforeOutBlinkSlowfalse"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="慢闪" />
+
+                            <RadioButton
+                                android:id="@+id/beforeOutBlinkFastfalse"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="快闪" />
+                        </RadioGroup>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:text="外圈灯亮灯颜色" />
+
+                        <RadioGroup
+                            android:id="@+id/beforeOutColor1false"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/beforeOutColorBluefalse"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:checked="true"
+                                android:gravity="center"
+                                android:text="蓝" />
+
+                            <RadioButton
+                                android:id="@+id/beforeOutColorRedfalse"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="红" />
+
+                            <RadioButton
+                                android:id="@+id/beforeOutColorGreenfalse"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="绿" />
+
+                            <RadioButton
+                                android:id="@+id/beforeOutColorPurplefalse"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="紫" />
+                        </RadioGroup>
+
+                        <RadioGroup
+                            android:id="@+id/beforeOutColor2false"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:orientation="horizontal">
+
+
+                            <RadioButton
+                                android:id="@+id/beforeOutColorCyanfalse"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="青" />
+
+                            <RadioButton
+                                android:id="@+id/beforeOutColorYellowfalse"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="黄" />
+
+                            <RadioButton
+                                android:id="@+id/beforeOutColorWhitefalse"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="白" />
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1" />
+                        </RadioGroup>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:gravity="center"
+                            android:text="内圈灯亮灯模式" />
+
+                        <RadioGroup
+                            android:id="@+id/beforeInBlinkfalse"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/beforeInBlinkNonefalse"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:checked="true"
+                                android:gravity="center"
+                                android:text="不亮" />
+
+                            <RadioButton
+                                android:id="@+id/beforeInBlinkAlwaysfalse"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="常亮" />
+
+                            <RadioButton
+                                android:id="@+id/beforeInBlinkSlowfalse"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="慢闪" />
+
+                            <RadioButton
+                                android:id="@+id/beforeInBlinkFastfalse"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="快闪" />
+                        </RadioGroup>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:text="内圈灯亮灯颜色" />
+
+                        <RadioGroup
+                            android:id="@+id/beforeInColorfalse"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/beforeInColorBluefalse"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="蓝" />
+
+                            <RadioButton
+                                android:id="@+id/beforeInColorRedfalse"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:checked="true"
+                                android:gravity="center"
+                                android:text="红" />
+
+                            <RadioButton
+                                android:id="@+id/beforeInColorPurplefalse"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="紫" />
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1" />
+                        </RadioGroup>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:text="红外发射开关" />
+
+                        <RadioGroup
+                            android:id="@+id/infraredEmissionfalse"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/infraredEmissionOnfalse"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="开启" />
+
+                            <RadioButton
+                                android:id="@+id/infraredEmissionOfffalse"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:checked="true"
+                                android:gravity="center"
+                                android:text="关闭" />
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1" />
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1" />
+                        </RadioGroup>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:gravity="center"
+                            android:text="红外感应开关" />
+
+                        <RadioGroup
+                            android:id="@+id/infraredInductionfalse"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/infraredInductionOnfalse"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="开启" />
+
+                            <RadioButton
+                                android:id="@+id/infraredInductionOfffalse"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:checked="true"
+                                android:gravity="center"
+                                android:text="关闭" />
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1" />
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1" />
+                        </RadioGroup>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:gravity="center"
+                            android:text="红外感应模式" />
+
+                        <RadioGroup
+                            android:id="@+id/infraredModelfalse"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/infraredModelNormalfalse"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:checked="true"
+                                android:gravity="center"
+                                android:text="正常模式" />
+
+                            <RadioButton
+                                android:id="@+id/infraredModelContendfalse"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="竞争模式" />
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1" />
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1" />
+                        </RadioGroup>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:visibility="visible">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="15dp"
+                                android:text="红外高度" />
+
+                            <RadioGroup
+                                android:id="@+id/infraredHeightfalse"
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:orientation="horizontal">
+
+                                <RadioButton
+                                    android:id="@+id/infraredHeightLowfalse"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="25dp"
+                                    android:layout_weight="1"
+                                    android:gravity="center"
+                                    android:text="低" />
+
+                                <RadioButton
+                                    android:id="@+id/infraredHeight_5cmfalse"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="25dp"
+                                    android:layout_weight="1"
+                                    android:checked="true"
+                                    android:gravity="center"
+                                    android:text="5cm" />
+
+                                <RadioButton
+                                    android:id="@+id/infraredHeight_30cmfalse"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="25dp"
+                                    android:layout_weight="1"
+                                    android:gravity="center"
+                                    android:text="30cm" />
+
+                                <RadioButton
+                                    android:id="@+id/infraredHeightHighfalse"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="25dp"
+                                    android:layout_weight="1"
+                                    android:gravity="center"
+                                    android:text="高" />
+                            </RadioGroup>
+
+                        </LinearLayout>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:gravity="center"
+                            android:text="震动感应开关" />
+
+                        <RadioGroup
+                            android:id="@+id/vibrationInducedfalse"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/vibrationInducedOnfalse"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="开启" />
+
+                            <RadioButton
+                                android:id="@+id/vibrationInducedOfffalse"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:checked="true"
+                                android:gravity="center"
+                                android:text="关闭" />
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1" />
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1" />
+                        </RadioGroup>
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical">
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_margin="15dp"
+                                android:gravity="center"
+                                android:text="振动强度" />
+
+                            <RadioGroup
+                                android:id="@+id/vibrationIntensityfalse"
+                                android:layout_width="match_parent"
+                                android:layout_height="40dp"
+                                android:orientation="horizontal">
+
+                                <RadioButton
+                                    android:id="@+id/vibrationIntensityLfalse"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="25dp"
+                                    android:layout_weight="1"
+                                    android:gravity="center"
+                                    android:text="轻触" />
+
+                                <RadioButton
+                                    android:id="@+id/vibrationIntensityMfalse"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="25dp"
+                                    android:layout_weight="1"
+                                    android:checked="true"
+                                    android:gravity="center"
+                                    android:text="中等" />
+
+
+                                <RadioButton
+                                    android:id="@+id/vibrationIntensityHfalse"
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="25dp"
+                                    android:layout_weight="1"
+                                    android:gravity="center"
+                                    android:text="重击" />
+
+                                <View
+                                    android:layout_width="0dp"
+                                    android:layout_height="match_parent"
+                                    android:layout_marginLeft="25dp"
+                                    android:layout_weight="1" />
+                            </RadioGroup>
+                        </LinearLayout>
+
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:gravity="center"
+                            android:text="震动详情设置" />
+
+                        <RadioGroup
+                            android:id="@+id/vibrationDetailsfalse"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/vibrationDetailsOnfalse"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="开启" />
+
+                            <RadioButton
+                                android:id="@+id/vibrationDetailsOfffalse"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:checked="true"
+                                android:gravity="center"
+                                android:text="关闭" />
+
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1" />
+
+                            <View
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1" />
+                        </RadioGroup>
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_margin="15dp"
+                            android:gravity="center"
+                            android:text="蜂鸣器设置" />
+
+                        <RadioGroup
+                            android:id="@+id/buzzerfalse"
+                            android:layout_width="match_parent"
+                            android:layout_height="40dp"
+                            android:orientation="horizontal">
+
+                            <RadioButton
+                                android:id="@+id/buzzerNonefalse"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:checked="true"
+                                android:gravity="center"
+                                android:text="不响" />
+
+                            <RadioButton
+                                android:id="@+id/buzzerShortfalse"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="短响" />
+
+                            <RadioButton
+                                android:id="@+id/buzzer_1sfalse"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="响1秒" />
+
+                            <RadioButton
+                                android:id="@+id/buzzer_2sfalse"
+                                android:layout_width="0dp"
+                                android:layout_height="match_parent"
+                                android:layout_marginLeft="25dp"
+                                android:layout_weight="1"
+                                android:gravity="center"
+                                android:text="响2秒" />
+                        </RadioGroup>
+                    </LinearLayout>
+                </ScrollView>
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="@color/black" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tvTotalTime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="226dp"
+                    android:gravity="center"
+                    android:text="总时间:00:00:00"
+                    android:textColor="@color/black"
+                    android:textSize="25sp"
+                    android:background="@color/white" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="@color/black" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1">
+
+                    <Button
+                        android:id="@+id/btn_startrun"
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="100dp"
+                        android:background="@drawable/shape_buttongreen"
+                        android:text="开始"
+                        android:textSize="25sp" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="1">
+
+                    <Button
+                        android:id="@+id/btn_stoprun"
+                        android:layout_width="120dp"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center"
+                        android:layout_marginLeft="100dp"
+                        android:background="@drawable/shape_buttonred"
+                        android:text="结束"
+                        android:textSize="25sp" />
+                </LinearLayout>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <View
+            android:layout_width="1dp"
+            android:layout_height="fill_parent"
+            android:background="@color/black" />
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="1">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginLeft="288dp"
+                    android:text="训练结果"
+                    android:textColor="@color/white"
+                    android:textSize="28sp"
+                    android:background="@drawable/proportion_text_background" />
+            </LinearLayout>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="@color/black" />
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="0dp"
+                android:layout_weight="1.5"
+                android:orientation="horizontal">
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="中靶数"
+                        android:textColor="@color/white"
+                        android:textSize="20sp"
+                        android:background="@drawable/proportion_text_background" />
+
+                    <TextView
+                        android:id="@+id/tv_hit_right_num"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.8"
+                        android:layout_marginTop="10dp"
+                        android:layout_marginLeft="10dp"
+                        android:text="00"
+                        android:textSize="20sp"
+                        android:gravity="center"
+                        android:textColor="@color/black" />
+                </LinearLayout>
+
+                <LinearLayout
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="10dp"
+                        android:layout_weight="1"
+                        android:gravity="center"
+                        android:text="脱靶数"
+                        android:textColor="@color/white"
+                        android:textSize="20sp"
+                        android:background="@drawable/proportion_text_background" />
+
+                    <TextView
+                        android:id="@+id/tv_hit_wrong_num"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.8"
+                        android:layout_marginLeft="10dp"
+                        android:layout_marginTop="10dp"
+                        android:textSize="20sp"
+                        android:text="00"
+                        android:gravity="center"
+                        android:textColor="@color/black" />
+                </LinearLayout>
+
+
+            </LinearLayout>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="@color/black" />
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="0dp"
+                android:layout_weight="6">
+
+                <ListView
+                    android:id="@+id/lvTimes"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="20sp"></ListView>
+            </LinearLayout>
+
+            <View
+                android:layout_width="fill_parent"
+                android:layout_height="1dp"
+                android:background="@color/black" />
+            <!--放平均值和保存按钮的地方-->
+
+            <include layout="@layout/part_savescores" />
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

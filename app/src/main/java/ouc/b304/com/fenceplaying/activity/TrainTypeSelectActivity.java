@@ -14,6 +14,7 @@ import butterknife.BindView;
 import butterknife.ButterKnife;
 import butterknife.OnClick;
 import ouc.b304.com.fenceplaying.R;
+import ouc.b304.com.fenceplaying.activity.newVersion.NewAccuracyActivity;
 
 /**
  * @author 王海峰 on 2019/1/10 15:44
@@ -82,7 +83,7 @@ public class TrainTypeSelectActivity extends Activity {
 
                 break;
             case R.id.rl_accuracytrain:
-                startActivity(new Intent(context, AccuracyActivity.class));
+                startActivity(new Intent(context, NewAccuracyActivity.class));
 
                 break;
         }
