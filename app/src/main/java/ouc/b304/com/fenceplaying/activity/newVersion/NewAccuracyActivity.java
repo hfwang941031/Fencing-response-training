@@ -342,6 +342,7 @@ public class NewAccuracyActivity extends BaseActivity {
     private final static int UPDATE_TIMES = 3;
     private final static int STOP_TRAINING = 4;
     private final static int TIME_RECEIVE_FOR_MATRIX = 5;
+    private final static int CHANGE_LISTVIEW = 6;
     //训练时间
     private long trainingTime = 0;
     //训练开始时间
@@ -386,6 +387,7 @@ public class NewAccuracyActivity extends BaseActivity {
     private PlayerDao playerDao;
     private Player player;
     private Context context;
+    boolean timedownFlag = false;
 
     //广播监听
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
@@ -397,7 +399,7 @@ public class NewAccuracyActivity extends BaseActivity {
                     if (!endFlag) {
                         TimeInfo timeInfo = (TimeInfo) intent.getSerializableExtra("timeInfo");
                         Log.d("timeInfo", timeInfo.toString());
-                        analyzeDateForMatrix(timeInfo);
+                        analyzeDateForMatrix2(timeInfo);
 
                     }
                     break;
@@ -406,6 +408,48 @@ public class NewAccuracyActivity extends BaseActivity {
     };
     private Realm mRealm;
 
+    private void analyzeDateForMatrix2(final TimeInfo info) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                if (!timedownFlag) {
+                    Log.i("analyzeDFM", info.getAddress() + "======" + nowLightListForMatrix.get(0).getAddress());
+                    if (info.getAddress().equals(nowLightListForMatrix.get(0).getAddress())) {
+                        counterForMatrixTraining++;
+                        Message message = handler.obtainMessage();
+                        message.what = CHANGE_LISTVIEW;
+                        handler.sendMessage(message);
+//                    tvHitRightNum.setText(counterForMatrixTraining + "");
+                        isHitArrayList.add(true);
+                        OrderUtils.getInstance().turnOffLightList(nowLightListForMatrix);
+
+                    } else {
+                        counterForWrongNum++;
+                        Message message = handler.obtainMessage();
+                        message.what = CHANGE_LISTVIEW;
+                        handler.sendMessage(message);
+//                    tvHitWrongNum.setText(counterForWrongNum + "");
+                        isHitArrayList.add(false);
+                        OrderUtils.getInstance().turnOffLightList(nowLightListForMatrix);
+
+                    }
+                    Random random = new Random();
+                    int randomNum3 = random.nextInt(3) + 1;
+                    try {
+                        Thread.sleep(randomNum3 * 1000);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    } finally {
+                        openLightForMatrixTraining();
+                    }
+                } else {
+                    OrderUtils.getInstance().turnOffLightList(nowLightListForMatrix);
+                }
+
+
+            }
+        }).start();
+    }
     private void analyzeDateForMatrix(TimeInfo info) {
         Log.i("analyzeDFM", info.getAddress() + "======" + nowLightListForMatrix.get(0).getAddress());
         if (info.getAddress().equals(nowLightListForMatrix.get(0).getAddress())) {
@@ -435,9 +479,11 @@ public class NewAccuracyActivity extends BaseActivity {
                     tvTotalTime.setText("总时间" + time);
                     break;
                 case Timer.TIMER_DOWN:
+
                     String time1 = msg.obj.toString();
                     tvTotalTime.setText("总时间" + time1);
                     if (timer.time >= trainingTime * 1000) {
+                        timedownFlag = true;
                         stopTraining();
                         saveBtnIsClickable = true;
                         hitRate = (float) counterForMatrixTraining / (float) (counterForWrongNum + counterForMatrixTraining);
@@ -448,6 +494,14 @@ public class NewAccuracyActivity extends BaseActivity {
                 case STOP_TRAINING:
                     stopTraining();
                     break;
+
+                case CHANGE_LISTVIEW:
+                    tvHitRightNum.setText(counterForMatrixTraining + "");
+                    tvHitWrongNum.setText(counterForWrongNum + "");
+                    avergeScore.setText((int) (100 * counterForMatrixTraining / (counterForWrongNum + counterForMatrixTraining)) + "%");
+                    accuracyAdapter.notifyDataSetChanged();
+                    break;
+
             }
         }
     };
@@ -577,6 +631,7 @@ public class NewAccuracyActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        unregisterReceiver(mBroadcastReceiver);
     }
 
     @Override

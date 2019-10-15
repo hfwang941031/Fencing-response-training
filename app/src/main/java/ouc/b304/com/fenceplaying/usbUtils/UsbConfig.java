@@ -226,6 +226,7 @@ public class UsbConfig {
     public int sendMessage(String order) {
         if (mConnection != null && usbEndpointOut != null) {
             byte[] bytes = Utils.hexStringToByte(order);
+            Log.d("FinalOrder", order + "");
             return mConnection.bulkTransfer(usbEndpointOut, bytes, bytes.length, 10);
         }
         return -1;

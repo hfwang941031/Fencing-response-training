@@ -30,6 +30,7 @@ import org.greenrobot.greendao.query.QueryBuilder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -324,7 +325,7 @@ public class NewSingleLineActivity extends BaseActivity {
                     if (!endFlag) {
                         TimeInfo timeInfo = (TimeInfo) intent.getSerializableExtra("timeInfo");
                         Log.d("timeInfo", timeInfo.toString());
-                        analyzeTimeData(timeInfo);
+                        analyzeTimeData2(timeInfo);
                     }
                     break;
             }
@@ -382,6 +383,7 @@ public class NewSingleLineActivity extends BaseActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        unregisterReceiver(mBroadcastReceiver);
     }
 
     @Override
@@ -542,6 +544,56 @@ public class NewSingleLineActivity extends BaseActivity {
             }
         });
 
+    }
+
+
+    private void analyzeTimeData2(final TimeInfo timeInfo) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("ana", "时间解析");
+                counter += 1;
+                Log.d("时间信息", timeInfo.getName() + timeInfo.getTime());
+
+                if (counter > trainTimes) {
+                    endFlag = true;
+                }
+                Log.d("计数器值", counter + "");
+                timeList.add((int) timeInfo.getTime());
+                Random random = new Random();
+                int randomNum2 = random.nextInt(3) + 1;
+                try {
+                    Thread.sleep(randomNum2 * 1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                int randomNum = NumberUtils.randomNumber(numberOfLight);
+                DbLight dbLight = selectedLights.get(randomNum);
+                Log.d("再次开灯前状态", dbLight.toString());
+                List<Order> orderList = new ArrayList<>();
+                dbLight.setOpen(true);
+                Order order = new Order();
+                order.setLight(dbLight);
+                order.setCommandNew(commandNewTrue);
+                orderList.add(order);
+                OrderUtils.getInstance().sendCommand(orderList);
+                Log.d("ananlyze中开灯", dbLight.toString());
+
+                Message msg = Message.obtain();
+                msg.what = UPDATE_TIMES;
+                msg.obj = "";
+                handler.sendMessage(msg);
+                if (isTrainingOver()) {
+                    //训练结束后设置保存按钮可点击
+                    saveBtnIsClickable = true;
+                    Log.d("ifistrainingover", "has run" + counter);
+                    Message msg1 = Message.obtain();
+                    msg1.what = STOP_TRAINING;
+                    msg1.obj = "";
+                    handler.sendMessage(msg1);
+                }
+            }
+        }).start();
     }
 
     //解析单列训练返回的时间数据

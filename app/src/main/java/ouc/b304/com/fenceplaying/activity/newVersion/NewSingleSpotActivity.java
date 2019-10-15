@@ -31,8 +31,10 @@ import org.greenrobot.greendao.query.QueryBuilder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
+
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -44,6 +46,8 @@ import ouc.b304.com.fenceplaying.Dao.SingleSpotScoresDao;
 import ouc.b304.com.fenceplaying.Dao.entity.Player;
 import ouc.b304.com.fenceplaying.Dao.entity.SingleSpotScores;
 import ouc.b304.com.fenceplaying.R;
+import ouc.b304.com.fenceplaying.activity.DataShowActivity;
+import ouc.b304.com.fenceplaying.activity.SettingActivity;
 import ouc.b304.com.fenceplaying.adapter.LightOperateAdapter;
 import ouc.b304.com.fenceplaying.adapter.SaveResultAdapter;
 import ouc.b304.com.fenceplaying.adapter.SingleSpotAdapter;
@@ -115,8 +119,7 @@ public class NewSingleSpotActivity extends BaseActivity {
     @BindView(R.id.tv_avalibledevices)
     TextView tvAvalibledevices;
 
-    @BindView(R.id.img_btn_refresh)
-    ImageButton imgBtnRefresh;
+
     @BindView(R.id.tvTotalTime)
     TextView tvTotalTime;
     @BindView(R.id.btn_startrun)
@@ -379,7 +382,7 @@ public class NewSingleSpotActivity extends BaseActivity {
                     if (!endFlag) {
                         TimeInfo timeInfo = (TimeInfo) intent.getSerializableExtra("timeInfo");
                         Log.d("timeInfo", timeInfo.toString());
-                        analyzeTimeData(timeInfo);
+                        analyzeTimeData1(timeInfo);
                     }
                     break;
             }
@@ -487,7 +490,7 @@ public class NewSingleSpotActivity extends BaseActivity {
         super.finish();
     }
 
-    @OnClick({R.id.bt_run_cancel, R.id.layout_cancel, R.id.btn_turnon, R.id.btn_turnoff, R.id.img_btn_refresh, R.id.btn_startrun, R.id.btn_stoprun, R.id.bt_save,R.id.sleepOrder,R.id.orderNum})
+    @OnClick({R.id.bt_run_cancel, R.id.layout_cancel, R.id.btn_turnon, R.id.btn_turnoff, R.id.btn_startrun, R.id.btn_stoprun, R.id.bt_save, R.id.sleepOrder, R.id.orderNum})
     public void onViewClicked(View view) {
         switch (view.getId()) {
             case R.id.bt_run_cancel:
@@ -509,11 +512,7 @@ public class NewSingleSpotActivity extends BaseActivity {
                 OrderUtils.getInstance().turnOffLightList(AppConfig.sDbLights);
 
                 break;
-            case R.id.img_btn_refresh:
-                //刷新当前页面的灯及其编号
-                getSaveLight();
-                ToastUtils.makeText(mContext, "设备已刷新", Toast.LENGTH_SHORT).show();
-                break;
+
             case R.id.btn_startrun:
                 //训练开始的时候把上次的成绩置空
                 averageScore = 0;
@@ -628,6 +627,12 @@ public class NewSingleSpotActivity extends BaseActivity {
 
     //解析时间
     private void analyzeTimeData(TimeInfo timeInfo) {
+//        try {
+//            Thread.sleep(3000);
+//        } catch (InterruptedException e) {
+//            e.printStackTrace();
+//        }
+
         Log.d("ana", "时间解析");
 /*
             if (timeInfo.getName() == selectedLight.getName()) {
@@ -652,6 +657,7 @@ public class NewSingleSpotActivity extends BaseActivity {
         order.setCommandNew(commandNew);
         orderList.add(order);
         OrderUtils.getInstance().sendCommand(orderList);
+//        OrderUtils.getInstance().turnOnAllLight(AppConfig.sDbLights);
         Log.d("ananlyze中开灯", selectedLight.toString());
 
         //  }
@@ -669,6 +675,63 @@ public class NewSingleSpotActivity extends BaseActivity {
             msg1.obj = "";
             handler.sendMessage(msg1);
         }
+
+    }
+
+    private void analyzeTimeData1(final TimeInfo timeInfo) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+
+                Log.d("ana", "时间解析");
+
+                counter += 1;
+                Log.d("******", timeInfo.getName() + timeInfo.getTime());
+
+                if (counter > trainTimes) {
+                    endFlag = true;
+                }
+                Log.d("#######", counter + "");
+                timeList.add((int) timeInfo.getTime());
+                Random random = new Random();
+                int randomNum = random.nextInt(3) + 1;
+                try {
+                    Thread.sleep(randomNum * 1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                Log.d("再次开灯前状态", selectedLight.toString());
+                List<Order> orderList = new ArrayList<>();
+                selectedLight.setOpen(true);
+                commandNew.setBeforeOutColor(lightColor);
+                commandNew.setInfraredEmission(CommandRules.InfraredEmission.OPEN);
+                commandNew.setInfraredInduction(CommandRules.InfraredInduction.OPEN);
+                commandNew.setInfraredModel(CommandRules.InfraredModel.NORMAL);
+                Order order = new Order();
+                order.setLight(selectedLight);
+                order.setCommandNew(commandNew);
+                orderList.add(order);
+                OrderUtils.getInstance().sendCommand(orderList);
+//        OrderUtils.getInstance().turnOnAllLight(AppConfig.sDbLights);
+                Log.d("ananlyze中开灯", selectedLight.toString());
+
+                //  }
+
+                Message msg = Message.obtain();
+                msg.what = UPDATE_TIMES;
+                msg.obj = "";
+                handler.sendMessage(msg);
+                if (isTrainingOver()) {
+                    //训练结束后设置保存按钮可点击
+                    saveBtnIsClickable = true;
+                    Log.d("ifistrainingover", "has run" + counter);
+                    Message msg1 = Message.obtain();
+                    msg1.what = STOP_TRAINING;
+                    msg1.obj = "";
+                    handler.sendMessage(msg1);
+                }
+            }
+        }).start();
 
     }
 
@@ -726,7 +789,7 @@ public class NewSingleSpotActivity extends BaseActivity {
                         }
                     }
                     if (selectedLight == null) {
-                        ToastUtils.makeText(mContext, "可用设备不足一个", Toast.LENGTH_SHORT).show();
+                        ToastUtils.makeText(mContext, "可用设备不足一个", Toast.LENGTH_LONG).show();
                     } else {
                         Log.d("deviceNum", selectedLight.getName() + "");
                     }
@@ -761,6 +824,11 @@ public class NewSingleSpotActivity extends BaseActivity {
 
     //开始训练
     public void startTraining() {
+        if (selectedLight == null) {
+            Toast.makeText(mContext, "未发现可用设备，请先返回系统设置页面等待设备连接！", Toast.LENGTH_LONG).show();
+            return;
+
+        }
         Log.d(TAG, "startTraining has run");
         //首先清除时间列表
         AppConfig.sTimeInfoList.clear();

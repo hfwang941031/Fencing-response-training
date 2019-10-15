@@ -30,6 +30,7 @@ import org.greenrobot.greendao.query.QueryBuilder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
 
 import butterknife.BindView;
 import butterknife.ButterKnife;
@@ -410,7 +411,7 @@ public class NewMatrixActivity extends BaseActivity {
                     if (!endFlag) {
                         TimeInfo timeInfo = (TimeInfo) intent.getSerializableExtra("timeInfo");
                         Log.d("timeInfo", timeInfo.toString());
-                        analyzeTimeData(timeInfo);
+                        analyzeTimeData2(timeInfo);
                     }
                     break;
             }
@@ -657,6 +658,68 @@ public class NewMatrixActivity extends BaseActivity {
 
     }
 
+    private void analyzeTimeData2(final TimeInfo timeInfo) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                Log.d("ana", "时间解析");
+                //关所有灯（关闭目标灯时，连带着关闭干扰项）
+                OrderUtils.getInstance().turnOffLight(falseLight);
+                counter += 1;
+                Log.d("时间信息", timeInfo.getName() + timeInfo.getTime());
+
+                if (counter > trainTimes) {
+                    endFlag = true;
+                }
+                Log.d("计数器值", counter + "");
+                timeList.add((int) timeInfo.getTime());
+                /*Random random = new Random();
+                int randomNum3=random.nextInt(2)+1;*/
+                try {
+                    Thread.sleep(800);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                //设置目标灯
+                int randomNum1 = NumberUtils.randomNumber(numberOfLight);
+                trueLight = selectedLights.get(randomNum1);
+                List<Order> orderList = new ArrayList<>();
+                trueLight.setOpen(true);
+                Order order = new Order();
+                order.setLight(trueLight);
+                order.setCommandNew(commandNewTrue);
+                Log.d("目标灯命令", order.toString() + "");
+
+                orderList.add(order);
+                //设置干扰灯
+                int randomNum2 = NumberUtils.randomNumber(numberOfLight);
+                falseLight = selectedLights.get(randomNum2);
+                falseLight.setOpen(true);
+                Order order1 = new Order();
+                order1.setLight(falseLight);
+                order1.setCommandNew(commandNewFalse);
+                Log.d("干扰灯命令", order1.toString() + "");
+                orderList.add(order1);
+                //开目标灯和干扰灯
+                OrderUtils.getInstance().sendCommand(orderList);
+                Message msg = Message.obtain();
+                msg.what = UPDATE_TIMES;
+                msg.obj = "";
+                handler.sendMessage(msg);
+                if (isTrainingOver()) {
+                    //训练结束后设置保存按钮可点击
+                    saveBtnIsClickable = true;
+                    Log.d("ifistrainingover", "has run" + counter);
+                    Message msg1 = Message.obtain();
+                    msg1.what = STOP_TRAINING;
+                    msg1.obj = "";
+                    handler.sendMessage(msg1);
+                }
+
+            }
+        }).start();
+    }
+
     //解析抗干扰训练返回的时间数据
     private void analyzeTimeData(TimeInfo timeInfo) {
         Log.d("ana", "时间解析");
@@ -775,14 +838,14 @@ public class NewMatrixActivity extends BaseActivity {
     private void initData() {
         //初始化可用灯数量
         int num = 0;
-        if (AppConfig.sDbLights != null && AppConfig.sDbLights.size() > 3) {
+        if (AppConfig.sDbLights != null && AppConfig.sDbLights.size() >= 3) {
             for (DbLight dbLight : AppConfig.sDbLights) {
                 num++;
             }
             numOfUsableLight = num;
 
             //填充灯Spinner数量
-            for (int i = 3; i < numOfUsableLight; i++) {
+            for (int i = 3; i <= numOfUsableLight; i++) {
                 lightNumberList.add(i);
             }
             //
@@ -1402,6 +1465,7 @@ public class NewMatrixActivity extends BaseActivity {
             randomNum1 = NumberUtils.randomNumber(numberOfLight);
             randomNum2 = NumberUtils.randomNumber(numberOfLight);
         }
+        Log.d("randomNum1,randomNum2", randomNum1 + " " + randomNum2);
         trueLight = selectedLights.get(randomNum1);
         Log.d("开始训练前目标灯的状态", trueLight.toString());
         List<Order> orderList = new ArrayList<>();

@@ -19,11 +19,13 @@ import butterknife.ButterKnife;
 import butterknife.OnClick;
 import io.realm.Realm;
 import ouc.b304.com.fenceplaying.R;
+import ouc.b304.com.fenceplaying.activity.DataShowActivity;
 import ouc.b304.com.fenceplaying.activity.DataShowSelect;
 import ouc.b304.com.fenceplaying.activity.InfoSelectActivity;
 import ouc.b304.com.fenceplaying.activity.SettingActivity;
 import ouc.b304.com.fenceplaying.activity.TrainTypeSelectActivity;
 import ouc.b304.com.fenceplaying.application.GreenDaoInitApplication;
+import ouc.b304.com.fenceplaying.utils.newUtils.AppConfig;
 import ouc.b304.com.fenceplaying.utils.newUtils.SafLightReceiver;
 
 /**
@@ -34,8 +36,7 @@ public class NewMain extends BaseActivity {
 
     @BindView(R.id.name)
     TextView name;
-    @BindView(R.id.img_btn_initdevice)
-    ImageButton imgBtnInitdevice;
+
     @BindView(R.id.img1)
     ImageView img1;
     @BindView(R.id.rl_playerinfo)
@@ -98,6 +99,13 @@ public class NewMain extends BaseActivity {
     @Override
     protected void onResume() {
         super.onResume();
+        int num = AppConfig.sDbLights.size();
+        if (num == 0) {
+            lightNum.setText(num + "个设备已连接");
+        } else {
+            lightNum.setText(num + "个设备已连接");
+        }
+
     }
 
     @Override
@@ -130,13 +138,10 @@ public class NewMain extends BaseActivity {
     }
 
 
-    @OnClick({R.id.img_btn_initdevice, R.id.rl_playerinfo, R.id.rl_train, R.id.rl_histroydata, R.id.rl_setting})
+    @OnClick({R.id.rl_playerinfo, R.id.rl_train, R.id.rl_histroydata, R.id.rl_setting})
     public void onViewClicked(View view) {
         switch (view.getId()) {
-            case R.id.img_btn_initdevice:
 
-
-                break;
             case R.id.rl_playerinfo:
                 startActivity(new Intent(mContext, InfoSelectActivity.class));
 
@@ -146,7 +151,7 @@ public class NewMain extends BaseActivity {
 
                 break;
             case R.id.rl_histroydata:
-                startActivity(new Intent(mContext, DataShowSelect.class));
+                startActivity(new Intent(mContext, DataShowActivity.class));
 
                 break;
             case R.id.rl_setting:

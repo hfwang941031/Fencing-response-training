@@ -15,12 +15,5 @@
             android:layout_marginLeft="250dp"
             android:background="@drawable/proportion_text_background"/>
 
-        <ImageButton
-            android:layout_marginLeft="180dp"
-            android:background="@color/black"
-            android:layout_width="50dp"
-            android:layout_height="50dp"
-            android:id="@+id/img_btn_refresh"
-            android:src="@drawable/img_refresh"/>
 
 </LinearLayout>
